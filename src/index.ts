@@ -1,14 +1,15 @@
 //Don't remove this
-interface Data {
-    localTime: string[];
-    pokemonId: string[];
-    longitude: number[];
-    latitude: number[];
-  }
+
+const data: Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
+
+const pokedex : Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
+
+// Merge sort
+function mergeSort(dataArray : number[], l : number, m : number, r : number) : number[]{
+
+
+
+  return dataArray;
+}
   
-  const data: Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here. 
-  
-  //This below just shows you how to access the data. You can remove these.
-  console.log(data);
-  console.log(data.pokemonId);
   
