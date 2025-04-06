@@ -1,4 +1,4 @@
-// constains all basic structures
+// constains all structures
 
 // node structure for linkedlist
 // double linked node
@@ -8,9 +8,13 @@ class node<T>{
     // auto take value
     constructor(
         public val : T,
+        public index : number,
     ){}
 }
 
+// TO USE
+// Create the class (dataarray)
+// returns sorted data array in index form
 class MergeSortLL<T> {
 
     // since in merge sort split we aren't able to split an array down the middle unless we copy all previous elements
@@ -31,7 +35,7 @@ class MergeSortLL<T> {
     constructor(arr : Array<T>){
         for(let i=0; i<arr.length; i++){
             // create new node
-            let newNode : node<T> = new node<T>(arr[i]);
+            let newNode : node<T> = new node<T>(arr[i], i);
             
             // check if head exists
             if(this.head === null){
@@ -111,13 +115,13 @@ class MergeSortLL<T> {
         while(left !== null && right !== null){
             let newNode : node<T>;
             // COMPARISON
-            if(this.compare(left.val, right.val)){
-                newNode = new node<T>(left.val);
+            if(this.compare(left.val, right.val) === 1){
+                newNode = new node<T>(left.val, left.index);
                 left = left.next;
                 
             }
             else{
-                newNode = new node<T>(right.val);
+                newNode = new node<T>(right.val, right.index);
                 right = right.next;
             }
             // no head
@@ -139,16 +143,17 @@ class MergeSortLL<T> {
     }
 
     // sort the stuff
-    // returns an array of sorted items
-    public sort(compare? : any) : Array<T> {
+    // returns an array of sorted indexes
+    public sort(compare? : any) : Array<number> {
 
+        if(typeof compare !== 'function') compare = compareNums;
         this.compare = compare;
 
-        let arr : Array<T> = new Array<T>;
+        let arr : Array<number> = new Array<number>;
         let cur : node<T> = this.mergeSort(this.head) as node<T>;
         // O(n) to convert back to list
         for(let i=0; i<this.numElements; i++){
-            arr[i] = cur.val;
+            arr[i] = cur.index;
             if(cur.next !== null){
                 cur = cur.next;
             }
