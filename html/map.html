@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Pokémon Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <style>
+        #map {
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+
+<h3>Pokémon Map</h3>
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([0, 0], 2); // center of the map
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18
+    }).addTo(map);
+
+    // Sample Pokémon data
+    var pokemonData = [
+        { name: 'Pikachu', coords: [37.7749, -122.4194] },
+        { name: 'Charmander', coords: [34.0522, -118.2437] },
+        { name: 'Squirtle', coords: [40.7128, -74.0060] },
+    ];
+
+    // Add markers for each Pokémon
+    pokemonData.forEach(pokemon => {
+        L.marker(pokemon.coords)
+            .addTo(map)
+            .bindPopup(`<strong>${pokemon.name}</strong><br>Coordinates: ${pokemon.coords[0].toFixed(4)}, ${pokemon.coords[1].toFixed(4)}`);
+    });
+</script>
+
+
+</body>
+</html>
