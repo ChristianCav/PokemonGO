@@ -9,7 +9,7 @@ interface Data {
 
 interface Pokedex{
     ids: number[];
-    names: string[];
+    names_english: string[];
     types: string[];
     stats: number[];
     species: string[];
