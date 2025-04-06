@@ -1,16 +1,29 @@
 // contains comparisons
 
-function compareNums(target: number, mid: number): number{
+function ascending(target: number, mid: number): number{
     if(target===mid){
-      return 0;
+        return 0;
     }
-    else if(target<mid){
-      return -1;
+    else if(target>mid){
+        return -1;
     }
     else{
-      return 1;
+        return 1;
     }
-  }
+}
+
+function desending(target: number, mid: number): number{
+    if(target===mid){
+        return 0;
+    }
+    else if(target<mid){
+        return -1;
+    }
+    else{
+        return 1;
+    }
+}
+
 
 function compareAlpha(target: string, mid:string): number{
 const len = Math.min(target.length,mid.length);

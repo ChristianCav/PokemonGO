@@ -146,8 +146,9 @@ class MergeSortLL<T> {
     // returns an array of sorted indexes
     public sort(compare? : any) : Array<number> {
 
-        if(typeof compare !== 'function') compare = compareNums;
-        this.compare = compare;
+        // if no compare function just do ascending
+        if(typeof compare !== 'function') compare = ascending;
+        else this.compare = compare;
 
         let arr : Array<number> = new Array<number>;
         let cur : node<T> = this.mergeSort(this.head) as node<T>;

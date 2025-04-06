@@ -46,4 +46,3 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
     }
     return foundIndexes;
 } 
-

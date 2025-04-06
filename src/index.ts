@@ -53,5 +53,23 @@ function displayPokedex(pokedex: Pokedex) {
   }
 }
 
-let t : MergeSortLL<number> = new MergeSortLL(data.longitude);
-console.log(t.sort());
+// converts indexes to a data set based on order
+// so if [1, 3, 2, 4]
+// it will return the data value of [data[1], data[3], data[2], data[4]]
+function indexToData(indexes : number[], arr : any[]) : Array<any> {
+  let result : Array<any> = new Array(indexes.length);
+  for(let i=0; i<indexes.length; i++){
+      result[i] = arr[indexes[i]];
+  }
+  return result;
+}
+
+let t : MergeSortLL<number> = new MergeSortLL(data.pokemonId);
+console.log(data.pokemonId);
+let m = (t.sort(ascending));
+console.log(m);
+let v = (indexToData(m, data.pokemonId));
+console.log(v);
+let d = binarySearch(1, v, desending);
+console.log(d);
+console.log(indexToData(d, v));
