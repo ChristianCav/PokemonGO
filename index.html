@@ -1,15 +1,69 @@
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="css/index.css" />
-  </head>
-  <body>
-    <!--Do not move the line below-->
-    <script src="./dist/DO_NOT_TOUCH.js"></script>
-    <script src="./dist/DataClasses.js"></script>
-    <!--Do not move the line above-->
-    <script src="./dist/index.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokédex</title>
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="icon" href="images/pokeball.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- Title Bar -->
+  <!-- !Can change the font -->
+  <div class="bar">
+    <h1>Pokémon Go! Pokédex</h1>
+    <div class="gradient-bar"></div>
+
+    <!-- TODO Fix the shimmer animation so it matches the same height as the gradient -->
+    <div class="shimmer"></div>
+  </div>
+
+
+  <!-- Search Bar -->
+  <div class="simpleSearchBar">
+    <h1>Search For Your Pokemon</h1>
+    <input type="text" id="searchBar" placeholder="Search for a Pokémon" />
+    <button type="button" id="searchButton">
+      <i class="fa-solid fa-magnifying-glass"></i> Search
+    </button>
+
+    <button type="button" id="openAdvSearchButton">
+      <i class="fa-solid fa-sliders"></i> Advanced Search
+    </button>
+
+  </div>
+
+  <!-- Advanced Search Bar
+  opens up after the button is pressed -->
+  <div class="advSearchBar" style="display: none;">
+    <h1>Advanced Search</h1>
+  </div>
+
+  <!-- Grid map for display -->
+  <!-- !NOT FINISHED CHANGE LATER -->
+  <div class="pokemon-grid-container">
+    <div class="pokemon-grid">
+      <div class="pokemon-card">
+        <img src="" alt="Pikachu" class="pokemon-image">
+        <div class="pokemon-info">
+          <h3 class="pokemon-name">Pikachu</h3>
+          <p class="pokemon-number">#025</p>
+          <div class="pokemon-types">
+            <span class="type electric">Electric</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+<!--Do not move the line below-->
+<script src="./dist/DO_NOT_TOUCH.js"></script>
+<script src="./dist/DataClasses.js"></script>
+<!--Do not move the line above-->
+<script src="./dist/index.js"></script>
+
 </html>

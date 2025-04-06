@@ -1,92 +1,156 @@
 //Don't remove this
 
-const data: Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
+// const data: Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
 
 const pokedex : Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
 
-class Algorithms{
-
-  // Splitting array
-  private arraySplit(arr : any[], left : number, right : number) : any[]{
-    let newArr : Array<any> = new Array(right-left);
-    console.log(arr);
-    for(let i=left, j=0; i<right; i++, j++){
-        // wrong
-        newArr[j] = arr[i];
-    }
-    //console.log(newArr);
-    return newArr;
-} 
-
-  // Push value into array
-  // use a fixed size array to create an ammortized O(n)
-  // otherwise everytime i loop and push it will be O(n^2) too slow
-  private arrayPush(arr : any[], val : any) : any[]{
-    let newArr : any[] = new Array<any>(arr.length+1);
-    for(let i=0; i<arr.length; i++){
-      newArr[i] = arr[i];
-    }
-    newArr[arr.length] = val;
-    return newArr;
-  }
-
+class Algorithms {
   // Merge sort
-  // 
-  public mergeSort(dataArray : any[]) : any[]{
-
-    // base case
-    if(dataArray.length <= 1){
-      return dataArray;
-    }
-    // find mid point in the array
-    let mid : number = Math.floor(dataArray.length/2);
-    // split into left and right side subarrays
-    let left : Array<any> = this.mergeSort(this.arraySplit(dataArray, 0, mid));
-    let right : Array<any> = this.mergeSort(this.arraySplit(dataArray, mid, dataArray.length));
-    
-    return this.merge(left, right);
+  public mergeSort(dataArray: number[], l: number, m: number,r: number): number[] {
+    return dataArray;
   }
-  
-  // Merge 
-  // Merging the arrays together after they have been cut down to 1 piece
-  public merge(left : any[], right : any[]) : any[]{
-    let sortedArray: any[] = new Array<any>();
-    let l : number = 0; let r : number = 0;
-    // depending on compare we add that element to the sorted and increment the index
-    // this compares every element to the other side, but since it is already sorted we don't have to compare with itself
-    // maximum comparisions in a loop is n/2
-    while (l < left.length && r < right.length) {
-      // comparison
-      if (left[l] < right[r]) {
-          this.arrayPush(sortedArray, left[l]);
-          l++;
-      } else {
-          this.arrayPush(sortedArray, right[r]);
-          r++;
+
+  public merge() {}
+
+  // finds all indexes of target
+  // does binary search to find first occurence, then goes to the left and right to find all other occurences
+  public binarySearch(target: number | string, data: any[], compareFn: any): number[]{
+    let left: number = 0;
+    let right: number = data.length-1;
+    let foundIndexes: number[] = []
+    let foundIndex: number = -1;
+
+    if(typeof compareFn !== 'function'){
+      return [-1];
+    }
+    while(left <= right){
+      // find middle index
+      const midIndex: number = Math.floor((left+right)/2);
+      // store the return value of the compare function
+      const compareResult : number = compareFn(target, data[midIndex]);
+      // if the target was found at the midIndex, set the foundIndex to midIndex
+      if(compareResult === 0){
+        foundIndex = midIndex;
+        break;
+      }
+      // if the middle val was too large, decrease right
+      else if(compareResult < 0){
+        right = midIndex-1;
+      }
+      // if the middle val was too small, increase left
+      else{
+        left = midIndex + 1;
       }
     }
-
-    // add remaining elements
-    while (l < left.length) {
-      this.arrayPush(sortedArray, left[l]);
-      l++;
+    if(foundIndex === -1){
+      return [-1];
     }
-    while (r < right.length) {
-      this.arrayPush(sortedArray, right[r]);
-      r++;
+    foundIndexes.push(foundIndex);
+
+    let i: number = foundIndex -1;
+    while(i>=0 && compareFn(target,data[i]) ===0){
+      foundIndexes.push(i);
+      i--;
     }
 
-  return sortedArray;
-  }   
-  
+    let j: number = foundIndex +1;
+    while(j<=data.length && compareFn(target,data[j]) === 0){
+      foundIndexes.push(j);
+      j++;
+    }
+    return foundIndexes;
+  } 
 }
-/*
-let a : Algorithms = new Algorithms;
-let test = data.longitude;
-a.mergeSort(test);
-console.log(test);
-*/
-let t : MergeSortLL<number> = new MergeSortLL<number>;
-t.push(1);
-t.push(2);
-t.print();
+
+fetch("../DO_NOT_TOUCH/pokedex.json")
+  .then(response => response.json())
+  .then((data: Pokedex) => {
+    displayPokedex(data);
+  })
+  .catch(error => {
+    console.error("Failed to load Pokédex JSON:", error);
+  });
+
+
+function displayPokedex(pokedex: Pokedex) {
+  const gridContainer = document.querySelector(".pokemon-grid") as HTMLElement;
+
+  function formatNumber(id: number): string {
+    if (id < 10) return "#00" + id;
+    else if (id < 100) return "#0" + id;
+    else return "#" + id;
+  }
+
+  for (let i = 0; i < pokedex.ids.length; i++) {
+    const card = document.createElement("div");
+    card.className = "pokemon-card";
+
+    const img = document.createElement("img");
+    img.src = pokedex.images[i];
+    img.alt = pokedex.names[i];
+    img.className = "pokemon-image";
+
+    const info = document.createElement("div");
+    info.className = "pokemon-info";
+
+    const name = document.createElement("h3");
+    name.className = "pokemon-name";
+    name.textContent = pokedex.names[i];
+
+    const number = document.createElement("p");
+    number.className = "pokemon-number";
+    number.textContent = formatNumber(pokedex.ids[i]);
+
+    const typesDiv = document.createElement("div");
+    typesDiv.className = "pokemon-types";
+
+    const types = pokedex.types[i].split(/[ ,]+/);
+    for (let t = 0; t < types.length; t++) {
+      const typeSpan = document.createElement("span");
+      typeSpan.className = `type ${types[t].toLowerCase()}`;
+      typeSpan.textContent = types[t];
+      typesDiv.appendChild(typeSpan);
+    }
+
+    info.appendChild(name);
+    info.appendChild(number);
+    info.appendChild(typesDiv);
+    card.appendChild(img);
+    card.appendChild(info);
+    gridContainer.appendChild(card);
+  }
+}
+
+
+function compareNums(target: number, mid: number): number{
+  if(target===mid){
+    return 0;
+  }
+  else if(target<mid){
+    return -1;
+  }
+  else{
+    return 1;
+  }
+}
+
+function compareAlpha(target: string, mid:string): number{
+  const len = Math.min(target.length,mid.length);
+  let a = target.toLowerCase()
+  let b = mid.toLowerCase();
+  let count: number =0;
+  for(let i=0;i<len;i++){
+    let aVal = a.charCodeAt(i);
+    let bVal = b.charCodeAt(i);
+    if(aVal === bVal){
+      count++
+    }
+    else if(aVal<bVal){
+      return -1;
+    }
+    else{
+      return 1;
+    }
+  }
+  return 0;
+}
