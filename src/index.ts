@@ -7,7 +7,7 @@ const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; //
 // @param takes the data from the json file
 function displayPokedex(pokedex: Pokedex): void {
   // select the grid container to append the pokemon to
-  const gridContainer = document.querySelector(".pokemon-grid") as HTMLElement;
+  const gridContainer = document.querySelector(".pokemonGrid") as HTMLElement;
 
   // function to format the numbers of the pokemon
   // @param takes the id of the pokemon
@@ -33,12 +33,12 @@ function displayPokedex(pokedex: Pokedex): void {
 
     // creates the card for the pokemon
     const cardHTML = `
-      <div class="pokemon-card">
-        <img src="${pokedex.images[i]}" alt="${pokedex.names_english[i]}" class="pokemon-image">
-        <div class="pokemon-info">
-          <h3 class="pokemon-name">${pokedex.names_english[i]}</h3>
-          <p class="pokemon-number">${formatNumber(pokedex.ids[i])}</p>
-          <div class="pokemon-types">
+      <div class="pokemonCard">
+        <img src="${pokedex.images[i]}" alt="${pokedex.names_english[i]}" class="pokemonImage">
+        <div class="pokemonInfo">
+          <h3 class="pokemonName">${pokedex.names_english[i]}</h3>
+          <p class="pokemonNumber">${formatNumber(pokedex.ids[i])}</p>
+          <div class="pokemonTypes">
             ${types}
           </div>
         </div>
