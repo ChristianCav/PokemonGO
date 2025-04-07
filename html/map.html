@@ -1,51 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <title>Pokémon Map</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-    <style>
-        #map {
-            height: 600px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokédex</title>
+  <link rel="stylesheet" href="../css/index.css" />
+  <link rel="icon" href="../images/pokeball.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
 
-<h3>Pokémon Map</h3>
-<div id="map"></div>
+  <!-- Title Bar -->
+  <header class="bar">
+    <a href="../html/index.html" class="logo">
+      <img src="../images/pokeball.png" alt="Logo" width="40" height="40" />
+    </a>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <nav class="navLinks">
+      <a href="../html/index.html">Home</a>
+      <a href="../html/table.html">Table</a>
+      <!-- TODO Link this to the map -->
+      <a href="">Map</a>
+    </nav>
 
-<script>
-    // Initialize the map
-    var map = L.map('map').setView([0, 0], 2); // center of the map
+    <div class="gradient-bar"></div>
+    <div class="shimmer"></div>
+  </header>
 
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18
-    }).addTo(map);
+  <!-- Search Bar -->
+  <div class="simpleSearchBarContainer">
+    <h1>
+      <img src="../images/pokeball.png" class="pokeball-icon" alt="Pokéball icon" />
+      Pokémon Go! Map
+      <img src="../images/pokeball.png" class="pokeball-icon" alt="Pokéball icon" />
+    </h1>
+    <div class="simpleSearchBar">
+      <input type="text" id="searchBar" placeholder="Search for a Pokémon" />
+      <button type="button" id="searchButton">
+        <i class="fa-solid fa-magnifying-glass"></i> Search
+      </button>
 
-    // Sample Pokémon data
-    var pokemonData = [
-        { name: 'Pikachu', coords: [37.7749, -122.4194] },
-        { name: 'Charmander', coords: [34.0522, -118.2437] },
-        { name: 'Squirtle', coords: [40.7128, -74.0060] },
-    ];
-
-    // Add markers for each Pokémon
-    pokemonData.forEach(pokemon => {
-        L.marker(pokemon.coords)
-            .addTo(map)
-            .bindPopup(`<strong>${pokemon.name}</strong><br>Coordinates: ${pokemon.coords[0].toFixed(4)}, ${pokemon.coords[1].toFixed(4)}`);
-    });
-</script>
-
+      <button type="button" id="openAdvSearchButton">
+        <i class="fa-solid fa-sliders"></i> Advanced Search
+      </button>
+    </div>
+    <!-- Advanced Search Bar
+    opens up after the button is pressed -->
+    <!-- TODO -->
+    <div class="advSearchBar" style="display: none;">
+      <h1>Advanced Search</h1>
+    </div>
+  </div>
 
 </body>
+
+<!--Do not move the line below-->
+<script src="../dist/DO_NOT_TOUCH.js"></script>
+<script src="../dist/DataClasses.js"></script>
+<script src="../dist/DO_NOT_TOUCH.js"></script>
+<script src="../dist/datatypes.js"></script>
+<script src="../dist/compare.js"></script>
+<script src="../dist/utility.js"></script>
+<script src="../dist/datastructures.js"></script>
+<script src="../dist/algorithms.js"></script>
+<!--Do not move the line above-->
+<script src="../dist/index.js"></script>
+
 </html>
