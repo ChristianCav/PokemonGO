@@ -2,7 +2,7 @@
 
 interface Data {
     localTime: string[];
-    pokemonId: string[];
+    pokemonId: number[];
     longitude: number[];
     latitude: number[];
 }  

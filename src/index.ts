@@ -1,5 +1,6 @@
-//on't remove this
-const data: Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
+//Don't remove this
+
+const data : Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
 
 const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
 
@@ -54,3 +55,16 @@ function displayPokedex(pokedex: Pokedex): void {
 document.addEventListener("DOMContentLoaded", (): void => {
   displayPokedex(pokedex);
 });
+
+/* HOW TO USE BINARY SEARCH AND MERGE SORT
+// they have to be opposite
+let t : MergeSortLL<number> = new MergeSortLL(data.pokemonId);
+console.log(data.pokemonId);
+let m = (t.sort(ascending));
+console.log(m);
+let v = (indexToData(m, data.pokemonId));
+console.log(v);
+let d = binarySearch(1, v, desending);
+console.log(d);
+console.log(indexToData(d, v));
+*/
