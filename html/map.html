@@ -1,71 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokédex</title>
+    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/map.css" />
+    <link rel="icon" href="../images/pokeball.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pokédex</title>
-  <link rel="stylesheet" href="../css/index.css" />
-  <link rel="icon" href="../images/pokeball.png" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-</head>
+  <body>
+    <!-- Title Bar -->
+    <header class="bar">
+      <a href="../html/index.html" class="logo">
+        <img src="../images/pokeball.png" alt="Logo" width="40" height="40" />
+      </a>
 
-<body>
+      <nav class="navLinks">
+        <a href="../html/index.html">Home</a>
+        <a href="../html/table.html">Table</a>
+        <a href="../html/map.html">Map</a>
+      </nav>
 
-  <!-- Title Bar -->
-  <header class="bar">
-    <a href="../html/index.html" class="logo">
-      <img src="../images/pokeball.png" alt="Logo" width="40" height="40" />
-    </a>
+      <div class="gradient-bar"></div>
+      <div class="shimmer"></div>
+    </header>
 
-    <nav class="navLinks">
-      <a href="../html/index.html">Home</a>
-      <a href="../html/table.html">Table</a>
-      <!-- TODO Link this to the map -->
-      <a href="">Map</a>
-    </nav>
+    <!-- Search Bar -->
 
-    <div class="gradient-bar"></div>
-    <div class="shimmer"></div>
-  </header>
-
-  <!-- Search Bar -->
-  <div class="simpleSearchBarContainer">
-    <h1>
-      <img src="../images/pokeball.png" class="pokeball-icon" alt="Pokéball icon" />
-      Pokémon Go! Map
-      <img src="../images/pokeball.png" class="pokeball-icon" alt="Pokéball icon" />
-    </h1>
-    <div class="simpleSearchBar">
-      <input type="text" id="searchBar" placeholder="Search for a Pokémon" />
-      <button type="button" id="searchButton">
-        <i class="fa-solid fa-magnifying-glass"></i> Search
-      </button>
-
-      <button type="button" id="openAdvSearchButton">
-        <i class="fa-solid fa-sliders"></i> Advanced Search
-      </button>
+    <div class="inputContainerMap">
+      <h1>
+        <img
+          src="../images/pokeball.png"
+          class="pokeball-icon"
+          alt="Pokéball icon"
+        />
+        Pokémon Go! Map
+        <img
+          src="../images/pokeball.png"
+          class="pokeball-icon"
+          alt="Pokéball icon"
+        />
+      </h1>
+      <p>
+        Insturctions for Use: <br />
+        1. Zoom to map size you wish <br />
+        2. Enter a country to lock on to <br />
+        3. Click "GO" to go to the country
+      </p>
+      <div>
+        <input
+          type="text"
+          id="countryInput"
+          placeholder="Enter a country to zoom in..."
+          autocomplete="off"
+        />
+        <button onclick="goToCountry()">Go</button>
+      </div>
     </div>
-    <!-- Advanced Search Bar
-    opens up after the button is pressed -->
-    <!-- TODO -->
-    <div class="advSearchBar" style="display: none;">
-      <h1>Advanced Search</h1>
+
+    <div class="mapContainer">
+      <div id="map"></div>
     </div>
-  </div>
+  </body>
 
-</body>
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""
+  ></script>
 
-<!--Do not move the line below-->
-<script src="../dist/DO_NOT_TOUCH.js"></script>
-<script src="../dist/DataClasses.js"></script>
-<script src="../dist/DO_NOT_TOUCH.js"></script>
-<script src="../dist/datatypes.js"></script>
-<script src="../dist/compare.js"></script>
-<script src="../dist/utility.js"></script>
-<script src="../dist/datastructures.js"></script>
-<script src="../dist/algorithms.js"></script>
-<!--Do not move the line above-->
-<script src="../dist/index.js"></script>
+  <!--Do not move the line below-->
+  <script src="../dist/DO_NOT_TOUCH.js"></script>
+  <script src="../dist/DataClasses.js"></script>
+  <script src="../dist/DO_NOT_TOUCH.js"></script>
+  <script src="../dist/datatypes.js"></script>
+  <script src="../dist/compare.js"></script>
+  <script src="../dist/utility.js"></script>
+  <script src="../dist/datastructures.js"></script>
+  <script src="../dist/algorithms.js"></script>
+  <script src="../dist/map.js"></script>
+  <!--Do not move the line above-->
+  <script src="../dist/index.js"></script>
 
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const map = L.map("map").setView([20, 0], 2);
+
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+    });
+  </script>
 </html>
