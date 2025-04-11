@@ -35,40 +35,128 @@
     </header>
 
     <!-- Search Bar -->
+    <div class="mainContainer">
+      <div class="inputContainer">
+        <h1>
+          <img
+            src="../images/pokeball.png"
+            class="pokeball-icon"
+            alt="Pokéball icon"
+          />
+          Pokémon Go! Map
+          <img
+            src="../images/pokeball.png"
+            class="pokeball-icon"
+            alt="Pokéball icon"
+          />
+        </h1>
+        <div>
+          <p>
+            Insturctions for Use: <br />
+            1. Zoom to map size you wish (works best with zoom 5+)<br />
+            2. Enter a country to lock on to <br />
+            3. Click "GO" to go to the country
+          </p>
+        </div>
+        <div style="display: flex; align-items: center">
+          <input
+            type="text"
+            id="countryInput"
+            placeholder="Enter a country to zoom in..."
+            autocomplete="off"
+            style="
+              padding: 10px;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              flex-grow: 1;
+              margin-right: 10px;
+            "
+          />
+          <button
+            onclick="goToCountry()"
+            style="
+              padding: 10px 20px;
+              border: none;
+              background-color: #f53100;
+              color: white;
+              border-radius: 5px;
+              cursor: pointer;
+            "
+          >
+            Go
+          </button>
+        </div>
 
-    <div class="inputContainerMap">
-      <h1>
-        <img
-          src="../images/pokeball.png"
-          class="pokeball-icon"
-          alt="Pokéball icon"
-        />
-        Pokémon Go! Map
-        <img
-          src="../images/pokeball.png"
-          class="pokeball-icon"
-          alt="Pokéball icon"
-        />
-      </h1>
-      <p>
-        Insturctions for Use: <br />
-        1. Zoom to map size you wish <br />
-        2. Enter a country to lock on to <br />
-        3. Click "GO" to go to the country
-      </p>
-      <div>
-        <input
-          type="text"
-          id="countryInput"
-          placeholder="Enter a country to zoom in..."
-          autocomplete="off"
-        />
-        <button onclick="goToCountry()">Go</button>
+        <div class="filterSection">
+          <div class="filterRow">
+            <div>
+              <label for="nameFilter">Pokémon Name:</label>
+              <input
+                type="text"
+                id="nameFilter"
+                placeholder="Enter Pokémon name..."
+                autocomplete="off"
+              />
+            </div>
+        
+            <div>
+              <label for="timeFilter">Time of Day:</label>
+              <input type="time" id="fromTimeFilter"/>
+              <label for="timeFilter">To:</label>
+              <input type="time" id="toTimeFilter"/>
+            </div>
+          </div>
+
+          <!-- Coordinates Range Filter -->
+          <div>
+            <label for="coordFilter"
+              >Filter by Coordinates (Latitude, Longitude):</label
+            >
+            <input
+              type="number"
+              id="fromLatitudeFilter"
+              placeholder="Latitude"
+              step="0.0001"
+              min="-90"
+              max="90"
+            />
+            <input
+              type="number"
+              id="fromLongitudeFilter"
+              placeholder="Longitude"
+              step="0.0001"
+              min="-180"
+              max="180"
+            />
+            <label for="coordFilter"
+              >to:</label
+            >
+            <input
+              type="number"
+              id="toLatitudeFilter"
+              placeholder="Latitude"
+              step="0.0001"
+              min="-90"
+              max="90"
+            />
+            <input
+              type="number"
+              id="toLongitudeFilter"
+              placeholder="Longitude"
+              step="0.0001"
+              min="-180"
+              max="180"
+            />
+          </div>
+
+          <!-- Apply Filters Button -->
+          <button onclick="applyFilters()">Apply Filters</button>
+        </div>
       </div>
-    </div>
 
-    <div class="mapContainer">
-      <div id="map"></div>
+      <div class="mapContainer">
+        <div id="map"></div>
+      </div>
     </div>
   </body>
 
@@ -80,7 +168,6 @@
   <!--Do not move the line below-->
   <script src="../dist/DO_NOT_TOUCH.js"></script>
   <script src="../dist/DataClasses.js"></script>
-  <script src="../dist/DO_NOT_TOUCH.js"></script>
   <script src="../dist/datatypes.js"></script>
   <script src="../dist/compare.js"></script>
   <script src="../dist/utility.js"></script>
@@ -89,15 +176,4 @@
   <script src="../dist/map.js"></script>
   <!--Do not move the line above-->
   <script src="../dist/index.js"></script>
-
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      const map = L.map("map").setView([20, 0], 2);
-
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 18,
-        attribution: "&copy; OpenStreetMap contributors",
-      }).addTo(map);
-    });
-  </script>
 </html>

@@ -1,5 +1,25 @@
+// some global variables
+let activeNameFilter: string | null = null;
+
+let activeTimeFilter: {
+  from: string | null;
+  to: string | null;
+} = { from: null, to: null };
+
+let activeCoordFilter: {
+  fromLat: number | null;
+  toLat: number | null;
+  fromLng: number | null;
+  toLng: number | null;
+} = {
+  fromLat: null,
+  toLat: null,
+  fromLng: null,
+  toLng: null,
+};
+
 // start the map at a default location
-var map = L.map("map").setView([20, 0], 2);
+var map = L.map("map").setView([20, 0], 3);
 
 // Add OpenStreetMap tiles
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -28,7 +48,7 @@ let pokedexData: Pokedex; // Store the Pokedex data
 let pokemonLocationData: Data; // Store the Pokémon location data
 
 function goToCountry() {
-  if (map.getZoom() > 2) {
+  if (map.getZoom() > 3) {
     const country = (document.getElementById("countryInput") as HTMLInputElement)
     .value;
   if (!country) {
@@ -80,7 +100,7 @@ function goToCountry() {
       alert("Something went wrong. Try again later.");
     });
   } else {
-    alert("Please zoom in to at least level 3 before entering a country name.");
+    alert("Please zoom in to at least level 4 before entering a country name.");
   }
 }
 
@@ -118,6 +138,7 @@ function renderPokemonMarkers(pokedex: Pokedex, locationData: Data) {
                         <div style="text-align:center;">
                             <h3>${name} (#${id})</h3>
                             <img src="${image}" alt="${name}" style="width:100px;height:auto;" />
+                            <p> Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
                         </div>
                     `;
 
@@ -128,3 +149,4 @@ function renderPokemonMarkers(pokedex: Pokedex, locationData: Data) {
     }
   }
 }
+
