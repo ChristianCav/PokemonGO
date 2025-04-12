@@ -98,59 +98,124 @@
                 autocomplete="off"
               />
             </div>
-        
-            <div>
+
+            <div style="gap: 1%">
               <label for="timeFilter">Time of Day:</label>
-              <input type="time" id="fromTimeFilter"/>
+              <input type="time" id="fromTimeFilter" />
               <label for="timeFilter">To:</label>
-              <input type="time" id="toTimeFilter"/>
+              <input type="time" id="toTimeFilter" />
             </div>
           </div>
 
-          <!-- Coordinates Range Filter -->
-          <div>
+          <div style="display: flex; flex-direction: column; gap: 1%">
             <label for="coordFilter"
               >Filter by Coordinates (Latitude, Longitude):</label
             >
-            <input
-              type="number"
-              id="fromLatitudeFilter"
-              placeholder="Latitude"
-              step="0.0001"
-              min="-90"
-              max="90"
-            />
-            <input
-              type="number"
-              id="fromLongitudeFilter"
-              placeholder="Longitude"
-              step="0.0001"
-              min="-180"
-              max="180"
-            />
-            <label for="coordFilter"
-              >to:</label
-            >
-            <input
-              type="number"
-              id="toLatitudeFilter"
-              placeholder="Latitude"
-              step="0.0001"
-              min="-90"
-              max="90"
-            />
-            <input
-              type="number"
-              id="toLongitudeFilter"
-              placeholder="Longitude"
-              step="0.0001"
-              min="-180"
-              max="180"
-            />
+            <div style="display: flex; gap: 1%">
+              <input
+                type="number"
+                id="fromLatitudeFilter"
+                placeholder="Latitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-90"
+                max="90"
+              />
+              <input
+                type="number"
+                id="fromLongitudeFilter"
+                placeholder="Longitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-180"
+                max="180"
+              />
+            </div>
+            <label for="coordFilter">to:</label>
+            <div style="display: flex; gap: 1%">
+              <input
+                type="number"
+                id="toLatitudeFilter"
+                placeholder="Latitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-90"
+                max="90"
+              />
+              <input
+                type="number"
+                id="toLongitudeFilter"
+                placeholder="Longitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-180"
+                max="180"
+              />
+            </div>
           </div>
 
           <!-- Apply Filters Button -->
           <button onclick="applyFilters()">Apply Filters</button>
+        </div>
+        <div class="filterSection">
+          <div style="display: flex; flex-direction: column; gap: 1%">
+            <label for="coordFilter"
+              >Shortest Distance Between 2 of the Same Pokemon</label
+            >
+            <div style="display: flex; gap: 1%">
+              <input
+                type="number"
+                id="candiesLatitudeFilter"
+                placeholder="Latitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-90"
+                max="90"
+              />
+              <input
+                type="number"
+                id="candiesLongitudeFilter"
+                placeholder="Longitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-180"
+                max="180"
+              />
+            </div>
+            <!-- MAKE BONUS 3, MAKE THE SHORTEST DISTANCE BETWEEN 2 PKMS -->
+            <button onclick="shortestCandyDist()">Gotta Grind Em' Candies!</button>
+          </div>
+        </div>
+
+        <div class="filterSection">
+          <div style="display: flex; flex-direction: column; gap: 1%">
+            <label for="coordFilter"
+              >Shortest Distance to Catch All 151 Pokemons From Your Latitude
+              and Longitude</label
+            >
+            <div style="display: flex; gap: 1%">
+              <input
+                type="number"
+                id="fromLatitudeFilter"
+                placeholder="Latitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-90"
+                max="90"
+              />
+              <input
+                type="number"
+                id="fromLongitudeFilter"
+                placeholder="Longitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-180"
+                max="180"
+              />
+            </div>
+            <!-- MAKE BONUS 5, MAKE THE SHORTEST DISTANCE -->
+            <button onclick="shortestDist()">Gotta Catch Em' All!</button>
+          </div>
         </div>
       </div>
 

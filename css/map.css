@@ -3,25 +3,26 @@ header {
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px; /* Adjust height as per your design */
-  background-color: #333; /* Example background color for the top bar */
+  height: 60px; 
+  background-color: #333; 
   z-index: 1000;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .mainContainer {
   display: flex;
+  flex-direction: row;
+  gap: 1%;
   justify-content: space-between;
-  width: 97%;
-  margin: 20px auto 40px auto;
-  margin-top: 6%;
-  margin-bottom: 1%;
+  width: 95%;
+  margin: 6% auto 1% auto;
   padding: 15px;
-  text-align: center;
   background: rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  flex-wrap: wrap;
 }
+
 
 .mainContainer h1 {
   font-family: "Pokemon Hollow", sans-serif;
@@ -54,11 +55,11 @@ img {
   margin: 0;
   width: 30%;
   max-width: 600px;
-  height: calc(100vh - 140px); /* 60px header + ~20px breathing room */
+  height: calc(100vh - 140px); 
   background-color: #f0f0f0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-  overflow-y: auto; /* allow internal scroll if content ever overflows */
+  overflow-y: auto; 
 }
 
 .inputContainer p {
@@ -99,17 +100,19 @@ img {
 }
 
 .mapContainer {
+  flex: 2 1 600px;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
   justify-content: center;
   padding: 20px;
-  width: 69%;
-  height: calc(100vh - 140px); 
+  height: calc(100vh - 140px);
   background-color: #f0f0f0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  min-width: 300px;
 }
+
 
 #map {
   width: 100%;
@@ -119,7 +122,6 @@ img {
 }
 
 
-/* New classes for filter sections */
 .filterSection {
   margin-top: 20px;
   background-color: #fff;
@@ -150,7 +152,7 @@ img {
   border: 1px solid #ccc;
   border-radius: 5px;
   width: 100%;
-  max-width: 180px; /* Ensure inputs are smaller */
+  max-width: 180px; 
   box-sizing: border-box;
 }
 
@@ -170,12 +172,10 @@ img {
   background-color: #d94c00;
 }
 
-/* Time filter dropdown specific styling */
 .filterSection #timeFilter {
   max-width: 150px;
 }
 
-/* Latitude and longitude inputs */
 .filterSection #latitudeFilter,
 .filterSection #longitudeFilter {
   display: inline-block;
@@ -191,11 +191,11 @@ img {
 .filterRow {
   display: flex;
   justify-content: space-between;
-  margin-left: 2.5%;
   align-items: center;
   margin-bottom: 10px;
   flex-wrap: wrap;
   width: 100%;
+  gap: 5%;
 }
 
 .filterRow > div {
@@ -203,4 +203,64 @@ img {
   min-width: 120px; 
   max-width: 200px; 
   box-sizing: border-box;
+}
+
+
+APPLES 
+
+/* Dropdown Button */
+.dropdownButton {
+  background-color: #f53100; /* Match the button color to your theme */
+  color: white;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  width: 100%; /* Make it full-width in the filter section */
+  text-align: left;
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+}
+
+.dropdownButton:hover {
+  background-color: #ac0b00;
+}
+
+/* Dropdown container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%; /* Ensure dropdown button takes full width */
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  min-width: 200px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  margin-top: 10px;
+  padding: 0;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 12px 20px;
+  text-decoration: none;
+  display: block;
+  font-size: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.dropdown-content a:hover {
+  background-color: #f0f0f0;
+}
+
+/* Show the dropdown content when active */
+.show { 
+  display: block;
 }
