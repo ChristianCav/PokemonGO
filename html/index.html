@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pokédex</title>
+  <title>Pokédex: Home</title>
   <link rel="stylesheet" href="../css/index.css" />
   <link rel="icon" href="../images/pokeball.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -25,16 +25,16 @@
       <a href="">Map</a>
     </nav>
 
-    <div class="gradient-bar"></div>
+    <div class="gradientBar"></div>
     <div class="shimmer"></div>
   </header>
 
   <!-- Search Bar -->
   <div class="simpleSearchBarContainer">
     <h1>
-      <img src="../images/pokeball.png" class="pokeball-icon" alt="Pokéball icon" />
+      <img src="../images/pokeball.png" class="pokeballIcon" alt="Pokéball icon" />
       Pokémon Go! Pokédex
-      <img src="../images/pokeball.png" class="pokeball-icon" alt="Pokéball icon" />
+      <img src="../images/pokeball.png" class="pokeballIcon" alt="Pokéball icon" />
     </h1>
     <div class="simpleSearchBar">
       <input type="text" id="searchBar" placeholder="Search for a Pokémon" />
@@ -46,11 +46,20 @@
         <i class="fa-solid fa-sliders"></i> Advanced Search
       </button>
     </div>
+
     <!-- Advanced Search Bar
     opens up after the button is pressed -->
-    <!-- TODO -->
-    <div class="advSearchBar" style="display: none;">
-      <h1>Advanced Search</h1>
+    <div class="advSearchBar">
+      <div class="timePicker">
+        <label for="timePickerStart">Start:</label>
+        <input type="time" id="timePickerStart" required/>
+
+        <label for="timePickerEnd">End:</label>
+        <input type="time" id="timePickerEnd" required/>
+      </div>
+      
+      <input type="number" id="longitude" placeholder="Longitude..."/>
+      <input type="number" id="latitude" placeholder="Latitude..."/>
     </div>
   </div>
 
