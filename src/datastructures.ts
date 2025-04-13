@@ -247,7 +247,7 @@ class List<T>{
 }
 
 // uses comparator
-class priorityQueue<T> {
+class PriorityQueue<T> {
     // contains compare function
     private compare : any;
 
@@ -345,4 +345,12 @@ class priorityQueue<T> {
 
         this.heap.replace(element, index);
     }
+}
+
+class Point {
+    constructor(
+        public lon : number,
+        public lat : number,
+        public index : number
+    ){}
 }

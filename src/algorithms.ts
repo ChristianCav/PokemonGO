@@ -46,3 +46,23 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
     }
     return foundIndexes;
 } 
+
+// Distance formula
+// returns the distance the current node is from the goal node
+function heuristic(node : Point, goal : Point){
+    return ((node.lat - node.lat) ** 2 + (node.lon - goal.lon) ** 2) ** 0.5
+}
+
+// find the distance between two points
+// takes in intial position, target (amount of pokemon), array of the pokemon (binarysearched down)
+// takes the position and finds the shortest path until target is hit
+function aStar(start : Point, target : number, data : number[]){
+    let q : PriorityQueue<Point> = new PriorityQueue<Point>(ascending);
+    q.enqueue(start); // queue the starting node
+    let prev : Array<number> = new Array(data.length);
+    let gScore : Array<number> = new Array(data.length);
+    let fScore : Array<number> = new Array(data.length);
+
+    
+
+}
