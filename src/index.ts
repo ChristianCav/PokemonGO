@@ -1,12 +1,17 @@
 //Don't remove this
+
+const data : Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
+//Don't remove this
 const data : Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
 
 const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
+
 
 // function to take the data and create new elements for each pokemon
 // @param takes the data from the json file
 function displayPokedex(pokedex: Pokedex): void {
   // select the grid container to append the pokemon to
+  const gridContainer = document.querySelector(".pokemonGrid") as HTMLElement;
   const gridContainer = document.querySelector(".pokemonGrid") as HTMLElement;
 
   // function to format the numbers of the pokemon
@@ -39,6 +44,12 @@ function displayPokedex(pokedex: Pokedex): void {
           <h3 class="pokemonName">${pokedex.names_english[i]}</h3>
           <p class="pokemonNumber">${formatNumber(pokedex.ids[i])}</p>
           <div class="pokemonTypes">
+      <div class="pokemonCard">
+        <img src="${pokedex.images[i]}" alt="${pokedex.names_english[i]}" class="pokemonImage">
+        <div class="pokemonInfo">
+          <h3 class="pokemonName">${pokedex.names_english[i]}</h3>
+          <p class="pokemonNumber">${formatNumber(pokedex.ids[i])}</p>
+          <div class="pokemonTypes">
             ${types}
           </div>
         </div>
@@ -55,17 +66,55 @@ document.addEventListener("DOMContentLoaded", (): void => {
   displayPokedex(pokedex);
 });
 
+
+let f: MergeSortLL<string> = new MergeSortLL(findNames())
+// array of indexes 
+let g = f.sort(compareAlphaAscendingSort);
+console.log(g)
+let h = indexToData(g, findNames());
+console.log(h)
+let k = binarySearch("P",h, compareAlphaAscendingSearch)
+console.log(k);
+console.log(indexToData(k,h));
+
+const mainNames = pokedex.names_english.slice(0,149)
+let l: MergeSortLL<string> = new MergeSortLL(mainNames);
+// array of indexes 
+let m = l.sort(compareAlphaAscendingSort);
+console.log(m)
+let n = indexToData(m, mainNames);
+console.log(n)
+let o = binarySearch("P", n, compareAlphaAscendingSearch)
+console.log(o);
+console.log(indexToData(o,n));
+
+console.log(filterCoords(data.latitude, data.longitude,-40, -40, 0, 0));
+console.log(filterTimes(data.localTime, "1:40:20 AM", "5:21:40 AM"));
+console.log(filterType(pokedex.types.slice(0,149), "Normal"));
+
 /* HOW TO USE BINARY SEARCH AND MERGE SORT
-they have to be opposite
-let t : mergeSort<number> = new mergeSort(ascending);
+// they have to be opposite
+let t : MergeSortLL<number> = new MergeSortLL(data.pokemonId);
 console.log(data.pokemonId);
-let m = t.sort(data.pokemonId);
+let m = (t.sort(ascending));
 console.log(m);
-console.log(m[0]);
-console.log(data.pokemonId[m[0]])
 let v = (indexToData(m, data.pokemonId));
 console.log(v);
-let d = binarySearch(1, v, descending);
+let d = binarySearch(1, v, desending);
 console.log(d);
 console.log(indexToData(d, v));
+
+
+
+
+// linked list
+let a: MergeSortLL<number> = new MergeSortLL(data.latitude)
+console.log(a)
+// array of original, such that it is sorted
+console.log("array of original indexes, such that it is sorted")
+let b = a.sort();
+console.log(b)
+let c = indexToData(b,data.latitude);
+console.log(c)
+console.log(binarySearch(-44,c, roundedAscending));
 */

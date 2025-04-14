@@ -25,3 +25,24 @@ function numDecimals(input: string): number{
 function roundToDecimal(input: number, numDecimals: number): number{
     return Number(input.toFixed(numDecimals));
 }
+
+function findNames(): string[]{
+    let namesArr: string[] = new Array(99333)
+    for(let i=0;i<data.pokemonId.length;i++){
+        let index: number = data.pokemonId[i]-1;
+        namesArr[i] = pokedex.names_english[index];
+    }
+    return namesArr;
+}   
+
+function toSeconds(time: string): number{
+    const [timePart, modifier] = time.split(' ');
+    let [hours, seconds, minutes] = timePart.split(':').map(Number);
+    if(modifier === "PM" && hours !== 12){
+        hours+=12
+    }
+    if(modifier === "AM" && hours === 12){
+        hours = 0;
+    }
+    return (hours*3600 + minutes*60 + seconds);
+}

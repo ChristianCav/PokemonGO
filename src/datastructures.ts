@@ -156,7 +156,7 @@ class MergeSortLL<T> {
     public sort(compare? : any) : Array<number> {
 
         // if no compare function just do ascending
-        if(typeof compare !== 'function') compare = ascending;
+        if(typeof compare !== 'function') this.compare = descending;
         else this.compare = compare;
 
         let arr : Array<number> = new Array;
