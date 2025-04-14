@@ -1,141 +1,17 @@
-@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap");
-@import url("https://fonts.cdnfonts.com/css/pokemon-solid");
-@import url("https://fonts.cdnfonts.com/css/pokemon-hollow");
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Lato", sans-serif;
-}
-
-body {
-  background-color: #e8f4f4;
-}
-
-.hidden {
-  display: none;
-}
-
-.bar {
+/* Search Bars (Shared Style) */
+.simpleSearchBarContainer {
   width: 100%;
-  height: 75px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 40px;
-  background-image: linear-gradient(
-    to right,
-    #dcdcf1,
-    #d8dcf0,
-    #cfdbef,
-    #cadaee
-  );
-  opacity: 0.9;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  overflow: hidden;
+  max-width: 600px;
+  margin: 20px auto;
+  margin-top: 100px;
+  padding: 20px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
-.logo img {
-  display: block;
-  height: 40px;
-  width: 40px;
-}
-
-.navLinks a {
-  font-size: 18px;
-  font-weight: 500;
-  margin-left: 30px;
-  text-decoration: none;
-  color: #2b2b2b;
-  position: relative;
-  transition: color 0.3s;
-}
-
-.navLinks a::before {
-  content: '';
-  position: absolute;
-  width: 0%;
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background-color: #2b2b2b;
-  transition: width 0.3s ease-in-out;
-}
-
-.navLinks a:hover::before {
-  width: 100%;
-}
-
-.gradient-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 7px;
-  background: linear-gradient(
-    to right,
-    #d97aa2,
-    #b083d1,
-    #9594da,
-    #9cb6fc,
-    #65c4f1,
-    #4ac5d4,
-    #89d659,
-    #efe120,
-    #efa852,
-    #ea8e77,
-    #d680a4
-  );
-  background-size: 700% 100%;
-  animation: gradientMove 60s linear infinite;
-  z-index: 1;
-  border-top: 1px solid #d0d0d0;
-  border-bottom: 1px solid #d0d0d0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  margin-bottom: 2px;
-}
-
-.shimmer {
-  position: absolute;
-  bottom: 0;
-  left: -100px;
-  width: 300px;
-  height: 8px;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.8) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: shimmerMove 15s linear infinite;
-  z-index: 2;
-  margin: 0;
-}
-
-@keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 700% 50%;
-  }
-}
-
-@keyframes shimmerMove {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(100vw);
-  }
-}
-
+/* Search Bar Title */
 .simpleSearchBarContainer h1 {
   font-family: "Pokemon Hollow", sans-serif;
   font-size: 2rem;
@@ -147,50 +23,53 @@ body {
   margin-bottom: 20px;
 }
 
-.simpleSearchBarContainer img{
+.simpleSearchBarContainer img {
   width: 30px;
   height: 30px;
   vertical-align: middle;
   margin: 0 10px;
 }
 
-.simpleSearchBarContainer {
-  width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
-  margin-top: 100px;
-  padding: 15px;
-  text-align: center;
-
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-}
-
-.simpleSearchBar{
+/* Search Input Layout */
+.simpleSearchBar,
+.advSearchBar {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-
-  margin-top: 10px;
-
   background-color: #f0f0f0;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.simpleSearchBar input{
+.advSearchBar {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: 10px;
+}
+
+/* Shared input styles */
+.simpleSearchBar input,
+.advSearchBar input {
   padding: 10px;
   margin: 0 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
   flex: 1;
+  min-width: 140px;
 }
 
 .simpleSearchBar button {
   padding: 10px 20px;
-  margin-left: 5px;
   border: none;
   background-color: #f53100;
   color: white;
@@ -203,6 +82,71 @@ body {
   background-color: #ac0b00;
 }
 
+.advSearchBar label {
+  width: 100%;
+  font-size: 14px;
+  color: #2b2b2b;
+  font-weight: 600;
+}
+
+.advSearchBar .timePicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.advSearchBar .timePicker label {
+  flex: 1;
+  margin-bottom: 5px;
+}
+
+.advSearchBar .timePicker input {
+  flex: 2;
+}
+
+/* Coordinate container */
+.coordinates-container {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+/* Each column for longitude and latitude */
+.coordinate-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 48%;
+}
+
+/* Group for min/max inputs */
+.min-max-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.min-max-group input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  min-width: 100px;
+}
+
+.column-header {
+  font-weight: 700;
+  color: #2b2b2b;
+  font-size: 16px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+/* Pokémon Grid */
 .pokemonGridContainer {
   width: 100%;
   padding: 20px;
@@ -267,61 +211,27 @@ body {
   font-weight: bold;
 }
 
-.electric {
-  background-color: #f8d030;
-}
-.fire {
-  background-color: #f08030;
-}
-.water {
-  background-color: #6890f0;
-}
-.grass {
-  background-color: #78c850;
-}
-.ice {
-  background-color: #98d8d8;
-}
-.fighting {
-  background-color: #c03028;
-}
-.poison {
-  background-color: #a040a0;
-}
-.ground {
-  background-color: #e0c068;
-}
-.flying {
-  background-color: #a890f0;
-}
-.psychic {
-  background-color: #f85888;
-}
-.bug {
-  background-color: #a8b820;
-}
-.rock {
-  background-color: #b8a038;
-}
-.ghost {
-  background-color: #705898;
-}
-.dragon {
-  background-color: #7038f8;
-}
-.dark {
-  background-color: #705848;
-}
-.steel {
-  background-color: #b8b8d0;
-}
-.fairy {
-  background-color: #ee99ac;
-}
-.normal {
-  background-color: #a8a878;
-}
+/* Type Colors */
+.electric { background-color: #f8d030; }
+.fire     { background-color: #f08030; }
+.water    { background-color: #6890f0; }
+.grass    { background-color: #78c850; }
+.ice      { background-color: #98d8d8; }
+.fighting { background-color: #c03028; }
+.poison   { background-color: #a040a0; }
+.ground   { background-color: #e0c068; }
+.flying   { background-color: #a890f0; }
+.psychic  { background-color: #f85888; }
+.bug      { background-color: #a8b820; }
+.rock     { background-color: #b8a038; }
+.ghost    { background-color: #705898; }
+.dragon   { background-color: #7038f8; }
+.dark     { background-color: #705848; }
+.steel    { background-color: #b8b8d0; }
+.fairy    { background-color: #ee99ac; }
+.normal   { background-color: #a8a878; }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   .pokemonGrid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

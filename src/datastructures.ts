@@ -2,10 +2,19 @@
 
 // pair data structure
 // mainly used for merge sort holding index and value
-class Pair<T>{
+class PairNode<T>{
     constructor(
         public val : T,
         public index : number
+    ){}
+}
+
+// pair data struture
+// this one is similar to a map where it has a key and value
+class Pair{
+    constructor(
+        public key : any,
+        public val : any,
     ){}
 }
 
@@ -21,6 +30,42 @@ class node<T>{
     ){}
 }
 
+// queue using list
+// list usues enqueue O(1) ammoritized
+// dequeue O(n) because its always the front
+class Queue<T>{
+    private queueArray : List<T> = new List<T>;
+    private numberOfElements : number = 0;
+
+    //Add one element to the rear of the queue
+    public enqueue(arg: T): void{
+        this.queueArray.push(arg);
+        this.numberOfElements++;
+    }
+    //Removes and returns the element at the front
+    public dequeue(): T | null{
+        if(this.isEmpty()) return null;
+        let front : T | null = this.queueArray.get(0);
+        this.queueArray.delete(0);
+        this.numberOfElements--;
+        return front;
+    }
+    //Returns the first element in the queue
+    public peek(): T | null{
+        return this.queueArray.get(0);
+    }
+    //Returns true if the queue is empty
+    public isEmpty(): boolean{
+        return (this.numberOfElements==0) ? true : false;
+    }
+    //Returns the length of the queue
+    public size(): number{
+        return this.numberOfElements;
+    }
+}
+
+
+/*
 // TO USE
 // Create the class (dataarray)
 // returns sorted data array in index form
@@ -170,4 +215,197 @@ class MergeSortLL<T> {
         }
         return arr;
     }
+}
+*/
+
+class List<T>{
+    public data : T[] = new Array<T>(10);
+    private numItems : number = 0;
+    private startSize : number = 10;
+
+    // post: removes the element at index.
+    //  returns without removing if index is not between 
+    //  0 and size() - 1
+    public delete(index : number){
+       // halve the size of the array if it is only half full and larger than the startSize
+       if (this.numItems === this.data.length/2 && this.data.length > this.startSize){
+            let newData : T[] = new Array<T>(Math.floor(this.numItems / 2));
+
+            for (let i = 0; i < this.numItems; i++){
+                newData[i] = this.data[i];
+            }
+
+            this.data = newData;
+        }
+        //shift values after index to the left
+        for (let i = index; i < this.numItems; i++ ){
+            this.data[i] = this.data[i + 1];
+        }
+        
+        this.numItems--;
+    }
+
+    public size(): number {
+       return this.numItems;
+    }
+
+    public isEmpty(): boolean {
+       return this.numItems === 0;
+    }
+
+    // inserts a number at a certain index, pushing everything from the right of it 1 space right
+    public insert(val : T, index: number) {
+        if (this.numItems === this.data.length){
+            let newData : T[] = new Array<T>(this.numItems * 2);
+
+            for (let i = 0; i < this.numItems; i++){
+                newData[i] = this.data[i];
+            }
+
+            this.data = newData;
+        }
+        //shift values after index to the right
+        for (let i = this.numItems; i > index; i-- ){
+            this.data[i] = this.data[i - 1];
+        }
+
+        this.data[index] = val;
+        
+        this.numItems++;
+    }
+    
+    public replace(val : T, index : number) : void{
+        if(index < 0 || index >= this.numItems) return;
+        this.data[index] = val;
+    }
+
+    public get(index : number): T | null {
+        if (index<0 || index>=this.numItems) return null;
+        return this.data[index];
+     }
+
+    // ammoritized O(1)
+    // because the array will usually be big enough to O(1) add elements
+    public push(val : T) {
+        if (this.numItems === this.data.length){
+            let newData : T[] = new Array<T>(this.numItems * 2);
+
+            for (let i = 0; i < this.numItems; i++){
+                newData[i] = this.data[i];
+            }
+
+            this.data = newData;
+        }
+        this.data[this.numItems] = val;
+        this.numItems++;
+    }
+}
+
+// uses comparator
+class PriorityQueue<T> {
+    // contains compare function
+    private compare : any;
+
+    // a binary tree sort of that makes the root node be 0 then
+    // left side is root * 2 + 1
+    // right side is root * 2 + 2
+    // so sons of 0 are 1 and 2
+    // these become parent nodes for other ones going on and on
+    private heap : List<T> = new List<T>();
+    
+    private numData : number = 0;
+
+    constructor(compare : any){
+        this.compare = compare;
+    }
+
+    public isEmpty(): boolean {
+        return this.numData === 0;
+    }
+
+    public peek(): T | null {
+        return this.heap.get(0);
+    }
+
+    public enqueue(val : T){
+        this.heap.push(val);
+        this.numData++;
+        this.heapUp();
+    }
+
+    public dequeue(): T | null {
+        let top = this.peek();
+        let bottom : T = this.heap.get(this.numData-1) as T;
+        this.heap.delete(this.numData-1);
+        this.numData--;
+        // basically swap the top value with bottom value
+        // while taking the top value
+        // this allows us to place the bottom value at the top using O(1) operations to get the top value
+        // top value normally would take O(n) because we have to shift everything back
+        // now just compare the root node to its children swaping when compartor says
+        if (this.numData > 0 && bottom !== null) {
+            this.heap.replace(bottom, 0);
+            this.heapDown();
+        }
+        return top;
+    }
+
+    // compares new element and parents until it is in sorted order
+    private heapUp() : void{
+        let index : number = this.numData - 1;
+        let element : T = this.heap.get(index) as T;
+        //console.log(element);
+        // cannot be less than 0 because 0 is top root node
+        while (index > 0) {
+            let parentIndex : number = Math.floor((index-1) / 2);
+            let parent : T = this.heap.get(parentIndex) as T;
+
+            // comparison
+            // if its not the ideal compare then the node is in place
+            if (this.compare(element, parent) === 1) break;
+            this.heap.replace(parent, index);
+            index = parentIndex;
+        }
+
+        this.heap.replace(element, index);
+    }
+
+    private heapDown() : void{
+        let index : number = 0;
+        let element : T = this.heap.get(0) as T;
+
+        while (true) {
+            let leftChild : number = 2 * index + 1;
+            let rightChild : number = 2 * index + 2;
+            let swapIndex : number = index;
+
+            if (leftChild < this.numData && this.compare(this.heap.get(leftChild), this.heap.get(swapIndex)) !== 1) {
+                swapIndex = leftChild;
+            }
+
+            // both if statements because it doesn't matter if it goes left or right
+            // end of day the structure is layer based
+            // with prio at top
+            if (rightChild < this.numData && this.compare(this.heap.get(rightChild), this.heap.get(swapIndex)) !== 1) {
+                swapIndex = rightChild;
+            }
+
+            // no swaps
+            if (swapIndex === index) break;
+
+            let swapElement : T = this.heap.get(swapIndex) as T;
+            this.heap.replace(swapElement, index);
+            index = swapIndex;
+        }
+
+        this.heap.replace(element, index);
+    }
+}
+
+class Point {
+    constructor(
+        public lon : number,
+        public lat : number,
+        public index : number
+    ){}
 }

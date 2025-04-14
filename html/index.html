@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pokédex</title>
-  <link rel="stylesheet" href="../css/index.css" />
-  <link rel="icon" href="../images/pokeball.png" />
+  <title>Pokédex: Home</title>
+  <link rel="stylesheet" href="../css/navbar.css" />
   <link rel="stylesheet" href="../css/index.css" />
   <link rel="icon" href="../images/pokeball.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -27,32 +25,60 @@
       <a href="../html/map.html">Map</a>
     </nav>
 
-    <div class="gradient-bar"></div>
+    <div class="gradientBar"></div>
     <div class="shimmer"></div>
   </header>
 
   <!-- Search Bar -->
   <div class="simpleSearchBarContainer">
     <h1>
-      <img src="../images/pokeball.png" class="pokeball-icon" alt="Pokéball icon" />
+      <img src="../images/pokeball.png" class="pokeballIcon" alt="Pokéball icon" />
       Pokémon Go! Pokédex
-      <img src="../images/pokeball.png" class="pokeball-icon" alt="Pokéball icon" />
+      <img src="../images/pokeball.png" class="pokeballIcon" alt="Pokéball icon" />
     </h1>
     <div class="simpleSearchBar">
       <input type="text" id="searchBar" placeholder="Search for a Pokémon" />
-      <button type="button" id="searchButton">
+      <button type="button" id="searchButton" onclick="handleSearchClick()">
         <i class="fa-solid fa-magnifying-glass"></i> Search
       </button>
 
-      <button type="button" id="openAdvSearchButton">
+      <button type="button" id="openAdvSearchButton" onclick="toggleAdvancedSearch()">
         <i class="fa-solid fa-sliders"></i> Advanced Search
       </button>
     </div>
-    <!-- Advanced Search Bar
-    opens up after the button is pressed -->
-    <!-- TODO -->
-    <div class="advSearchBar" style="display: none;">
-      <h1>Advanced Search</h1>
+
+    <!-- Advanced Search Bar 
+  opens up after the button is pressed -->
+    <div class="advSearchBar hidden">
+      <div class="timePicker">
+        <label for="timePickerStart">Start:</label>
+        <input type="time" id="timePickerStart" required />
+
+        <label for="timePickerEnd">End:</label>
+        <input type="time" id="timePickerEnd" required />
+      </div>
+
+      <div class="coordinates-container">
+        <div class="coordinate-column">
+          <div class="column-header">Longitude</div>
+          <div class="min-max-group">
+            <input type="number" id="minLongitude" placeholder="Min longitude..." step="0.0001" />
+          </div>
+          <div class="min-max-group">
+            <input type="number" id="maxLongitude" placeholder="Max longitude..." step="0.0001" />
+          </div>
+        </div>
+
+        <div class="coordinate-column">
+          <div class="column-header">Latitude</div>
+          <div class="min-max-group">
+            <input type="number" id="minLatitude" placeholder="Min latitude..." step="0.0001" />
+          </div>
+          <div class="min-max-group">
+            <input type="number" id="maxLatitude" placeholder="Max latitude..." step="0.0001" />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -65,8 +91,6 @@
 </body>
 
 <!--Do not move the line below-->
-<script src="../dist/DO_NOT_TOUCH.js"></script>
-<script src="../dist/DataClasses.js"></script>
 <script src="../dist/DO_NOT_TOUCH.js"></script>
 <script src="../dist/datatypes.js"></script>
 <script src="../dist/compare.js"></script>
