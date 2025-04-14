@@ -1,5 +1,4 @@
 //Don't remove this
-
 const data : Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
 
 const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
@@ -57,6 +56,8 @@ function displayPokedex(pokedex: Pokedex): void {
           <h3 class="pokemonName">${pokedex.names_english[i]}</h3>
           <p class="pokemonNumber">${formatNumber(pokedex.ids[i])}</p>
           <div class="pokemonTypes">
+            ${types}
+          </div>
         </div>
       </div>
     `;
@@ -66,8 +67,44 @@ function displayPokedex(pokedex: Pokedex): void {
   }
 }
 
+// function to hide and unhide the advanced search bar
+function toggleAdvancedSearch(): void {
+  const advSearchBar = document.querySelector(".advSearchBar");
+
+  if (advSearchBar) {
+    advSearchBar.classList.toggle("hidden");
+  }
+}
+
+function handleSearchClick(): void {
+  const input = document.getElementById("searchBar") as HTMLInputElement | null;
+
+  if (!input) return;
+
+  const query = input.value.trim();
+
+  if (query.length === 0) {
+    alert("Please enter a Pokémon name before searching.");
+    return;
+  }
+
+  window.location.href = `../html/table.html`;
+
+  // const encodedQuery = encodeURIComponent(query);
+  // window.location.href = `../html/table.html?search=${encodedQuery}`;
+}
+
+
 // call function when the DOM is loaded (webpage starts)
+// ! Only runs when in index.html file
 document.addEventListener("DOMContentLoaded", (): void => {
+  const path = window.location.pathname;
+  const page = path.substring(path.lastIndexOf("/") + 1);
+
+  if (page === "index.html" || page === "") {
+    displayPokedex(pokedex);
+  }
+});
   displayPokedex(pokedex);
 });
 
@@ -134,10 +171,10 @@ console.log(filterTimes(data.localTime, "1:40:20 AM", "5:21:40 AM"));
 console.log(filterType(pokedex.types.slice(0,149), "Normal"));
 
 /* HOW TO USE BINARY SEARCH AND MERGE SORT
-// they have to be opposite
-let t : mergeSort<number> = new mergeSort(ascending);
+they have to be opposite
+let t : MergeSortLL<number> = new MergeSortLL(data.pokemonId);
 console.log(data.pokemonId);
-let m = (t.sort(data.pokemonId));
+let m = (t.sort(ascending));
 console.log(m);
 let v = (indexToData(m, data.pokemonId));
 console.log(v);
