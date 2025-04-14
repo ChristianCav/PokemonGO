@@ -108,3 +108,15 @@ function ascending(target: number, mid: number): number{
         return 1;
     }
 }
+
+function compareTimes(time: number, min: number, max: number){
+    if(time>= min && time<= max){
+        return 0;
+    }
+    else if(time<min){
+        return 1;
+    }
+    else{
+        return -1;
+    }
+}

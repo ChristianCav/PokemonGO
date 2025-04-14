@@ -1,6 +1,5 @@
 //Don't remove this
 
-const data : Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
 //Don't remove this
 const data : Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
 
@@ -11,7 +10,6 @@ const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; //
 // @param takes the data from the json file
 function displayPokedex(pokedex: Pokedex): void {
   // select the grid container to append the pokemon to
-  const gridContainer = document.querySelector(".pokemonGrid") as HTMLElement;
   const gridContainer = document.querySelector(".pokemonGrid") as HTMLElement;
 
   // function to format the numbers of the pokemon
