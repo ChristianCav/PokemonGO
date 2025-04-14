@@ -40,14 +40,6 @@ function displayPokedex(pokedex: Pokedex): void {
           <h3 class="pokemonName">${pokedex.names_english[i]}</h3>
           <p class="pokemonNumber">${formatNumber(pokedex.ids[i])}</p>
           <div class="pokemonTypes">
-      <div class="pokemonCard">
-        <img src="${pokedex.images[i]}" alt="${pokedex.names_english[i]}" class="pokemonImage">
-        <div class="pokemonInfo">
-          <h3 class="pokemonName">${pokedex.names_english[i]}</h3>
-          <p class="pokemonNumber">${formatNumber(pokedex.ids[i])}</p>
-          <div class="pokemonTypes">
-            ${types}
-          </div>
         </div>
       </div>
     `;
