@@ -26,13 +26,16 @@ function roundToDecimal(input: number, numDecimals: number): number{
     return Number(input.toFixed(numDecimals));
 }
 
-function findNames(): string[]{
-    let namesArr: string[] = new Array(99333)
+// returns an array of the specific value of the pokemon using the pokemon id
+// if inputted pokedex.names_english --> will return array of names_englsh
+// O(n) time
+function findPokedex(arr : any[]): string[]{
+    let newArr : string[] = new Array(data.pokemonId.length)
     for(let i=0;i<data.pokemonId.length;i++){
-        let index: number = data.pokemonId[i]-1;
-        namesArr[i] = pokedex.names_english[index];
+        // id is 1 above 0
+        newArr[i] = arr[data.pokemonId[i]-1];
     }
-    return namesArr;
+    return newArr;
 }   
 
 function toSeconds(time: string): number{
