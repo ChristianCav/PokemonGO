@@ -23,10 +23,10 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
     }
     while(left <= right){
         // find middle index
-        const midIndex: number = Math.floor((left+right)/2);
+        let midIndex: number = Math.floor((left+right)/2);
         // store the return value of the compare function
         // O(1)
-        const compareResult : number = compareFn(target, data[midIndex],"search");
+        let compareResult : number = compareFn(target, data[midIndex]);
         // if the target was found at the midIndex, set the foundIndex to midIndex
         if(compareResult === 0){
             foundIndex = midIndex;
@@ -68,7 +68,69 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
     return foundIndexes;
 } 
 
-// class for merge sort
+function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, type?: string){
+    const startTime = performance.now();
+    // left bound
+    let left: number = 0;
+    // right bound
+    let right: number = data.length-1;
+    // stores indexes of targets found
+    let foundIndexes: number[] = []
+    // stores current index of target
+    let foundIndex: number = -1;
+
+    // check if the compareFn inputted is a function  
+    if(typeof compareFn !== 'function'){
+        return [-1];
+    }
+    while(left <= right){
+        // find middle index
+        let midIndex: number = Math.floor((left+right)/2);
+        // store the return value of the compare function
+        // O(1)
+        let compareResult : number = compareFn(data[midIndex], min, max);
+        // if the target was found at the midIndex, set the foundIndex to midIndex
+        if(compareResult === 0){
+            foundIndex = midIndex;
+            break;
+        }
+        // if the middle val was too large, decrease right
+        else if(compareResult < 0){
+            right = midIndex-1;
+        }
+        // if the middle val was too small, increase left
+        else{
+            left = midIndex + 1;
+        }
+    }
+    if(foundIndex === -1){
+        return [-1];
+    }
+    // add the target's index to the foundIndexes
+    foundIndexes.push(foundIndex);
+
+    // traverse to the left of the found index and check if element is also the target 
+    // if it is add it to foundIndexes, and keep looking left until the next element is not the target
+    let i: number = foundIndex -1;
+    while(i>=0 && compareFn(data[i], min, max) ===0){
+        foundIndexes.push(i);
+        i--;
+    }
+
+    // traverse to the right of the found index and check if element is also the target 
+    // if it is add it to foundIndexes, and keep looking right until the next element is not the target
+    let j: number = foundIndex +1;
+    while(j<data.length && compareFn(data[j], min, max) === 0){
+        foundIndexes.push(j);
+        j++;
+    }
+    const endTime = performance.now();
+    console.log(`Binary search runtime: ${endTime-startTime} ms`);
+    return foundIndexes;
+}
+
+
+// returns indexes of sorted array
 // O(nlogn) time 
 // mergesort function --> O(logn) because it divides the array by 2 each time
 // merge function --> O(n) because it at most compares n times, 1 for each value
@@ -199,15 +261,15 @@ function aStar(start : Point, target : number, data : number[]){
 function filterCoords(latitudes: number[], longitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number): number[]{
     let startTime = performance.now();
     // store indexes of data that are within the two inputted points
-    const validIndexes: number[] = []
+    let validIndexes: number[] = []
     // smallest latitude value of the two points
-    const minLat: number = Math.min(lat1,lat2);
+    let minLat: number = Math.min(lat1,lat2);
     // biggest latitude value of the two points
-    const maxLat: number = Math.max(lat1,lat2);
+    let maxLat: number = Math.max(lat1,lat2);
     // smallest longitude value of the two points
-    const minLng: number = Math.min(lng1,lng2);
+    let minLng: number = Math.min(lng1,lng2);
     // biggest longitude value of the two points
-    const maxLng: number = Math.max(lng1, lng2);
+    let maxLng: number = Math.max(lng1, lng2);
 
     // loop through all the data
     for(let i=0;i<latitudes.length;i++){
@@ -233,27 +295,19 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
 function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     const startTime = performance.now();
     // store indexes of data within the 2 times
-    const validIndexes: number[] = [];
+    let validIndexes: number[] = [];
     // convert string time Ex: "1:40:10" to seconds
     // O(1)
-    const aVal: number = toSeconds(timeA);
+    let aVal: number = toSeconds(timeA);
     // convert string time Ex: "1:40:10" to seconds
     // O(1)
-    const bVal: number = toSeconds(timeB);
+    let bVal: number = toSeconds(timeB);
     // find the minimum time
-    const minTime: number = Math.min(aVal, bVal);
+    let minTime: number = Math.min(aVal, bVal);
     // find the max time
-    const maxTime: number = Math.max(aVal, bVal);
-
-    // loop through all times inputted
-    for(let i=0;i<times.length;i++){
-        // convert the time to seconds
-        const seconds: number = toSeconds(times[i])
-        // if the time is within the inputted range, then add the index to the foundIndexes
-        if(seconds >= minTime && seconds<= maxTime){
-            validIndexes.push(i);
-        }
-    }
+    let maxTime: number = Math.max(aVal, bVal);
+    validIndexes = binarySearchBetween(minTime, maxTime, times, compareTimes)
+    
     const endTime = performance.now();
     let newPair : Pair = new Pair("Filter Time", endTime-startTime)
     performanceTime.enqueue(newPair);
@@ -263,6 +317,7 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
 // Returns indexes of pokemon that are an inputted type
 // O(n), since it looops through all given times once
 function filterType(pokemon: string[], type: string){
+
     const startTime = performance.now();
     // store indexes
     let validIndexes: number[] = [];
