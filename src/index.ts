@@ -50,9 +50,24 @@ function displayPokedex(pokedex: Pokedex): void {
   }
 }
 
+// function to hide and unhide the advanced search bar
+function toggleAdvancedSearch(): void {
+  const advSearchBar = document.querySelector(".advSearchBar");
+
+  if (advSearchBar) {
+    advSearchBar.classList.toggle("hidden");
+  }
+}
+
 // call function when the DOM is loaded (webpage starts)
+// ! Only runs when in index.html file
 document.addEventListener("DOMContentLoaded", (): void => {
-  displayPokedex(pokedex);
+  const path = window.location.pathname;
+  const page = path.substring(path.lastIndexOf("/") + 1);
+
+  if (page === "index.html" || page === "") {
+    displayPokedex(pokedex);
+  }
 });
 
 /* HOW TO USE BINARY SEARCH AND MERGE SORT
