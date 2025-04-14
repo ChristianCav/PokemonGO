@@ -9,11 +9,20 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/node": "^22.14.1",
     "leaflet": "^1.9.4",
     "live-server": "^1.2.2",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.17"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChristianCav/PokemonGO.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ChristianCav/PokemonGO/issues"
+  },
+  "homepage": "https://github.com/ChristianCav/PokemonGO#readme"
 }
