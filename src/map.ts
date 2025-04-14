@@ -277,3 +277,11 @@ class PokemonCoordWithDistance {
   }
 }
 
+// function just to toggle visibility of instructions
+function toggleInstructions(): void {
+  const instructions = document.querySelector(".instructions") as HTMLElement | null;
+
+  if (instructions) {
+    instructions.classList.toggle("hidden");
+  }
+}
