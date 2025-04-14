@@ -2,10 +2,19 @@
 
 // pair data structure
 // mainly used for merge sort holding index and value
-class Pair<T>{
+class PairNode<T>{
     constructor(
         public val : T,
         public index : number
+    ){}
+}
+
+// pair data struture
+// this one is similar to a map where it has a key and value
+class Pair{
+    constructor(
+        public key : any,
+        public val : any,
     ){}
 }
 
@@ -21,6 +30,42 @@ class node<T>{
     ){}
 }
 
+// queue using list
+// list usues enqueue O(1) ammoritized
+// dequeue O(n) because its always the front
+class Queue<T>{
+    private queueArray : List<T> = new List<T>;
+    private numberOfElements : number = 0;
+
+    //Add one element to the rear of the queue
+    public enqueue(arg: T): void{
+        this.queueArray.push(arg);
+        this.numberOfElements++;
+    }
+    //Removes and returns the element at the front
+    public dequeue(): T | null{
+        if(this.isEmpty()) return null;
+        let front : T | null = this.queueArray.get(0);
+        this.queueArray.delete(0);
+        this.numberOfElements--;
+        return front;
+    }
+    //Returns the first element in the queue
+    public peek(): T | null{
+        return this.queueArray.get(0);
+    }
+    //Returns true if the queue is empty
+    public isEmpty(): boolean{
+        return (this.numberOfElements==0) ? true : false;
+    }
+    //Returns the length of the queue
+    public size(): number{
+        return this.numberOfElements;
+    }
+}
+
+
+/*
 // TO USE
 // Create the class (dataarray)
 // returns sorted data array in index form
@@ -171,6 +216,7 @@ class MergeSortLL<T> {
         return arr;
     }
 }
+*/
 
 class List<T>{
     public data : T[] = new Array<T>(10);

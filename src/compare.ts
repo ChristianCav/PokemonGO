@@ -1,6 +1,5 @@
 // contains comparisons
 
-// for merge sort
 function compareAlphaAscending(target: string, mid:string): number{
     const len = Math.min(target.length,mid.length);
     let a = target.toLowerCase()
@@ -38,7 +37,6 @@ function descending(target: number, mid: number): number{
         return -1;
     }
 }
-
 
 function roundedAscending(target: number, mid: number){
     let decimals = numDecimals(String(mid));

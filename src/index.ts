@@ -4,6 +4,23 @@ const data : Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delet
 
 const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
 
+let sortedData : AllSorted = new AllSorted;
+
+// presort all sorted data
+function presort(){
+  sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
+  sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, compareAlphaAscending), data.pokemonId), sort(data.pokemonId, compareAlphaAscending));
+  sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
+  sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
+  sortedData.ids = new Pair(indexToData(sort(findPokedex(pokedex.ids), ascending), findPokedex(pokedex.ids)), sort(findPokedex(pokedex.ids), ascending));
+  sortedData.names_english = new Pair(indexToData(sort(findPokedex(pokedex.names_english), ascending), findPokedex(pokedex.names_english)), sort(findPokedex(pokedex.names_english), compareAlphaAscending));
+  sortedData.types = new Pair(indexToData(sort(findPokedex(pokedex.types), compareAlphaAscending), findPokedex(pokedex.types)), sort(findPokedex(pokedex.types), compareAlphaAscending));
+  sortedData.heights = new Pair(indexToData(sort(findPokedex(pokedex.heights), ascending), findPokedex(pokedex.heights)), sort(findPokedex(pokedex.heights), ascending));
+  sortedData.weights = new Pair(indexToData(sort(findPokedex(pokedex.weights), ascending), findPokedex(pokedex.weights)), sort(findPokedex(pokedex.weights), ascending));
+}
+
+presort();
+
 // function to take the data and create new elements for each pokemon
 // @param takes the data from the json file
 function displayPokedex(pokedex: Pokedex): void {
@@ -53,6 +70,11 @@ function displayPokedex(pokedex: Pokedex): void {
 document.addEventListener("DOMContentLoaded", (): void => {
   displayPokedex(pokedex);
 });
+
+// handles performance times
+// since functions are one by one we can use a queue to hold the performance times in order
+// input the function performance times and the name of the function
+let performanceTime : Queue<Pair> = new Queue();
 
 // returns the closest same pokemon as the pokemon given
 // uses haversine formula with the given pokemon as the comparision

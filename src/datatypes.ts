@@ -22,3 +22,27 @@ interface Pokedex{
     genders: number[];
     images: string[];
 }
+
+// class to hold parrallel sorted data
+// pairs of sorted data
+// first sorted values
+// second sorted indexes
+class AllSorted{
+    localTime : Pair
+    pokemonId: Pair;
+    longitude: Pair;
+    latitude: Pair;
+    ids: Pair;
+    names_english: Pair;
+    types: Pair;
+    stats: Pair;
+    species: Pair;
+    descriptions: Pair;
+    evolutions_prev: Pair;
+    evolutions_next: Pair;
+    heights: Pair;
+    weights: Pair;
+    abilities: Pair;
+    genders: Pair;
+    images: Pair;
+}

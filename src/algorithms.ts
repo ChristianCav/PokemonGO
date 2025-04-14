@@ -7,7 +7,7 @@
 // and then + O(k), since it loops k more times, to find all k other occurences of the target
 // Takes 2-6 ms to run on 99000 data, using performance.now()
 function binarySearch(target: number | string, data: any[], compareFn: any) : number[]{
-    const startTime = performance.now();
+    let startTime = performance.now();
     // left bound
     let left: number = 0;
     // right bound
@@ -62,119 +62,121 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
         foundIndexes.push(j);
         j++;
     }
-    const endTime = performance.now();
-    console.log(`Binary search runtime: ${endTime-startTime}`);
+    let endTime = performance.now();
+    let newPair : Pair = new Pair("Binary Search", endTime-startTime)
+    performanceTime.enqueue(newPair);
     return foundIndexes;
 } 
 
-// returns indexes of sorted array
+// class for merge sort
 // O(nlogn) time 
-class mergeSort<T>{
+// mergesort function --> O(logn) because it divides the array by 2 each time
+// merge function --> O(n) because it at most compares n times, 1 for each value
+// since each mergesort function calls merge it is mutipled giving O(nlogn)
+    // returns indexes of sorted array
+function sort<T>(arr : T[], compare : any) : number[]{
+    let startTime = performance.now();
+    let sortSpace : PairNode<T>[] = new Array(arr.length);
 
-    // made into class so it is easy to store the index array
-    private indexArray : number[];
-    private compareFn : any;
-
-    constructor(compare? : any){
-        if(typeof compare !== 'function') compare = ascending;
-        else this.compareFn = compare;
+    // make deep copy, we dont want to edit the original
+    // O(n) time
+    let deepcopy : PairNode<T>[] = new Array(arr.length)
+    for(let i=0; i<arr.length; i++){
+        let newPair : PairNode<T> = new PairNode<T>(arr[i], i);
+        deepcopy[i] = newPair;
     }
 
-    public sort<T>(arr : T[]) : number[]{
+    mergeSort<T>(deepcopy, 0, arr.length-1, sortSpace, compare);
 
-        let sortSpace : Pair<T>[] = new Array(arr.length);
-        this.indexArray = new Array(arr.length);
+    // convert deep copy to array of indexes
+    let indexes : Array<number> = new Array(arr.length);
+    for(let i=0; i<indexes.length; i++)[
+        indexes[i] = deepcopy[i].index
+    ]
 
-        // make deep copy, we dont want to edit the original
-        // O(n) time
-        let deepcopy : Pair<T>[] = new Array(arr.length)
-        for(let i=0; i<arr.length; i++){
-            let newPair : Pair<T> = new Pair<T>(arr[i], i);
-            deepcopy[i] = newPair;
+    let endTime = performance.now();
+    let newPair : Pair = new Pair("Merge Sort", endTime-startTime)
+    performanceTime.enqueue(newPair);
+
+    return indexes;
+}
+
+
+function mergeSort<T>(arr : PairNode<T>[], leftStart : number, rightEnd : number, sortSpace : PairNode<T>[], compareFn : any) : PairNode<T>[]{
+
+// BASE CASE
+// when the array is only 1 item (or no items) it is already sorted
+if (rightEnd <= leftStart){
+    return arr;
+}
+
+// RECURSIVE CASE: array length is 2 or more -- keep dividing
+// in half and sorting those halves
+
+// get the middle index of the array to do the splitting
+let midIndex : number = Math.floor((leftStart + rightEnd)/ 2);
+
+// recursively sort the left and right sides halves back into the original array
+arr = mergeSort<T>(arr, leftStart, midIndex, sortSpace, compareFn);
+arr = mergeSort<T>(arr, midIndex + 1, rightEnd, sortSpace, compareFn);
+
+// merge the 2 sorted halves together to sort the entire range from leftStart
+// to rightEnd
+arr = merge<T>(arr, leftStart, rightEnd, sortSpace, compareFn);
+
+return arr;
+}
+
+function merge<T>(arr: PairNode<T>[], leftStart : number, rightEnd : number, sortSpace : PairNode<T>[], compareFn : any) : PairNode<T>[]{
+    // create a bigger array to hold all of the sorted elements
+
+    // get the middle index of the array to do the splitting
+    let midIndex : number = Math.floor((leftStart + rightEnd)/ 2);
+
+    let leftIndex : number = leftStart;
+    let rightIndex : number = midIndex + 1;
+
+    // each loop, put an element from the leftSorted or rightSorted arrays into the
+    // sort the elements into the AUXILIARY storage array - 
+    // O(n) time complexity
+    for ( let i = leftIndex; i <= rightEnd; i++){
+        // if there are no more elements remaining in the leftSorted array
+        //  then dump all of the rightSorted elements into sorted
+        if (leftIndex > midIndex){
+            sortSpace[i] = arr[rightIndex];
+            rightIndex++;
         }
 
-        this.mergeSort(deepcopy, 0, arr.length-1, sortSpace);
-        return this.indexArray;
+        // if there are no more elements remaining in the rightSorted array
+        //  then dump all of the leftSorted elements into sorted
+        else if (rightIndex > rightEnd){
+            sortSpace[i] = arr[leftIndex];
+            leftIndex++;
+        }
+
+        // if the element in rightSorted should go into sorted
+        else if (compareFn(arr[rightIndex].val, arr[leftIndex].val) === 1){
+            sortSpace[i] = arr[rightIndex];
+            rightIndex++;
+        }
+
+        // if the element in the leftSorted should go into sorted
+        else {
+            sortSpace[i] = arr[leftIndex];
+            leftIndex++;
+        }
     }
 
 
-    private mergeSort<T>(arr : Pair<T>[], leftStart : number, rightEnd : number, sortSpace : Pair<T>[]) : Pair<T>[]{
-        
-        // BASE CASE
-        // when the array is only 1 item (or no items) it is already sorted
-        if (rightEnd <= leftStart){
-            return arr;
-        }
-
-        // RECURSIVE CASE: array length is 2 or more -- keep dividing
-        // in half and sorting those halves
-
-        // get the middle index of the array to do the splitting
-        let midIndex : number = Math.floor((leftStart + rightEnd)/ 2);
-        
-        // recursively sort the left and right sides halves back into the original array
-        arr = this.mergeSort(arr, leftStart, midIndex, sortSpace);
-        arr = this.mergeSort(arr, midIndex + 1, rightEnd, sortSpace);
-
-        // merge the 2 sorted halves together to sort the entire range from leftStart
-        // to rightEnd
-        arr = this.merge(arr, leftStart, rightEnd, sortSpace);
-
-        return arr;
+    // copy sorted elements from the auxilliary array back to arr - 
+    // O(n) time complexity
+    for (let i = leftStart; i <= rightEnd; i++){
+        arr[i] = sortSpace[i];
     }
 
-    private merge<T>(arr: Pair<T>[], leftStart : number, rightEnd : number, sortSpace : Pair<T>[]) : Pair<T>[]{
-        // create a bigger array to hold all of the sorted elements
+    // 2 O(n) time complexity loops run in this function, which is still O(n)
 
-        // get the middle index of the array to do the splitting
-        let midIndex : number = Math.floor((leftStart + rightEnd)/ 2);
-
-        let leftIndex : number = leftStart;
-        let rightIndex : number = midIndex + 1;
-        
-        // each loop, put an element from the leftSorted or rightSorted arrays into the
-        // sort the elements into the AUXILIARY storage array - 
-        // O(n) time complexity
-        for ( let i = leftIndex; i <= rightEnd; i++){
-            // if there are no more elements remaining in the leftSorted array
-            //  then dump all of the rightSorted elements into sorted
-            if (leftIndex > midIndex){
-                sortSpace[i] = arr[rightIndex];
-                rightIndex++;
-            }
-
-            // if there are no more elements remaining in the rightSorted array
-            //  then dump all of the leftSorted elements into sorted
-            else if (rightIndex > rightEnd){
-                sortSpace[i] = arr[leftIndex];
-                leftIndex++;
-            }
-
-            // if the element in rightSorted should go into sorted
-            else if (this.compareFn(arr[rightIndex].val, arr[leftIndex].val) === 1){
-                sortSpace[i] = arr[rightIndex];
-                rightIndex++;
-            }
-
-            // if the element in the leftSorted should go into sorted
-            else {
-                sortSpace[i] = arr[leftIndex];
-                leftIndex++;
-            }
-        }
-
-
-        // copy sorted elements from the auxilliary array back to arr - 
-        // O(n) time complexity
-        for ( let i = leftStart; i <= rightEnd; i++){
-            arr[i] = sortSpace[i];
-            this.indexArray[i] = arr[i].index;
-        }
-
-        // 2 O(n) time complexity loops run in this function, which is still O(n)
-        
-        return arr;
-    }
+    return arr;
 }
 
 // find the distance between two points
@@ -195,7 +197,7 @@ function aStar(start : Point, target : number, data : number[]){
 // O(n), since it loops through all inputted data points once
 // 6 millisecond average runtime using performance.now()
 function filterCoords(latitudes: number[], longitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number): number[]{
-    const startTime = performance.now();
+    let startTime = performance.now();
     // store indexes of data that are within the two inputted points
     const validIndexes: number[] = []
     // smallest latitude value of the two points
@@ -219,8 +221,9 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
             validIndexes.push(i)
         }
     }
-    const endTime = performance.now();
-    console.log(`Filter runtime:  ${endTime-startTime}`);
+    let endTime = performance.now();
+    let newPair : Pair = new Pair("Filter Coords", endTime-startTime)
+    performanceTime.enqueue(newPair);
     return validIndexes;
 }
 
@@ -252,7 +255,8 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
         }
     }
     const endTime = performance.now();
-    console.log(`Filter time runtime: ${endTime-startTime}`);
+    let newPair : Pair = new Pair("Filter Time", endTime-startTime)
+    performanceTime.enqueue(newPair);
     return validIndexes;
 }
 

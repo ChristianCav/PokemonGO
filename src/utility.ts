@@ -4,10 +4,14 @@
 // so if [1, 3, 2, 4]
 // it will return the data value of [data[1], data[3], data[2], data[4]]
 function indexToData(indexes : number[], arr : any[]) : Array<any> {
+    let startTime = performance.now();
     let result : Array<any> = new Array(indexes.length);
     for(let i=0; i<indexes.length; i++){
         result[i] = arr[indexes[i]];
     }
+    let endTime = performance.now();
+    let newPair : Pair = new Pair("Index to Data", endTime-startTime)
+    performanceTime.enqueue(newPair);
     return result;
 }
 
@@ -30,11 +34,15 @@ function roundToDecimal(input: number, numDecimals: number): number{
 // if inputted pokedex.names_english --> will return array of names_englsh
 // O(n) time
 function findPokedex(arr : any[]): string[]{
+    let startTime = performance.now();
     let newArr : string[] = new Array(data.pokemonId.length)
     for(let i=0;i<data.pokemonId.length;i++){
         // id is 1 above 0
         newArr[i] = arr[data.pokemonId[i]-1];
     }
+    let endTime = performance.now();
+    let newPair : Pair = new Pair("Find Pokedex Array", endTime-startTime)
+    performanceTime.enqueue(newPair);
     return newArr;
 }   
 
@@ -53,11 +61,14 @@ function toSeconds(time: string): number{
 // returns indexes of searched value
 // needs changing because ascedning and descending doesnt work for string
 function search<T>(arr : T[], val : string | number) : number[]{
+    let startTime = performance.now();
     // check whether string or num and change function based off it
     let descension = (typeof val === 'string') ? compareAlphaDescending : descending;
     let sortedArray : number[] = sortAscending<T>(arr)
     let indexes : number[] = binarySearch(val, indexToData(sortedArray, arr), descension);
-
+    let endTime = performance.now();
+    let newPair : Pair = new Pair("Searching", endTime-startTime)
+    performanceTime.enqueue(newPair);
     return indexConverter(indexes, sortedArray);
 }   
 
@@ -76,10 +87,17 @@ function indexConverter(indexes : number[], sortedData : number[]) : number[]{
 
 // returns the given array in ascending form
 // returns in indexed form
+// O(nlogn)
 function sortAscending<T>(arr : T[]) : number[]{
+    let startTime = performance.now();
+
     let ascension = (typeof arr[0] === 'string') ? compareAlphaAscending : ascending;
-    let mergeSorter : mergeSort<T> = new mergeSort(ascension);
-    let sortedIndexes : number[] = mergeSorter.sort(arr);
+    let sortedIndexes : number[] = sort(arr, ascension);
+
+    let endTime = performance.now();
+    let newPair : Pair = new Pair("Sort Ascending", endTime-startTime)
+    performanceTime.enqueue(newPair);
+
     return sortedIndexes
 }   
 
