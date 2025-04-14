@@ -6,20 +6,21 @@ const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; //
 
 let sortedData : AllSorted = new AllSorted;
 
+// handles performance times
+// since functions are one by one we can use a queue to hold the performance times in order
+// input the function performance times and the name of the function
+let performanceTime : Queue<Pair> = new Queue();
 // presort all sorted data
 function presort(){
   sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
-  sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, compareAlphaAscending), data.pokemonId), sort(data.pokemonId, compareAlphaAscending));
+  sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, ascending), data.pokemonId), sort(data.pokemonId, ascending));
   sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
   sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
   sortedData.ids = new Pair(indexToData(sort(findPokedex(pokedex.ids), ascending), findPokedex(pokedex.ids)), sort(findPokedex(pokedex.ids), ascending));
-  sortedData.names_english = new Pair(indexToData(sort(findPokedex(pokedex.names_english), ascending), findPokedex(pokedex.names_english)), sort(findPokedex(pokedex.names_english), compareAlphaAscending));
-  sortedData.types = new Pair(indexToData(sort(findPokedex(pokedex.types), compareAlphaAscending), findPokedex(pokedex.types)), sort(findPokedex(pokedex.types), compareAlphaAscending));
+  sortedData.names_english = new Pair(indexToData(sort(findPokedex(pokedex.names_english), compareAlphaAscending), findPokedex(pokedex.names_english)), sort(findPokedex(pokedex.names_english), compareAlphaAscending));
   sortedData.heights = new Pair(indexToData(sort(findPokedex(pokedex.heights), ascending), findPokedex(pokedex.heights)), sort(findPokedex(pokedex.heights), ascending));
   sortedData.weights = new Pair(indexToData(sort(findPokedex(pokedex.weights), ascending), findPokedex(pokedex.weights)), sort(findPokedex(pokedex.weights), ascending));
 }
-
-presort();
 
 // function to take the data and create new elements for each pokemon
 // @param takes the data from the json file
@@ -70,13 +71,6 @@ function displayPokedex(pokedex: Pokedex): void {
 document.addEventListener("DOMContentLoaded", (): void => {
   displayPokedex(pokedex);
 });
-  displayPokedex(pokedex);
-});
-
-// handles performance times
-// since functions are one by one we can use a queue to hold the performance times in order
-// input the function performance times and the name of the function
-let performanceTime : Queue<Pair> = new Queue();
 
 // returns the closest same pokemon as the pokemon given
 // uses haversine formula with the given pokemon as the comparision
@@ -86,7 +80,7 @@ let performanceTime : Queue<Pair> = new Queue();
 function grindingCandies(mon : string, lat : number, lon : number){
 
   // search for all the indexes of the mon
-  let indexArray : number[] = search<string>(findPokedex(pokedex.names_english), mon);
+  let indexArray : number[] = search<string>(sortedData.names_english.key, mon);
   // create new array to sort after
   let distanceArray : number[] = new Array(indexArray.length);
 
@@ -110,9 +104,8 @@ let t = (grindingCandies(pokedex.names_english[data.pokemonId[21]-1], data.latit
 console.log(t);
 
 /*
-let f: mergeSort<string> = new mergeSort(compareAlphaAscending)
 // array of indexes 
-let g = f.sort(findPokedex(pokedex.names_english));
+let g = sort(findPokedex(pokedex.names_english), compareAlphaAscending);
 console.log(g)
 let h = indexToData(g, findPokedex(pokedex.names_english));
 console.log(h)
@@ -121,9 +114,8 @@ console.log(k);
 console.log(indexToData(k,h));
 
 const mainNames = pokedex.names_english.slice(0,149)
-let l: MergeSortLL<string> = new MergeSortLL(mainNames);
 // array of indexes 
-let m = l.sort(compareAlphaAscending);
+let m = sort(mainNames,compareAlphaAscending);
 console.log(m)
 let n = indexToData(m, mainNames);
 console.log(n)

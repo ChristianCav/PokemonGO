@@ -64,12 +64,11 @@ function search<T>(arr : T[], val : string | number) : number[]{
     let startTime = performance.now();
     // check whether string or num and change function based off it
     let descension = (typeof val === 'string') ? compareAlphaDescending : descending;
-    let sortedArray : number[] = sortAscending<T>(arr)
-    let indexes : number[] = binarySearch(val, indexToData(sortedArray, arr), descension);
+    let indexes : number[] = binarySearch(val, arr, descension);
     let endTime = performance.now();
     let newPair : Pair = new Pair("Searching", endTime-startTime)
     performanceTime.enqueue(newPair);
-    return indexConverter(indexes, sortedArray);
+    return indexes; // indexes of sorted data
 }   
 
 // since the search function returns the sorted indexes of the sorted array
@@ -77,25 +76,26 @@ function search<T>(arr : T[], val : string | number) : number[]{
 // must input the original data
 // just index the original sort indexes using current indexes
 // O(n)
+/*
 function indexConverter(indexes : number[], sortedData : number[]) : number[]{
     let newArray : Array<number> = new Array(indexes.length);
     for(let i=0; i<indexes.length; i++){
         newArray[i] = sortedData[indexes[i]];
     }
     return newArray;
-}
+}*/
 
 // returns the given array in ascending form
 // returns in indexed form
 // O(nlogn)
-function sortAscending<T>(arr : T[]) : number[]{
+function sortDescending<T>(arr : T[]) : number[]{
     let startTime = performance.now();
 
-    let ascension = (typeof arr[0] === 'string') ? compareAlphaAscending : ascending;
-    let sortedIndexes : number[] = sort(arr, ascension);
+    let decension = (typeof arr[0] === 'string') ? compareAlphaDescending : descending;
+    let sortedIndexes : number[] = sort(arr, decension);
 
     let endTime = performance.now();
-    let newPair : Pair = new Pair("Sort Ascending", endTime-startTime)
+    let newPair : Pair = new Pair("Sort Descending", endTime-startTime)
     performanceTime.enqueue(newPair);
 
     return sortedIndexes
