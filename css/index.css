@@ -22,8 +22,9 @@ body {
   width: 100%;
   height: 75px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  padding: 0 40px;
   background-image: linear-gradient(
     to right,
     #dcdcf1,
@@ -31,19 +32,44 @@ body {
     #cfdbef,
     #cadaee
   );
-  border-bottom: 2px solid black;
-  position: relative;
+  opacity: 0.9;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   overflow: hidden;
 }
 
-.bar h1 {
-  font-family: "Pokemon Hollow", sans-serif;
-  font-size: 2.5rem;
-  letter-spacing: 1px;
+.logo img {
+  display: block;
+  height: 40px;
+  width: 40px;
+}
+
+.navLinks a {
+  font-size: 18px;
+  font-weight: 500;
+  margin-left: 30px;
+  text-decoration: none;
   color: #2b2b2b;
   position: relative;
-  z-index: 3;
-  margin-bottom: 20px;
+  transition: color 0.3s;
+}
+
+.navLinks a::before {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #2b2b2b;
+  transition: width 0.3s ease-in-out;
+}
+
+.navLinks a:hover::before {
+  width: 100%;
 }
 
 .gradient-bar {
@@ -63,10 +89,11 @@ body {
     #89d659,
     #efe120,
     #efa852,
-    #ea8e77
+    #ea8e77,
+    #d680a4
   );
   background-size: 700% 100%;
-  animation: gradientMove 75s linear infinite;
+  animation: gradientMove 60s linear infinite;
   z-index: 1;
   border-top: 1px solid #d0d0d0;
   border-bottom: 1px solid #d0d0d0;
@@ -74,13 +101,12 @@ body {
   margin-bottom: 2px;
 }
 
-/* TODO Fix the shimmer effect */
 .shimmer {
   position: absolute;
   bottom: 0;
   left: -100px;
-  width: 100px;
-  height: 10px;
+  width: 300px;
+  height: 8px;
   background: linear-gradient(
     to right,
     rgba(255, 255, 255, 0) 0%,
@@ -110,33 +136,87 @@ body {
   }
 }
 
-.simpleSearchBar{
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: (-50%, -50%);
-    z-index: 3;
-
-    padding: 20px;
-
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.simpleSearchBarContainer h1 {
+  font-family: "Pokemon Hollow", sans-serif;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  color: #2b2b2b;
+  position: relative;
+  z-index: 3;
+  opacity: 1;
+  margin-bottom: 20px;
 }
 
-.pokemon-grid-container {
+.simpleSearchBarContainer img{
+  width: 30px;
+  height: 30px;
+  vertical-align: middle;
+  margin: 0 10px;
+}
+
+.simpleSearchBarContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  margin-top: 100px;
+  padding: 15px;
+  text-align: center;
+
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.simpleSearchBar{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+
+  margin-top: 10px;
+
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.simpleSearchBar input{
+  padding: 10px;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex: 1;
+}
+
+.simpleSearchBar button {
+  padding: 10px 20px;
+  margin-left: 5px;
+  border: none;
+  background-color: #f53100;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.simpleSearchBar button:hover {
+  background-color: #ac0b00;
+}
+
+.pokemonGridContainer {
   width: 100%;
   padding: 20px;
 }
 
-.pokemon-grid {
+.pokemonGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
   width: 100%;
+  padding: 20px;
 }
 
-.pokemon-card {
+.pokemonCard {
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -144,12 +224,12 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.pokemon-card:hover {
+.pokemonCard:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.pokemon-image {
+.pokemonImage {
   width: 100%;
   height: 160px;
   object-fit: contain;
@@ -157,23 +237,23 @@ body {
   display: block;
 }
 
-.pokemon-info {
+.pokemonInfo {
   padding: 12px;
 }
 
-.pokemon-name {
+.pokemonName {
   margin: 0;
   font-size: 18px;
   color: #333;
 }
 
-.pokemon-number {
+.pokemonNumber {
   margin: 5px 0;
   color: #666;
   font-size: 14px;
 }
 
-.pokemon-types {
+.pokemonTypes {
   display: flex;
   gap: 5px;
   margin-top: 5px;
@@ -243,35 +323,35 @@ body {
 }
 
 @media (max-width: 768px) {
-  .pokemon-grid {
+  .pokemonGrid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
   }
 
-  .pokemon-image {
+  .pokemonImage {
     height: 120px;
   }
 
-  .pokemon-name {
+  .pokemonName {
     font-size: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .pokemon-grid {
+  .pokemonGrid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 10px;
   }
 
-  .pokemon-image {
+  .pokemonImage {
     height: 100px;
   }
 
-  .pokemon-info {
+  .pokemonInfo {
     padding: 8px;
   }
 
-  .pokemon-name {
+  .pokemonName {
     font-size: 14px;
   }
 }

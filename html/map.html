@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokédex</title>
+    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/map.css" />
+    <link rel="icon" href="../images/pokeball.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+  </head>
+
+  <body>
+    <!-- Title Bar -->
+    <header class="bar">
+      <a href="../html/index.html" class="logo">
+        <img src="../images/pokeball.png" alt="Logo" width="40" height="40" />
+      </a>
+
+      <nav class="navLinks">
+        <a href="../html/index.html">Home</a>
+        <a href="../html/table.html">Table</a>
+        <a href="../html/map.html">Map</a>
+      </nav>
+
+      <div class="gradient-bar"></div>
+      <div class="shimmer"></div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="mainContainer">
+      <div class="inputContainer">
+        <h1>
+          <img
+            src="../images/pokeball.png"
+            class="pokeball-icon"
+            alt="Pokéball icon"
+          />
+          Pokémon Go! Map
+          <img
+            src="../images/pokeball.png"
+            class="pokeball-icon"
+            alt="Pokéball icon"
+          />
+        </h1>
+        <div>
+          <p>
+            Insturctions for Use: <br />
+            1. Zoom to map size you wish (works best with zoom 5+)<br />
+            2. Enter a country to lock on to <br />
+            3. Click "GO" to go to the country
+          </p>
+        </div>
+        <div style="display: flex; align-items: center">
+          <input
+            type="text"
+            id="countryInput"
+            placeholder="Enter a country to zoom in..."
+            autocomplete="off"
+            style="
+              padding: 10px;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              flex-grow: 1;
+              margin-right: 10px;
+            "
+          />
+          <button
+            onclick="goToCountry()"
+            style="
+              padding: 10px 20px;
+              border: none;
+              background-color: #f53100;
+              color: white;
+              border-radius: 5px;
+              cursor: pointer;
+            "
+          >
+            Go
+          </button>
+        </div>
+
+        <div class="filterSection">
+          <div class="filterRow">
+            <div>
+              <label for="nameFilter">Pokémon Name:</label>
+              <input
+                type="text"
+                id="nameFilter"
+                placeholder="Enter Pokémon name..."
+                autocomplete="off"
+              />
+            </div>
+
+            <div style="gap: 1%">
+              <label for="timeFilter">Time of Day:</label>
+              <input type="time" id="fromTimeFilter" />
+              <label for="timeFilter">To:</label>
+              <input type="time" id="toTimeFilter" />
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 1%">
+            <label for="coordFilter"
+              >Filter by Coordinates (Latitude, Longitude):</label
+            >
+            <div style="display: flex; gap: 1%">
+              <input
+                type="number"
+                id="fromLatitudeFilter"
+                placeholder="Latitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-90"
+                max="90"
+              />
+              <input
+                type="number"
+                id="fromLongitudeFilter"
+                placeholder="Longitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-180"
+                max="180"
+              />
+            </div>
+            <label for="coordFilter">to:</label>
+            <div style="display: flex; gap: 1%">
+              <input
+                type="number"
+                id="toLatitudeFilter"
+                placeholder="Latitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-90"
+                max="90"
+              />
+              <input
+                type="number"
+                id="toLongitudeFilter"
+                placeholder="Longitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-180"
+                max="180"
+              />
+            </div>
+          </div>
+
+          <!-- Apply Filters Button -->
+          <button onclick="applyFilters()">Apply Filters</button>
+        </div>
+        <div class="filterSection">
+          <div style="display: flex; flex-direction: column; gap: 1%">
+            <label for="coordFilter"
+              >Shortest Distance Between 2 of the Same Pokemon</label
+            >
+            <div style="display: flex; gap: 1%">
+              <input
+                type="number"
+                id="candiesLatitudeFilter"
+                placeholder="Latitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-90"
+                max="90"
+              />
+              <input
+                type="number"
+                id="candiesLongitudeFilter"
+                placeholder="Longitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-180"
+                max="180"
+              />
+            </div>
+            <!-- MAKE BONUS 3, MAKE THE SHORTEST DISTANCE BETWEEN 2 PKMS -->
+            <button onclick="shortestCandyDist()">Gotta Grind Em' Candies!</button>
+          </div>
+        </div>
+
+        <div class="filterSection">
+          <div style="display: flex; flex-direction: column; gap: 1%">
+            <label for="coordFilter"
+              >Shortest Distance to Catch All 151 Pokemons From Your Latitude
+              and Longitude</label
+            >
+            <div style="display: flex; gap: 1%">
+              <input
+                type="number"
+                id="fromLatitudeFilter"
+                placeholder="Latitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-90"
+                max="90"
+              />
+              <input
+                type="number"
+                id="fromLongitudeFilter"
+                placeholder="Longitude"
+                style="max-width: 50%"
+                step="0.0001"
+                min="-180"
+                max="180"
+              />
+            </div>
+            <!-- MAKE BONUS 5, MAKE THE SHORTEST DISTANCE -->
+            <button onclick="shortestDist()">Gotta Catch Em' All!</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mapContainer">
+        <div id="map"></div>
+      </div>
+    </div>
+  </body>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""
+  ></script>
+
+  <!--Do not move the line below-->
+  <script src="../dist/DO_NOT_TOUCH.js"></script>
+  <script src="../dist/DataClasses.js"></script>
+  <script src="../dist/datatypes.js"></script>
+  <script src="../dist/compare.js"></script>
+  <script src="../dist/utility.js"></script>
+  <script src="../dist/datastructures.js"></script>
+  <script src="../dist/algorithms.js"></script>
+  <script src="../dist/map.js"></script>
+  <!--Do not move the line above-->
+  <script src="../dist/index.js"></script>
+</html>

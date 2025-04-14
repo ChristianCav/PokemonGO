@@ -156,10 +156,10 @@ class MergeSortLL<T> {
     public sort(compare? : any) : Array<number> {
 
         // if no compare function just do ascending
-        if(typeof compare !== 'function') compare = ascending;
+        if(typeof compare !== 'function') this.compare = descending;
         else this.compare = compare;
 
-        let arr : Array<number> = new Array<number>;
+        let arr : Array<number> = new Array;
         let cur : node<T> = this.mergeSort(this.head) as node<T>;
         // O(n) to convert back to list
         for(let i=0; i<this.numElements; i++){

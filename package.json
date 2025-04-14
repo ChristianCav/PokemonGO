@@ -9,7 +9,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "leaflet": "^1.9.4",
     "live-server": "^1.2.2",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.17"
   }
 }
