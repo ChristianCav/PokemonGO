@@ -42,6 +42,9 @@
   <div class="mainContainer">
     <div class="inputContainer">
       <div class="instructionsContainer">
+        <button type="button" id="instructionsButton" onclick="toggleInstructions()">
+          Instructions (READ BEFORE)
+        </button>
         <div class="instructions hidden">
           <p>
             Insturctions for Use: <br />
@@ -51,10 +54,6 @@
             3. Click "GO" to go to the country
           </p>
         </div>
-        <button type="button" id="instructionsButton" onclick="toggleInstructions()">
-          Instructions (READ BEFORE)
-        </button>
-
       </div>
 
       <div class="countryInputContainer">
@@ -117,10 +116,10 @@
 
       <div class="filterSection">
         <div>
-          <label for="coordFilter">Shortest Distance to Catch All 151 Pokemons From Your :Location</label>
+          <label for="coordFilter">Shortest Distance to Catch All 151 Pokemons From Your Location</label>
           <div class="coordFilter">
-            <input type="number" id="fromLatitudeFilter" placeholder="Latitude..." step="0.0001" min="-90" max="90" />
-            <input type="number" id="fromLongitudeFilter" placeholder="Longitude..." step="0.0001" min="-180" max="180" />
+            <input type="number" id="SDLatitudeFilter" placeholder="Latitude..." step="0.0001" min="-90" max="90" />
+            <input type="number" id="SDLongitudeFilter" placeholder="Longitude..." step="0.0001" min="-180" max="180" />
           </div>
           <button type="button" onclick="shortestDist()">Gotta Catch Em' All!</button>
         </div>
