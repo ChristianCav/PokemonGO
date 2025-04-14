@@ -6,20 +6,20 @@ const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; //
 
 let sortedData : AllSorted = new AllSorted;
 
-// presort all sorted data
-function presort(){
-  sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
-  sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, compareAlphaAscending), data.pokemonId), sort(data.pokemonId, compareAlphaAscending));
-  sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
-  sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
-  sortedData.ids = new Pair(indexToData(sort(findPokedex(pokedex.ids), ascending), findPokedex(pokedex.ids)), sort(findPokedex(pokedex.ids), ascending));
-  sortedData.names_english = new Pair(indexToData(sort(findPokedex(pokedex.names_english), ascending), findPokedex(pokedex.names_english)), sort(findPokedex(pokedex.names_english), compareAlphaAscending));
-  sortedData.types = new Pair(indexToData(sort(findPokedex(pokedex.types), compareAlphaAscending), findPokedex(pokedex.types)), sort(findPokedex(pokedex.types), compareAlphaAscending));
-  sortedData.heights = new Pair(indexToData(sort(findPokedex(pokedex.heights), ascending), findPokedex(pokedex.heights)), sort(findPokedex(pokedex.heights), ascending));
-  sortedData.weights = new Pair(indexToData(sort(findPokedex(pokedex.weights), ascending), findPokedex(pokedex.weights)), sort(findPokedex(pokedex.weights), ascending));
-}
+// // presort all sorted data
+// function presort(){
+//   sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
+//   sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, compareAlphaAscending), data.pokemonId), sort(data.pokemonId, compareAlphaAscending));
+//   sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
+//   sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
+//   sortedData.ids = new Pair(indexToData(sort(findPokedex(pokedex.ids), ascending), findPokedex(pokedex.ids)), sort(findPokedex(pokedex.ids), ascending));
+//   sortedData.names_english = new Pair(indexToData(sort(findPokedex(pokedex.names_english), ascending), findPokedex(pokedex.names_english)), sort(findPokedex(pokedex.names_english), compareAlphaAscending));
+//   sortedData.types = new Pair(indexToData(sort(findPokedex(pokedex.types), compareAlphaAscending), findPokedex(pokedex.types)), sort(findPokedex(pokedex.types), compareAlphaAscending));
+//   sortedData.heights = new Pair(indexToData(sort(findPokedex(pokedex.heights), ascending), findPokedex(pokedex.heights)), sort(findPokedex(pokedex.heights), ascending));
+//   sortedData.weights = new Pair(indexToData(sort(findPokedex(pokedex.weights), ascending), findPokedex(pokedex.weights)), sort(findPokedex(pokedex.weights), ascending));
+// }
 
-presort();
+// presort();
 
 // function to take the data and create new elements for each pokemon
 // @param takes the data from the json file
@@ -66,11 +66,42 @@ function displayPokedex(pokedex: Pokedex): void {
   }
 }
 
+// function to hide and unhide the advanced search bar
+function toggleAdvancedSearch(): void {
+  const advSearchBar = document.querySelector(".advSearchBar");
+
+  if (advSearchBar) {
+    advSearchBar.classList.toggle("hidden");
+  }
+}
+
+function handleSearchClick(): void {
+  const input = document.getElementById("searchBar") as HTMLInputElement | null;
+
+  if (!input) return;
+
+  const query = input.value.trim();
+
+  if (query.length === 0) {
+    alert("Please enter a Pokémon name before searching.");
+    return;
+  }
+
+  window.location.href = `../html/table.html`;
+
+  // const encodedQuery = encodeURIComponent(query);
+  // window.location.href = `../html/table.html?search=${encodedQuery}`;
+}
+
 // call function when the DOM is loaded (webpage starts)
+// ! Only runs when in index.html file
 document.addEventListener("DOMContentLoaded", (): void => {
-  displayPokedex(pokedex);
-});
-  displayPokedex(pokedex);
+  const path = window.location.pathname;
+  const page = path.substring(path.lastIndexOf("/") + 1);
+
+  if (page === "index.html" || page === "") {
+    displayPokedex(pokedex);
+  }
 });
 
 // handles performance times
