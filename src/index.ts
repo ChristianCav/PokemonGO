@@ -57,13 +57,15 @@ document.addEventListener("DOMContentLoaded", (): void => {
 
 /* HOW TO USE BINARY SEARCH AND MERGE SORT
 they have to be opposite
-let t : MergeSortLL<number> = new MergeSortLL(data.pokemonId);
+let t : mergeSort<number> = new mergeSort(ascending);
 console.log(data.pokemonId);
-let m = (t.sort(ascending));
+let m = t.sort(data.pokemonId);
 console.log(m);
+console.log(m[0]);
+console.log(data.pokemonId[m[0]])
 let v = (indexToData(m, data.pokemonId));
 console.log(v);
-let d = binarySearch(1, v, desending);
+let d = binarySearch(1, v, descending);
 console.log(d);
 console.log(indexToData(d, v));
 */

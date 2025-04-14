@@ -1,5 +1,14 @@
 // constains all structures
 
+// pair data structure
+// mainly used for merge sort holding index and value
+class Pair<T>{
+    constructor(
+        public val : T,
+        public index : number
+    ){}
+}
+
 // node structure for linkedlist
 // double linked node
 class node<T>{
@@ -150,7 +159,7 @@ class MergeSortLL<T> {
         if(typeof compare !== 'function') compare = ascending;
         else this.compare = compare;
 
-        let arr : Array<number> = new Array<number>;
+        let arr : Array<number> = new Array;
         let cur : node<T> = this.mergeSort(this.head) as node<T>;
         // O(n) to convert back to list
         for(let i=0; i<this.numElements; i++){
