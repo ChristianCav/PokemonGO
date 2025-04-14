@@ -176,6 +176,21 @@ class mergeSort<T>{
         return arr;
     }
 }
+
+// find the distance between two points
+// takes in intial position, target (amount of pokemon), array of the pokemon (binarysearched down)
+// takes the position and finds the shortest path until target is hit
+function aStar(start : Point, target : number, data : number[]){
+    let q : PriorityQueue<Point> = new PriorityQueue<Point>(ascending);
+    q.enqueue(start); // queue the starting node
+    let prev : Array<number> = new Array(data.length);
+    let gScore : Array<number> = new Array(data.length);
+    let fScore : Array<number> = new Array(data.length);
+
+    
+
+}
+
 // returns indexes of data with (lat, lng) between two inputted points
 // O(n), since it loops through all inputted data points once
 // 6 millisecond average runtime using performance.now()

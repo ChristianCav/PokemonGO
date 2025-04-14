@@ -49,3 +49,60 @@ function toSeconds(time: string): number{
     }
     return (hours*3600 + minutes*60 + seconds);
 }
+
+// returns indexes of searched value
+// needs changing because ascedning and descending doesnt work for string
+function search<T>(arr : T[], val : string | number) : number[]{
+    // check whether string or num and change function based off it
+    let descension = (typeof val === 'string') ? compareAlphaDescending : descending;
+    let sortedArray : number[] = sortAscending<T>(arr)
+    let indexes : number[] = binarySearch(val, indexToData(sortedArray, arr), descension);
+
+    return indexConverter(indexes, sortedArray);
+}   
+
+// since the search function returns the sorted indexes of the sorted array
+// we must be able to convert these indexes to their original form otherwise they will only ever work on the sorted data type
+// must input the original data
+// just index the original sort indexes using current indexes
+// O(n)
+function indexConverter(indexes : number[], sortedData : number[]) : number[]{
+    let newArray : Array<number> = new Array(indexes.length);
+    for(let i=0; i<indexes.length; i++){
+        newArray[i] = sortedData[indexes[i]];
+    }
+    return newArray;
+}
+
+// returns the given array in ascending form
+// returns in indexed form
+function sortAscending<T>(arr : T[]) : number[]{
+    let ascension = (typeof arr[0] === 'string') ? compareAlphaAscending : ascending;
+    let mergeSorter : mergeSort<T> = new mergeSort(ascension);
+    let sortedIndexes : number[] = mergeSorter.sort(arr);
+    return sortedIndexes
+}   
+
+// given two points longitude and latitude
+// since the earth is a sphere we find the shortest length between the two points
+// this will be the edge for the graph
+function haversine(lat1 : number, lon1 : number, lat2 : number, lon2 : number) : number{
+    // quick function to convert to radians
+    const radiansConvert = (degrees : number) => degrees * (Math.PI/180);
+    const R : number = 6371;
+
+    let dLat : number = radiansConvert(lat2 - lat1);
+    let dLon : number = radiansConvert(lon2 - lon1);
+
+    let radLat1 : number = radiansConvert(lat1)
+    let radLat2 : number = radiansConvert(lat2);
+
+    // Haversine formula
+    let a : number = Math.sin(dLat / 2)**2 + Math.cos(radLat1) * Math.cos(radLat2) * Math.sin(dLon / 2)**2
+    let c  : number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    let distance : number = R * c
+
+    return distance;
+
+}
