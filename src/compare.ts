@@ -12,7 +12,7 @@ function ascending(target: number, mid: number): number{
     }
 }
 
-function desending(target: number, mid: number): number{
+function descending(target: number, mid: number): number{
     if(target===mid){
         return 0;
     }
@@ -45,4 +45,3 @@ for(let i=0;i<len;i++){
 }
 return 0;
 }
-  

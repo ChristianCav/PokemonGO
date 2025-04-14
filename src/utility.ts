@@ -11,6 +11,25 @@ function indexToData(indexes : number[], arr : any[]) : Array<any> {
     return result;
 }
 
+// returns indexes of searched value
+// needs changing because ascedning and descending doesnt work for string
+function search<T>(arr : T[], val : string | number) : number[]{
+    // check whether string or num and change function based off it
+    let ascension = (typeof val === 'string') ? compareAlpha : ascending;
+    let descension = (typeof val === 'string') ? compareAlpha : descending;
+    let sortedArray : number[] = sortAscending(arr)
+    let indexes : number[] = binarySearch(val, sortedArray, descension);
+    return indexes;
+}   
+
+// returns the given array in ascending form
+function sortAscending<T>(arr : T[]){
+    let ascension = (typeof arr[0] === 'string') ? compareAlpha : ascending;
+    let mergeSorter : mergeSort<T> = new mergeSort(ascension);
+    let sortedIndexes : number[] = mergeSorter.sort(arr);
+    return sortedIndexes
+}   
+
 // given two points longitude and latitude
 // since the earth is a sphere we find the shortest length between the two points
 // this will be the edge for the graph

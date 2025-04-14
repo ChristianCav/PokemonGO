@@ -1,5 +1,14 @@
 // constains all structures
 
+// pair data structure
+// mainly used for merge sort holding index and value
+class Pair<T>{
+    constructor(
+        public val : T,
+        public index : number
+    ){}
+}
+
 // node structure for linkedlist
 // double linked node
 class node<T>{
