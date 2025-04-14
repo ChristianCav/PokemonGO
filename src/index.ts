@@ -66,46 +66,52 @@ document.addEventListener("DOMContentLoaded", (): void => {
 // uses haversine formula with the given pokemon as the comparision
 // and sorts it by it
 // therefore the closest pokemon is the second one in the return
-function grindingCandies(mon : string, lon : number, lat : number){
+
+function grindingCandies(mon : string, lat : number, lon : number){
 
   // search for all the indexes of the mon
-  let indexArray : number[] = search(data.pokemonId, mon);
-
+  let indexArray : number[] = search<string>(findPokedex(pokedex.names_english), mon);
   // create new array to sort after
   let distanceArray : number[] = new Array(indexArray.length);
 
   // create an array of haversine lengths compared to the starting node
+  // O(n)
   for(let i=0; i<indexArray.length; i++){
     let index : number = indexArray[i];
+
     // put the distance into array
     distanceArray[i] = haversine(lat, lon, data.latitude[index], data.longitude[index]);
   }
 
-  distanceArray = sortAscending(distanceArray);
   // if the length is less 2 there is only 1 of that pokemon
-  return (distanceArray.length <= 1) ? -1 : distanceArray[1]; // index 1 because 0 must be itself
+  return (distanceArray.length <= 1) ? -1 : distanceArray[0]; // index 1 because 0 must be itself
 
 }
 // test stuff
+/*
+console.log(pokedex.names_english[data.pokemonId[21]-1])
+let t = (grindingCandies(pokedex.names_english[data.pokemonId[21]-1], data.latitude[21], data.longitude[21]))
+console.log(t);
 
-let f: mergeSort<string> = new mergeSort(compareAlphaAscendingSort)
+/*
+let f: mergeSort<string> = new mergeSort(compareAlphaAscending)
 // array of indexes 
 let g = f.sort(findPokedex(pokedex.names_english));
 console.log(g)
 let h = indexToData(g, findPokedex(pokedex.names_english));
 console.log(h)
-let k = binarySearch("P",h, compareAlphaAscendingSearch)
+let k = binarySearch("P",h, compareAlphaDescending)
 console.log(k);
 console.log(indexToData(k,h));
 
 const mainNames = pokedex.names_english.slice(0,149)
 let l: MergeSortLL<string> = new MergeSortLL(mainNames);
 // array of indexes 
-let m = l.sort(compareAlphaAscendingSort);
+let m = l.sort(compareAlphaAscending);
 console.log(m)
 let n = indexToData(m, mainNames);
 console.log(n)
-let o = binarySearch("P", n, compareAlphaAscendingSearch)
+let o = binarySearch("P", n, compareAlphaDescending)
 console.log(o);
 console.log(indexToData(o,n));
 

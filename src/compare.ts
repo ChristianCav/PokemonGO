@@ -1,7 +1,7 @@
 // contains comparisons
 
 // for merge sort
-function compareAlphaAscendingSort(target: string, mid:string): number{
+function compareAlphaAscending(target: string, mid:string): number{
     const len = Math.min(target.length,mid.length);
     let a = target.toLowerCase()
     let b = mid.toLowerCase();
@@ -26,37 +26,16 @@ function compareAlphaAscendingSort(target: string, mid:string): number{
     }
     return 0;
 }
-
-// for binarySearch
-function compareAlphaAscendingSearch(target: string, mid:string): number{
-    const len = Math.min(target.length,mid.length);
-    let a = target.toLowerCase()
-    let b = mid.toLowerCase();
-    for(let i=0;i<len;i++){
-        let aVal = a.charCodeAt(i);
-        let bVal = b.charCodeAt(i);
-        if(aVal === bVal){
-            continue;
-        }
-        else if(aVal<bVal){
-            return -1;
-        }
-        else{
-            return 1;
-        }
-    }
-    return 0;
-}
   
 function descending(target: number, mid: number): number{
     if(target===mid){
         return 0;
     }
     else if(target>mid){
-        return -1;
+        return 1;
     }
     else{
-        return 1;
+        return -1;
     }
 }
 
@@ -102,9 +81,9 @@ function ascending(target: number, mid: number): number{
         return 0;
     }
     else if(target<mid){
-        return -1;
+        return 1;
     }
     else{
-        return 1;
+        return -1;
     }
 }
