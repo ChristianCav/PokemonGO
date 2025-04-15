@@ -8,18 +8,12 @@ const graph: Array<Array<Item>> = loadJSON("../DO_NOT_TOUCH/graph.json"); // clo
 // handles performance times
 // since functions are one by one we can use a queue to hold the performance times in order
 // input the function performance times and the name of the function
-let performanceTime: Queue<Triplet> = new Queue(showPerformanceTime);
+let performanceTime: Queue<Triplet> = new Queue();
 
 let sortedData: AllSorted = new AllSorted();
 let data2: Pokedex = new Pokedex();
 
 let currentRuntimeIndex: number = 0; // Keeps track of which runtime we’re displaying
-
-
-// handles performance times
-// since functions are one by one we can use a queue to hold the performance times in order
-// input the function performance times and the name of the function
-let performanceTime: Queue<Pair> = new Queue();
 
 // presort all sorted data
 
@@ -339,31 +333,40 @@ function grindingCandies(
 
 // Function to show the performance times
 function showPerformanceTime(): void {
-  // get the container to display the performance times
-  const container = document.querySelector(".runtimeDisplay") as HTMLElement;
+  console.log(performanceTime)
+    const container = document.querySelector(".runtimeDisplay") as HTMLElement;
+    
+    // If queue is empty, show message and disable button
+    if (performanceTime.isEmpty()) {
+        container.innerHTML = "No more runtime data to display";
+        const button = document.getElementById("runtimeButton") as HTMLButtonElement;
+        button.disabled = true;
+        return;
+    }
 
-  // Clear existing content
-  //container.innerHTML = ""; // only clear if you click next
-
-  // if there is currently content do not run
-  // call this function when next is clicked
-
-  if(container.innerHTML != "") return; // return if its not empty
-
-  // ENSURE EACH FUNCTION THAT CALLS NON MAIN FUNCTIONS ARE A MAIN FUNCTION
-  for(let i=0; i<performanceTime.size(); i++){ // loop through the q
-    // THIS IS WHERE YOU ADD THE INFO
-    let cur : Triplet = performanceTime.dequeue() as Triplet;
-    // key is the name of the function
-    // val is the time it takes 
-    // main does not matter
-    // add the info the to performance time display
-
-    // stop when we hit main
-    if(cur.main === true) break;
-
-  } 
-
+    let output = "";
+    let firstIteration = true;
+    
+    // Process until we find a main function (after the first one)
+    while (!performanceTime.isEmpty()) {
+        const current = performanceTime.peek() as Triplet;
+        
+        // If we hit another main function after the first one, stop
+        if (!firstIteration && current.main) {
+            break;
+        }
+        
+        // Remove and process the item
+        const item = performanceTime.dequeue() as Triplet;
+        output += `Function: ${item.key} — Time: ${item.val.toFixed(2)} ms<br>`;
+        
+        // Mark that we've passed the first iteration
+        if (item.main) {
+            firstIteration = false;
+        }
+    }
+    
+    container.innerHTML = output;
 }
 
 // function to hide and unhide the advanced search bar
