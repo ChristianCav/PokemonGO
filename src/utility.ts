@@ -145,7 +145,7 @@ function sortDescending<T>(arr : T[]) : number[]{
     let sortedIndexes : number[] = sort(arr, decension);
 
     let endTime = performance.now();
-    let time : Pair = new Triplet("Sort Descending", endTime-startTime, true)
+    let time : Triplet = new Triplet("Sort Descending", endTime-startTime, true)
     performanceTime.enqueue(time);
 
     return sortedIndexes

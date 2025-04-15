@@ -5,16 +5,15 @@ const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; //
 
 const graph: Array<Array<Item>> = loadJSON("../DO_NOT_TOUCH/graph.json"); // closest 500 nodes adjacency list
 
+// handles performance times
+// since functions are one by one we can use a queue to hold the performance times in order
+// input the function performance times and the name of the function
+let performanceTime: Queue<Triplet> = new Queue(showPerformanceTime);
+
 let sortedData: AllSorted = new AllSorted();
 let data2: Pokedex = new Pokedex();
 
 let currentRuntimeIndex: number = 0; // Keeps track of which runtime we’re displaying
-
-
-// handles performance times
-// since functions are one by one we can use a queue to hold the performance times in order
-// input the function performance times and the name of the function
-let performanceTime: Queue<Triplet> = new Queue(showPerformanceTime());
 
 // presort all sorted data
 
