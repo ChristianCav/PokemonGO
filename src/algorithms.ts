@@ -248,6 +248,7 @@ function merge<T>(arr: PairNode<T>[], leftStart : number, rightEnd : number, sor
 // target --> number of pokemon to travel
 // arr --> array of indexes representing the same pokemon
 // returns path containing the index, and cost
+// asymtotic worst case O(n^2logn)
 function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
     // variable to check if the pokemon we got is actually the same
     let pokemon : string = sortedData.names_english.key[indexes[0]];
@@ -264,6 +265,7 @@ function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
     vis[start.index] = true;
     dis[start.index] = 0;
     next[start.index] = 1;
+    // O(n + e) e the number of edges
     while(!q.isEmpty()){
         let cur : Point = q.dequeue() as Point;
         console.log(cur)
@@ -291,6 +293,7 @@ function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
         // means that the node on the graph doesnt have a close same pokemon
         // manually search for one
         if(!foundOne){
+            // O(nlogn)
             let distance : Pair = sortDistance(indexes, cur.lat, cur.lon);
             // loop through until they meet conditions
             // O(n)

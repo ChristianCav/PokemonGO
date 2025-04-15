@@ -80,11 +80,13 @@ document.addEventListener("DOMContentLoaded", (): void => {
 });
 
 // returns the closest same pokemon as the pokemon given
-// uses haversine formula with the given pokemon as the comparision
-// and sorts it by it
-// therefore the closest pokemon is the second one in the return
-
-function grindingCandies(mon : string, lat : number, lon : number){
+// mon --> name of the pokemon
+// lat --> latitude
+// lon --> longitude
+// numTargets --> how many pokemon you want
+// returns a path of pairs (key is index in sorted.names_english), val is cost
+// (first is first node) last is last node
+function grindingCandies(mon : string, lat : number, lon : number, numTargets : number){
 
   // search for all the indexes of the mon
   let indexArray : number[] = search<string>(sortedData.names_english.key, mon);
@@ -94,13 +96,13 @@ function grindingCandies(mon : string, lat : number, lon : number){
   let closest : number = sortedData.names_english.val[shortestDistance.val[0]] // index of closest pokemon, (of sorted)
 
   let startPokemon : Point = new Point(data.longitude[closest], data.latitude[closest], shortestDistance.val[0], 0);
-  let path : Pair[] = bfs(startPokemon, 2, indexArray);
+  let path : Pair[] = bfs(startPokemon, numTargets, indexArray);
   path.push(new Pair(shortestDistance.val[0], 0));
 
   return path.reverse();
 
 }
-grindingCandies("Eevee", data.latitude[0], data.longitude[0])
+//grindingCandies("Eevee", data.latitude[0], data.longitude[0])
 // test stuff
 /*
 console.log(pokedex.names_english[data.pokemonId[0]-1])
