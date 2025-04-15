@@ -270,3 +270,40 @@ function toggleInstructions(): void {
     instructions.classList.toggle("hidden");
   }
 }
+
+// gets the shortest distance to a Pokémon from the point user inputted
+function shortestCandyDist(): void {
+  fetch("../DO_NOT_TOUCH/pokedex.json")
+    .then((response) => response.json())
+    .then((pokedex) => {
+      pokedexData = pokedex;
+      // ensures pokedex is actually loaded before trying to load the data
+      return fetch("../DO_NOT_TOUCH/data.json");
+    })
+    .then((response) => response.json())
+    .then((locationData) => {
+      pokemonLocationData = locationData;
+
+      const pokemonCoords: PokemonCoordWithDistance[] = [];
+
+      for (let i = 0; i < pokemonLocationData.pokemonId.length; i++) {
+        const lat = pokemonLocationData.latitude[i];
+        const lng = pokemonLocationData.longitude[i];
+        const id = pokemonLocationData.pokemonId[i];
+        const index = pokedexData.ids.indexOf(id);
+        if (index === -1) continue;
+
+        const species = pokedexData.names_english[index];
+        const distance = map.distance([lat, lng], map.getCenter());
+
+        pokemonCoords.push(new PokemonCoordWithDistance(lat, lng, distance, species));
+      }
+
+      pokemonCoords.sort((a, b) => a.distance - b.distance);
+
+      console.log("Sorted Pokémon by Distance:", pokemonCoords);
+    })
+    .catch((error) => {
+      console.error("Error loading data:", error);
+    });
+}

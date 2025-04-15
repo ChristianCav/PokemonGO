@@ -65,6 +65,7 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
     let endTime = performance.now();
     let newPair : Pair = new Pair("Binary Search", endTime-startTime)
     performanceTime.enqueue(newPair);
+    showPerformanceTime()
     return foundIndexes;
 } 
 
@@ -125,6 +126,9 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
         j++;
     }
     const endTime = performance.now();
+    let newPair : Pair = new Pair("Binary Search Between", endTime-startTime)
+    performanceTime.enqueue(newPair);
+    showPerformanceTime()
     console.log(`Binary search runtime: ${endTime-startTime} ms`);
     return foundIndexes;
 }
@@ -159,7 +163,7 @@ function sort<T>(arr : T[], compare : any) : number[]{
     let endTime = performance.now();
     let newPair : Pair = new Pair("Merge Sort", endTime-startTime)
     performanceTime.enqueue(newPair);
-
+    showPerformanceTime()
     return indexes;
 }
 
@@ -286,6 +290,7 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
     let endTime = performance.now();
     let newPair : Pair = new Pair("Filter Coords", endTime-startTime)
     performanceTime.enqueue(newPair);
+    showPerformanceTime()
     return validIndexes;
 }
 
@@ -311,6 +316,7 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     const endTime = performance.now();
     let newPair : Pair = new Pair("Filter Time", endTime-startTime)
     performanceTime.enqueue(newPair);
+    showPerformanceTime()
     return validIndexes;
 }
 
@@ -328,6 +334,8 @@ function filterType(pokemon: string[], type: string){
         }
     }
     const endTime = performance.now();
-    console.log(`Filter time runtime: ${endTime-startTime}`);
+    let newPair : Pair = new Pair("Filter Type", endTime-startTime)
+    performanceTime.enqueue(newPair);
+    showPerformanceTime()
     return validIndexes;
 }

@@ -1,25 +1,61 @@
 //Don't remove this
 
-const data : Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
+const data: Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
 
 const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
 
-let sortedData : AllSorted = new AllSorted;
+let sortedData: AllSorted = new AllSorted();
 
 // handles performance times
 // since functions are one by one we can use a queue to hold the performance times in order
 // input the function performance times and the name of the function
-let performanceTime : Queue<Pair> = new Queue();
+let performanceTime: Queue<Pair> = new Queue();
 // presort all sorted data
-function presort(){
-  sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
-  sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, ascending), data.pokemonId), sort(data.pokemonId, ascending));
-  sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
-  sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
-  sortedData.ids = new Pair(indexToData(sort(findPokedex(pokedex.ids), ascending), findPokedex(pokedex.ids)), sort(findPokedex(pokedex.ids), ascending));
-  sortedData.names_english = new Pair(indexToData(sort(findPokedex(pokedex.names_english), compareAlphaAscending), findPokedex(pokedex.names_english)), sort(findPokedex(pokedex.names_english), compareAlphaAscending));
-  sortedData.heights = new Pair(indexToData(sort(findPokedex(pokedex.heights), ascending), findPokedex(pokedex.heights)), sort(findPokedex(pokedex.heights), ascending));
-  sortedData.weights = new Pair(indexToData(sort(findPokedex(pokedex.weights), ascending), findPokedex(pokedex.weights)), sort(findPokedex(pokedex.weights), ascending));
+function presort() {
+  sortedData.localTime = new Pair(
+    indexToData(sort(data.localTime, ascending), data.localTime),
+    sort(data.localTime, ascending)
+  );
+  sortedData.pokemonId = new Pair(
+    indexToData(sort(data.pokemonId, ascending), data.pokemonId),
+    sort(data.pokemonId, ascending)
+  );
+  sortedData.longitude = new Pair(
+    indexToData(sort(data.longitude, ascending), data.longitude),
+    sort(data.longitude, ascending)
+  );
+  sortedData.latitude = new Pair(
+    indexToData(sort(data.latitude, ascending), data.latitude),
+    sort(data.latitude, ascending)
+  );
+  sortedData.ids = new Pair(
+    indexToData(
+      sort(findPokedex(pokedex.ids), ascending),
+      findPokedex(pokedex.ids)
+    ),
+    sort(findPokedex(pokedex.ids), ascending)
+  );
+  sortedData.names_english = new Pair(
+    indexToData(
+      sort(findPokedex(pokedex.names_english), compareAlphaAscending),
+      findPokedex(pokedex.names_english)
+    ),
+    sort(findPokedex(pokedex.names_english), compareAlphaAscending)
+  );
+  sortedData.heights = new Pair(
+    indexToData(
+      sort(findPokedex(pokedex.heights), ascending),
+      findPokedex(pokedex.heights)
+    ),
+    sort(findPokedex(pokedex.heights), ascending)
+  );
+  sortedData.weights = new Pair(
+    indexToData(
+      sort(findPokedex(pokedex.weights), ascending),
+      findPokedex(pokedex.weights)
+    ),
+    sort(findPokedex(pokedex.weights), ascending)
+  );
 }
 
 // function to take the data and create new elements for each pokemon
@@ -53,7 +89,9 @@ function displayPokedex(pokedex: Pokedex): void {
     // creates the card for the pokemon
     const cardHTML = `
       <div class="pokemonCard">
-        <img src="${pokedex.images[i]}" alt="${pokedex.names_english[i]}" class="pokemonImage">
+        <img src="${pokedex.images[i]}" alt="${
+      pokedex.names_english[i]
+    }" class="pokemonImage">
         <div class="pokemonInfo">
           <h3 class="pokemonName">${pokedex.names_english[i]}</h3>
           <p class="pokemonNumber">${formatNumber(pokedex.ids[i])}</p>
@@ -77,26 +115,65 @@ document.addEventListener("DOMContentLoaded", (): void => {
 // and sorts it by it
 // therefore the closest pokemon is the second one in the return
 
-function grindingCandies(mon : string, lat : number, lon : number){
-
+function grindingCandies(mon: string, lat: number, lon: number) {
   // search for all the indexes of the mon
-  let indexArray : number[] = search<string>(sortedData.names_english.key, mon);
+  let indexArray: number[] = search<string>(sortedData.names_english.key, mon);
   // create new array to sort after
-  let distanceArray : number[] = new Array(indexArray.length);
+  let distanceArray: number[] = new Array(indexArray.length);
 
   // create an array of haversine lengths compared to the starting node
   // O(n)
-  for(let i=0; i<indexArray.length; i++){
-    let index : number = indexArray[i];
+  for (let i = 0; i < indexArray.length; i++) {
+    let index: number = indexArray[i];
 
     // put the distance into array
-    distanceArray[i] = haversine(lat, lon, data.latitude[index], data.longitude[index]);
+    distanceArray[i] = haversine(
+      lat,
+      lon,
+      data.latitude[index],
+      data.longitude[index]
+    );
   }
 
   // if the length is less 2 there is only 1 of that pokemon
-  return (distanceArray.length <= 1) ? -1 : distanceArray[0]; // index 1 because 0 must be itself
-
+  return distanceArray.length <= 1 ? -1 : distanceArray[0]; // index 1 because 0 must be itself
 }
+
+// Function to show the performance times
+function showPerformanceTime(): void {
+  // get the container to display the performance times
+  const container = document.querySelector(".runtimeDisplay") as HTMLElement;
+
+
+  const count = performanceTime.size(); // get size of the performance time queue
+  const maxElements = 100; // max num of elements to show, if goes over, will remove the oldest ones
+  const tempList: Pair[] = []; // temp list to hold the performance times
+
+  // Loop through the queue and add the items to the temp list
+  for (let i = 0; i < count; i++) {
+    const item = performanceTime.dequeue();
+    if (item) {
+      tempList.push(item);
+      performanceTime.enqueue(item);
+    }
+  }
+
+  // take the last 100 elements from the temp list
+  // if list is shorter than 100, take all of them
+  const start = Math.max(0, tempList.length - maxElements);
+  const latestEntries = tempList.slice(start);
+
+  // Clear existing content
+  container.innerHTML = "";
+
+  // Log each performance time in a new line, ordered most recent to oldest
+  for (let i = latestEntries.length - 1; i >= 0; i--) {
+    const pair = latestEntries[i];
+    container.innerHTML += `${pair.key}: ${pair.val.toFixed(3)}ms<br>`;
+  }
+}
+
+
 // test stuff
 /*
 console.log(pokedex.names_english[data.pokemonId[21]-1])
