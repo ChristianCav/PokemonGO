@@ -102,26 +102,11 @@ function hieuristicAscending(arg1 : Point, arg2 : Point){
         return -1;
     }
 }
-function compareRange(time: number, min: number, max: number){
-    if(time>= min && time<= max){
-=======
-// is inputted a point data structure
-function hieuristicAscending(arg1 : Point, arg2 : Point){
-    if(arg1.cost === arg2.cost){
-        return 0;
-    }
-    else if(arg1.cost < arg2.cost){
-        return 1;
-    }
-    else {
-        return -1;
-    }
-}
+
 
 // compare function for range (min-max)
 function compareRange(val: number, min: number, max: number): number{
     if(val>= min && val<= max){
->>>>>>> Stashed changes
         return 0;
     }
     else if(val<min){
@@ -156,9 +141,4 @@ function compareAlphaAscendingSearch(target: string, mid:string): number{
         }
     }
     return 0;
-<<<<<<< Updated upstream
 }
-=======
-}
-
->>>>>>> Stashed changes
