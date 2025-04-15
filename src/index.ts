@@ -124,69 +124,179 @@ function displayPokedex(pokedex: Pokedex): void {
 // function to handle the search button click
 function handleSearchClick(): void {
   const input = document.getElementById("searchBar") as HTMLInputElement | null;
+  
+  // Get advanced search parameters
+  const minLongitude = (document.getElementById("minLongitude") as HTMLInputElement)?.value;
+  const maxLongitude = (document.getElementById("maxLongitude") as HTMLInputElement)?.value;
+  const minLatitude = (document.getElementById("minLatitude") as HTMLInputElement)?.value;
+  const maxLatitude = (document.getElementById("maxLatitude") as HTMLInputElement)?.value;
+  const timeStart = (document.getElementById("timePickerStart") as HTMLInputElement)?.value;
+  const timeEnd = (document.getElementById("timePickerEnd") as HTMLInputElement)?.value;
+  
   // if no input, return
   if (!input) return;
 
   // get val of input and trim
   const query = input.value.trim();
-  // if no query, alert user to enter a pokemon name
-  if (query.length === 0) {
-    alert("Please enter a Pokémon name before searching.");
+  
+  // Build the URL with search parameters
+  let searchParams = new URLSearchParams();
+  searchParams.set("page", "1"); // Always start with page 1 for a new search
+  
+  // Add name search if provided
+  if (query.length > 0) {
+    searchParams.set("search", query);
+  }
+  
+  // Add coordinate filters if both min and max are provided
+  if (minLongitude && maxLongitude) {
+    searchParams.set("minLong", minLongitude);
+    searchParams.set("maxLong", maxLongitude);
+  } else if (minLongitude || maxLongitude) {
+    alert("Please enter both minimum and maximum longitude values.");
     return;
   }
+  
+  if (minLatitude && maxLatitude) {
+    searchParams.set("minLat", minLatitude);
+    searchParams.set("maxLat", maxLatitude);
+  } else if (minLatitude || maxLatitude) {
+    alert("Please enter both minimum and maximum latitude values.");
+    return;
+  }
+  
+  // Add time filters if both start and end are provided
+  if (timeStart && timeEnd) {
+    // Convert HTML time input (HH:MM) to the format needed (HH:MM:00 AM/PM)
+    searchParams.set("timeStart", formatTimeForFilter(timeStart));
+    searchParams.set("timeEnd", formatTimeForFilter(timeEnd));
+  } else if (timeStart || timeEnd) {
+    alert("Please enter both start and end time values.");
+    return;
+  }
+  
+  // If no search parameters were provided, prompt user
+  if (searchParams.toString() === "page=1") {
+    alert("Please enter a search term or use the advanced search options.");
+    return;
+  }
+  
+  // Redirect to the table page with all the parameters
+  window.location.href = `../html/table.html?${searchParams.toString()}`;
+}
 
-  // redirect to the table page with the search query as a parameter
-  // always start with page 1 for a new search
-  const encodedQuery = encodeURIComponent(query);
-  window.location.href = `../html/table.html?search=${encodedQuery}&page=1`;
+// Helper function to convert HTML time input format (HH:MM) to the format needed by filterTimes (HH:MM:00 AM/PM)
+function formatTimeForFilter(timeString: string): string {
+  // HTML time input returns time in 24-hour format (HH:MM)
+  const [hours, minutes] = timeString.split(':').map(Number);
+  
+  // Convert to 12-hour format with AM/PM
+  let period = "AM";
+  let hours12 = hours;
+  
+  if (hours >= 12) {
+    period = "PM";
+    hours12 = hours === 12 ? 12 : hours - 12;
+  }
+  
+  if (hours12 === 0) {
+    hours12 = 12; // Convert 0 to 12 for 12 AM
+  }
+  
+  // Format as "H:MM:00 AM/PM"
+  return `${hours12}:${minutes.toString().padStart(2, '0')}:00 ${period}`;
 }
 
 // populates the table with the search results
 function populateTableWithResults(data: Data): void {
   // identify the current page
   const path: string = window.location.pathname;
-  // get the last part of the path after the /
   const page: string = path.substring(path.lastIndexOf("/") + 1);
-  // check if we are on the table page
   if (page !== "table.html") return;
 
   const tableBody = document.getElementById("pokemonTableBody");
-  // if no table body, return
   if (!tableBody) return;
 
-  // get the search query from the URL
+  // Get all parameters from the URL
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery: string | null = urlParams.get("search");
   const currentPage: number = parseInt(urlParams.get("page") || "1", 10);
-
-  // if no search query, return and display error on tabel container
-  if (!searchQuery) {
-    tableBody.innerHTML =
-      "<tr><td colspan='5'>No search query found.</td></tr>";
-    return;
+  
+  // Get coordinate filters
+  const minLong: number | null = urlParams.get("minLong") ? parseFloat(urlParams.get("minLong")!) : null;
+  const maxLong: number | null = urlParams.get("maxLong") ? parseFloat(urlParams.get("maxLong")!) : null;
+  const minLat: number | null = urlParams.get("minLat") ? parseFloat(urlParams.get("minLat")!) : null;
+  const maxLat: number | null = urlParams.get("maxLat") ? parseFloat(urlParams.get("maxLat")!) : null;
+  
+  // Get time filters
+  const timeStart: string | null = urlParams.get("timeStart");
+  const timeEnd: string | null = urlParams.get("timeEnd");
+  
+  // Initialize results array
+  let searchResults: number[] = [];
+  
+  // Apply name search if provided
+  if (searchQuery && searchQuery.length > 0) {
+    searchResults = search(sortedData.names_english.key, searchQuery);
+  } else {
+    // If no name search, use all pokemon
+    searchResults = Array.from({ length: sortedData.names_english.key.length }, (_, i) => i);
   }
-
-  // run the search function to get the indexes of the pokemon that match the search query
-  const searchResults: number[] = search(sortedData.names_english.key, searchQuery);
-
-  // if no results, display error on table container
+  
+  // Apply coordinate filters if provided
+  if (minLong !== null && maxLong !== null && minLat !== null && maxLat !== null) {
+    // Get Pokemon within the coordinate range
+    const coordResults = filterCoords(
+      sortedData.latitude.key, 
+      data.longitude, 
+      minLat, 
+      minLong, 
+      maxLat, 
+      maxLong, 
+      sortedData.latitude.val
+    );
+    
+    // If we have valid coordinates, filter search results
+    if (coordResults[0] !== -1) {
+      // We need to match indexes between the name search and coordinate filter
+      searchResults = searchResults.filter(index => {
+        const originalIndex = sortedData.names_english.val[index];
+        return coordResults.includes(originalIndex);
+      });
+    }
+  }
+  
+  // Apply time filters if provided
+  if (timeStart && timeEnd) {
+    // Filter results by time range
+    const timeResults = filterTimes(sortedData.localTime.key, timeStart, timeEnd);
+    
+    if (timeResults[0] !== -1) {
+      // Filter results to only include Pokémon that match the time range
+      searchResults = searchResults.filter(index => {
+        const originalIndex = sortedData.names_english.val[index];
+        return timeResults.includes(originalIndex);
+      });
+    }
+  }
+  
+  // Display no results message if appropriate
   if (searchResults.length === 0 || searchResults[0] === -1) {
-    tableBody.innerHTML =
-      "<tr><td colspan='5'>No Pokémon found matching your search.</td></tr>";
+    tableBody.innerHTML = "<tr><td colspan='5'>No Pokémon found matching your search criteria.</td></tr>";
     return;
   }
 
   tableBody.innerHTML = "";
 
-  // calculate the starting and ending indices for the current page
+  // Calculate the starting and ending indices for the current page
   const resultsPerPage: number = 100;
   const startIndex: number = (currentPage - 1) * resultsPerPage;
   const endIndex: number = Math.min(startIndex + resultsPerPage, searchResults.length);
 
-  // get the slice of results for the current page
+  // Get the slice of results for the current page
   const currentPageResults: number[] = searchResults.slice(startIndex, endIndex);
 
-  // display the current page information
+  // Display the current page information
   const pageInfo = document.getElementById("pageInfo");
   if (pageInfo) {
     pageInfo.textContent = `Page ${currentPage} of ${Math.ceil(
@@ -194,12 +304,18 @@ function populateTableWithResults(data: Data): void {
     )}`;
   }
 
-  // show or hide pagination buttons
+  // Show or hide pagination buttons
   updatePaginationButtons(
     currentPage,
     searchResults.length,
     resultsPerPage,
-    searchQuery
+    searchQuery,
+    minLong,
+    maxLong,
+    minLat,
+    maxLat,
+    timeStart,
+    timeEnd
   );
 
   // Populate the table with the current page results
@@ -231,18 +347,19 @@ function populateTableWithResults(data: Data): void {
   }
 }
 
-// update the pagination buttons
-// @param currentPage holds the current page
-// @param totalResults holds the total num of results
-// @param resultsPerPage holds the num of results per page
-// @param searchQuery holds the search query
+// Update this function to include all search parameters
 function updatePaginationButtons(
   currentPage: number,
   totalResults: number,
   resultsPerPage: number,
-  searchQuery: string
+  searchQuery: string | null,
+  minLong: number | null,
+  maxLong: number | null,
+  minLat: number | null,
+  maxLat: number | null,
+  timeStart: string | null,
+  timeEnd: string | null
 ): void {
-  // calcs the total number of pages needed
   const totalPages: number = Math.ceil(totalResults / resultsPerPage);
 
   const paginationContainer = document.getElementById("paginationContainer");
@@ -250,35 +367,63 @@ function updatePaginationButtons(
 
   paginationContainer.innerHTML = "";
 
-  // previous page button
+  // Previous page button
   if (currentPage > 1) {
     const prevButton = document.createElement("button");
     prevButton.textContent = "<";
     prevButton.classList.add("pagination-button");
-    // when the user clicks, navigates to the previous page
     prevButton.addEventListener("click", () => {
-      navigateToPage(currentPage - 1, searchQuery);
+      navigateToPage(currentPage - 1, searchQuery, minLong, maxLong, minLat, maxLat, timeStart, timeEnd);
     });
     paginationContainer.appendChild(prevButton);
   }
 
-  // next page button
+  // Next page button
   if (currentPage < totalPages) {
     const nextButton = document.createElement("button");
     nextButton.textContent = ">";
     nextButton.classList.add("pagination-button");
-    // when the user clicks, navigates to the next page
     nextButton.addEventListener("click", () => {
-      navigateToPage(currentPage + 1, searchQuery);
+      navigateToPage(currentPage + 1, searchQuery, minLong, maxLong, minLat, maxLat, timeStart, timeEnd);
     });
     paginationContainer.appendChild(nextButton);
   }
 }
 
-// function to navigate to the specified page
-function navigateToPage(pageNumber: number, searchQuery: string): void {
-  const encodedQuery = encodeURIComponent(searchQuery);
-  window.location.href = `../html/table.html?search=${encodedQuery}&page=${pageNumber}`;
+// Update this function to include all search parameters
+function navigateToPage(
+  pageNumber: number, 
+  searchQuery: string | null,
+  minLong: number | null,
+  maxLong: number | null,
+  minLat: number | null,
+  maxLat: number | null,
+  timeStart: string | null,
+  timeEnd: string | null
+): void {
+  let searchParams = new URLSearchParams();
+  searchParams.set("page", pageNumber.toString());
+  
+  if (searchQuery) {
+    searchParams.set("search", searchQuery);
+  }
+  
+  if (minLong !== null && maxLong !== null) {
+    searchParams.set("minLong", minLong.toString());
+    searchParams.set("maxLong", maxLong.toString());
+  }
+  
+  if (minLat !== null && maxLat !== null) {
+    searchParams.set("minLat", minLat.toString());
+    searchParams.set("maxLat", maxLat.toString());
+  }
+  
+  if (timeStart && timeEnd) {
+    searchParams.set("timeStart", timeStart);
+    searchParams.set("timeEnd", timeEnd);
+  }
+  
+  window.location.href = `../html/table.html?${searchParams.toString()}`;
 }
 
 // call function when the DOM is loaded (webpage starts)
