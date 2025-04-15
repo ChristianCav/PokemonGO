@@ -5,10 +5,16 @@ const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; //
 
 const graph: Array<Array<Item>> = loadJSON("../DO_NOT_TOUCH/graph.json"); // closest 500 nodes adjacency list
 
+// handles performance times
+// since functions are one by one we can use a queue to hold the performance times in order
+// input the function performance times and the name of the function
+let performanceTime: Queue<Triplet> = new Queue(showPerformanceTime);
+
 let sortedData: AllSorted = new AllSorted();
 let data2: Pokedex = new Pokedex();
 
 let currentRuntimeIndex: number = 0; // Keeps track of which runtime we’re displaying
+
 
 // handles performance times
 // since functions are one by one we can use a queue to hold the performance times in order
@@ -66,6 +72,8 @@ function presort() {
   );
 }
 
+// precompile the data to make it easier to access
+// only take name and types as thats all we need for the table
 function precompile(): void {
   data2.names_english = findPokedex(pokedex.names_english);
   data2.types = findPokedex(pokedex.types);
@@ -90,12 +98,12 @@ function displayPokedex(pokedex: Pokedex): void {
   // loop through the first 149 pokemon
   for (let i = 0; i < 149; i++) {
     // creates a string of the types of the pokemon
-    let types = "";
-    const typeList = pokedex.types[i];
+    let types: string = "";
+    const typeList: string = pokedex.types[i];
 
     // splits the types by the comma and adds them to the string
     for (let t = 0; t < typeList.length; t++) {
-      const type = typeList[t];
+      const type: string = typeList[t];
       types += `<span class="type ${type.toLowerCase()}">${type}</span>`;
     }
 
@@ -118,42 +126,55 @@ function displayPokedex(pokedex: Pokedex): void {
   }
 }
 
+// function to handle the search button click
 function handleSearchClick(): void {
   const input = document.getElementById("searchBar") as HTMLInputElement | null;
+  // if no input, return
   if (!input) return;
 
+  // get val of input and trim
   const query = input.value.trim();
+  // if no query, alert user to enter a pokemon name
   if (query.length === 0) {
     alert("Please enter a Pokémon name before searching.");
     return;
   }
 
-  // Redirect to the table page with the search query as a parameter
-  // Always start with page 1 for a new search
+  // redirect to the table page with the search query as a parameter
+  // always start with page 1 for a new search
   const encodedQuery = encodeURIComponent(query);
   window.location.href = `../html/table.html?search=${encodedQuery}&page=1`;
 }
 
+// populates the table with the search results
 function populateTableWithResults(data: Data): void {
-  const path = window.location.pathname;
-  const page = path.substring(path.lastIndexOf("/") + 1);
+  // identify the current page
+  const path: string = window.location.pathname;
+  // get the last part of the path after the /
+  const page: string = path.substring(path.lastIndexOf("/") + 1);
+  // check if we are on the table page
   if (page !== "table.html") return;
 
   const tableBody = document.getElementById("pokemonTableBody");
+  // if no table body, return
   if (!tableBody) return;
 
+  // get the search query from the URL
   const urlParams = new URLSearchParams(window.location.search);
-  const searchQuery = urlParams.get("search");
-  const currentPage = parseInt(urlParams.get("page") || "1", 10);
+  const searchQuery: string | null = urlParams.get("search");
+  const currentPage: number = parseInt(urlParams.get("page") || "1", 10);
 
+  // if no search query, return and display error on tabel container
   if (!searchQuery) {
     tableBody.innerHTML =
       "<tr><td colspan='5'>No search query found.</td></tr>";
     return;
   }
 
-  const searchResults = search(sortedData.names_english.key, searchQuery);
+  // run the search function to get the indexes of the pokemon that match the search query
+  const searchResults: number[] = search(sortedData.names_english.key, searchQuery);
 
+  // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
     tableBody.innerHTML =
       "<tr><td colspan='5'>No Pokémon found matching your search.</td></tr>";
@@ -162,15 +183,15 @@ function populateTableWithResults(data: Data): void {
 
   tableBody.innerHTML = "";
 
-  // Calculate the starting and ending indices for the current page
-  const resultsPerPage = 100;
-  const startIndex = (currentPage - 1) * resultsPerPage;
-  const endIndex = Math.min(startIndex + resultsPerPage, searchResults.length);
+  // calculate the starting and ending indices for the current page
+  const resultsPerPage: number = 100;
+  const startIndex: number = (currentPage - 1) * resultsPerPage;
+  const endIndex: number = Math.min(startIndex + resultsPerPage, searchResults.length);
 
-  // Get the slice of results for the current page
-  const currentPageResults = searchResults.slice(startIndex, endIndex);
+  // get the slice of results for the current page
+  const currentPageResults: number[] = searchResults.slice(startIndex, endIndex);
 
-  // Display the current page information
+  // display the current page information
   const pageInfo = document.getElementById("pageInfo");
   if (pageInfo) {
     pageInfo.textContent = `Page ${currentPage} of ${Math.ceil(
@@ -178,7 +199,7 @@ function populateTableWithResults(data: Data): void {
     )}`;
   }
 
-  // Show or hide pagination buttons
+  // show or hide pagination buttons
   updatePaginationButtons(
     currentPage,
     searchResults.length,
@@ -188,17 +209,19 @@ function populateTableWithResults(data: Data): void {
 
   // Populate the table with the current page results
   for (const i of currentPageResults) {
-    const name = sortedData.names_english.key[i];
-    const originalIndex = sortedData.names_english.val[i];
+    const name: any = sortedData.names_english.key[i];
+    const originalIndex: any = sortedData.names_english.val[i];
 
-    const type = Array.isArray(data2.types[originalIndex])
+    const type: string = Array.isArray(data2.types[originalIndex])
       ? data2.types[originalIndex].join("/")
       : data2.types[originalIndex];
 
-    const longitude = data.longitude[originalIndex]?.toFixed(4) ?? "-";
-    const latitude = data.latitude[originalIndex]?.toFixed(4) ?? "-";
-    const time = data.localTime[originalIndex] ?? "-";
+    // if returns null then display a placeholder
+    const longitude: string = data.longitude[originalIndex]?.toFixed(4) ?? "-";
+    const latitude: string = data.latitude[originalIndex]?.toFixed(4) ?? "-";
+    const time: string = data.localTime[originalIndex] ?? "-";
 
+    // creates a new row for the table 
     const rowHTML = `
       <tr>
         <td>${name}</td>
@@ -213,35 +236,43 @@ function populateTableWithResults(data: Data): void {
   }
 }
 
+// update the pagination buttons
+// @param currentPage holds the current page
+// @param totalResults holds the total num of results
+// @param resultsPerPage holds the num of results per page
+// @param searchQuery holds the search query
 function updatePaginationButtons(
   currentPage: number,
   totalResults: number,
   resultsPerPage: number,
   searchQuery: string
 ): void {
-  const totalPages = Math.ceil(totalResults / resultsPerPage);
+  // calcs the total number of pages needed
+  const totalPages: number = Math.ceil(totalResults / resultsPerPage);
 
   const paginationContainer = document.getElementById("paginationContainer");
   if (!paginationContainer) return;
 
   paginationContainer.innerHTML = "";
 
-  // Previous page button
+  // previous page button
   if (currentPage > 1) {
     const prevButton = document.createElement("button");
-    prevButton.textContent = "Previous Page";
+    prevButton.textContent = "<";
     prevButton.classList.add("pagination-button");
+    // when the user clicks, navigates to the previous page
     prevButton.addEventListener("click", () => {
       navigateToPage(currentPage - 1, searchQuery);
     });
     paginationContainer.appendChild(prevButton);
   }
 
-  // Next page button
+  // next page button
   if (currentPage < totalPages) {
     const nextButton = document.createElement("button");
-    nextButton.textContent = "Next Page";
+    nextButton.textContent = ">";
     nextButton.classList.add("pagination-button");
+    // when the user clicks, navigates to the next page
     nextButton.addEventListener("click", () => {
       navigateToPage(currentPage + 1, searchQuery);
     });
@@ -249,6 +280,7 @@ function updatePaginationButtons(
   }
 }
 
+// function to navigate to the specified page
 function navigateToPage(pageNumber: number, searchQuery: string): void {
   const encodedQuery = encodeURIComponent(searchQuery);
   window.location.href = `../html/table.html?search=${encodedQuery}&page=${pageNumber}`;
@@ -257,17 +289,20 @@ function navigateToPage(pageNumber: number, searchQuery: string): void {
 // call function when the DOM is loaded (webpage starts)
 // ! Only runs when in index.html file
 document.addEventListener("DOMContentLoaded", () => {
-  const path = window.location.pathname;
-  const page = path.substring(path.lastIndexOf("/") + 1);
+  const path: string = window.location.pathname;
+  const page: string = path.substring(path.lastIndexOf("/") + 1);
 
-  presort();
-  precompile();
-
+  // check if page is index or blank page (home)
   if (page === "index.html" || page === "") {
+    presort();
+    precompile();
     displayPokedex(pokedex);
   }
 
+  // checks of page is table
   if (page === "table.html") {
+    presort();
+    precompile();
     populateTableWithResults(data);
   }
 });
@@ -281,7 +316,7 @@ function grindingCandies(
   lat: number,
   lon: number,
   numTargets: number
-) {
+): Pair[] {
   // search for all the indexes of the mon
   let indexArray: number[] = search<string>(sortedData.names_english.key, mon);
 
@@ -308,42 +343,40 @@ function showPerformanceTime(): void {
   const container = document.querySelector(".runtimeDisplay") as HTMLElement;
 
   // Clear existing content
-  container.innerHTML = "";
+  //container.innerHTML = ""; // only clear if you click next
 
-  const count = performanceTime.size(); // get size of the performance time queue
-  const maxElements = 100; // max num of elements to show, if goes over, will remove the oldest ones
-  const tempList: Pair[] = []; // temp list to hold the performance times
+  // if there is currently content do not run
+  // call this function when next is clicked
 
-  // Loop through the queue and add the items to the temp list
-  for (let i = 0; i < count; i++) {
-    const item = performanceTime.dequeue();
-    if (item) {
-      tempList.push(item);
-      performanceTime.enqueue(item);
-    }
-  }
+  if(container.innerHTML != "") return; // return if its not empty
 
-  // take the last 100 elements from the temp list
-  // if list is shorter than 100, take all of them
-  const start = Math.max(0, tempList.length - maxElements);
-  const latestEntries = tempList.slice(start);
+  // ENSURE EACH FUNCTION THAT CALLS NON MAIN FUNCTIONS ARE A MAIN FUNCTION
+  for(let i=0; i<performanceTime.size(); i++){ // loop through the q
+    // THIS IS WHERE YOU ADD THE INFO
+    let cur : Triplet = performanceTime.dequeue() as Triplet;
+    // key is the name of the function
+    // val is the time it takes 
+    // main does not matter
+    // add the info the to performance time display
 
-  // Log each performance time in a new line, ordered most recent to oldest
-  for (let i = latestEntries.length - 1; i >= 0; i--) {
-    const pair = latestEntries[i];
-    container.innerHTML += `${pair.key}: ${pair.val.toFixed(3)}ms<br>`;
-  }
+    // stop when we hit main
+    if(cur.main === true) break;
+
+  } 
+
 }
 
 // function to hide and unhide the advanced search bar
 function toggleAdvancedSearch(): void {
   const advSearchBar = document.querySelector(".advSearchBar");
 
+  // if advSearchBar is found then toggle the hidden class
   if (advSearchBar) {
     advSearchBar.classList.toggle("hidden");
   }
 }
-// grindingCandies("Eevee", data.latitude[0], data.longitude[0])
+
+// grindingCandies("Eevee", data.latitude[0], data.longitude[0]);
 // test stuff
 
 // console.log(filterTimes(sortedData.localTime.key, "12:00:10 AM", "2:46:40 AM"));

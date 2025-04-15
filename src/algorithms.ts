@@ -63,9 +63,8 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
         j++;
     }
     let endTime = performance.now();
-    let newPair : Pair = new Pair("Binary Search", endTime-startTime)
-    performanceTime.enqueue(newPair);
-    showPerformanceTime()
+    let time : Triplet = new Triplet("Binary Search", endTime-startTime, false)
+    performanceTime.enqueue(time);
     return foundIndexes;
 } 
 
@@ -130,10 +129,8 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
         j++;
     }
     const endTime = performance.now();
-    let newPair : Pair = new Pair("Binary Search Between", endTime-startTime)
-    performanceTime.enqueue(newPair);
-    showPerformanceTime()
-    console.log(`Binary search runtime: ${endTime-startTime} ms`);
+    let time : Triplet = new Triplet("Binary Search Between", endTime-startTime, false)
+    performanceTime.enqueue(time);
     return foundIndexes;
 }
 
@@ -165,9 +162,8 @@ function sort<T>(arr : T[], compare : any) : number[]{
     ]
 
     let endTime = performance.now();
-    let newPair : Pair = new Pair("Merge Sort", endTime-startTime)
-    performanceTime.enqueue(newPair);
-    showPerformanceTime()
+    let time : Triplet = new Triplet("Merge Sort", endTime-startTime, false)
+    performanceTime.enqueue(time);
     return indexes;
 }
 
@@ -257,6 +253,7 @@ function merge<T>(arr: PairNode<T>[], leftStart : number, rightEnd : number, sor
 // arr --> array of indexes representing the same pokemon
 // returns path containing the index, and cost
 function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
+    let startTime = performance.now();
     // variable to check if the pokemon we got is actually the same
     let pokemon : string = sortedData.names_english.key[indexes[0]];
     let q : Queue<Point> = new Queue();
@@ -319,7 +316,11 @@ function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
     }
     // return the original path
     let path : Pair[] = reconstructPath(prev, dis, lowest.key)
+    let endTime = performance.now();
+    let time : Triplet = new Triplet("BFS Modified", endTime-startTime, false)
+    performanceTime.enqueue(time);
     return path;
+    
 }
 
 function twa(start : Point, target : number, arr : any[]){
@@ -375,9 +376,8 @@ function filterCoords(latitudes: number[], unsortedLongitudes: number[], lat1: n
         }
     }
     let endTime = performance.now();
-    let newPair : Pair = new Pair("Filter Coords", endTime-startTime)
-    performanceTime.enqueue(newPair);
-    showPerformanceTime()
+    let time : Triplet = new Triplet("Filter Coords", endTime-startTime, false)
+    performanceTime.enqueue(time);
     return validIndexes;
 }
 
@@ -400,9 +400,8 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     // O(log n)
     validIndexes = binarySearchBetween(minTime, maxTime, times, compareRange, toSeconds)
     const endTime = performance.now();
-    let newPair : Pair = new Pair("Filter Time", endTime-startTime)
-    performanceTime.enqueue(newPair);
-    showPerformanceTime()
+    let time : Triplet = new Triplet("Filter Time", endTime-startTime, false)
+    performanceTime.enqueue(time);
     return validIndexes;
 }
 
@@ -419,9 +418,8 @@ function filterType(pokemonIDs: number[], type: string){
         }
     }
     const endTime = performance.now();
-    let newPair : Pair = new Pair("Filter Type", endTime-startTime)
-    performanceTime.enqueue(newPair);
-    showPerformanceTime()
+    let time : Triplet = new Triplet("Filter Type", endTime-startTime, false)
+    performanceTime.enqueue(time);
     return validIndexes;
 }
 
