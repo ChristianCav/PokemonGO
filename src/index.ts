@@ -13,8 +13,6 @@ let performanceTime: Queue<Triplet> = new Queue();
 let sortedData: AllSorted = new AllSorted();
 let data2: Pokedex = new Pokedex();
 
-let currentRuntimeIndex: number = 0; // Keeps track of which runtime we’re displaying
-
 // presort all sorted data
 
 // KEY is ACTUAL VALUE
@@ -304,37 +302,11 @@ document.addEventListener("DOMContentLoaded", () => {
     precompile();
     populateTableWithResults(data);
   }
+  if (page === "map.html") {
+    presort();
+    precompile();
+  }
 });
-
-// returns the closest same pokemon as the pokemon given
-// uses haversine formula with the given pokemon as the comparision
-// and sorts it by it
-// therefore the closest pokemon is the second one in the return
-function grindingCandies(
-  mon: string,
-  lat: number,
-  lon: number,
-  numTargets: number
-): Pair[] {
-  // search for all the indexes of the mon
-  let indexArray: number[] = search<string>(sortedData.names_english.key, mon);
-
-  // find shortest same pokemon (because we could be starting not on one)
-  let shortestDistance: Pair = sortDistance(indexArray, lat, lon);
-  let closest: number = sortedData.names_english.val[shortestDistance.val[0]]; // index of closest pokemon, (of sorted)
-
-  let startPokemon: Point = new Point(
-    data.longitude[closest],
-    data.latitude[closest],
-    shortestDistance.val[0],
-    0
-  );
-  let path: Pair[] = bfs(startPokemon, numTargets, indexArray);
-  path.push(new Pair(shortestDistance.val[0], 0));
-  
-  console.log(path);
-  return path.reverse();
-}
 
 // Function to show the performance times
 function showPerformanceTime(): void {

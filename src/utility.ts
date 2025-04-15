@@ -87,16 +87,16 @@ function search<T>(arr : T[], val : string | number) : number[]{
 // arr --> indexes of originals
 // starting lat & lon
 // O(n) to compute distance + Sorting O(nlogn)
-function sortDistance(arr : number[], lat1 : number, lon1 : number) : Pair{
+function sortDistance(arr : number[], lat : number, lon : number) : Pair{
     let startTime = performance.now();
     let distance : number[] = new Array(arr.length);
     for(let i=0; i<distance.length; i++){
         let index : number = arr[i];
         // get distances from start node
-        distance[i] = haversine(lat1, lon1, data.latitude[index], data.longitude[index]);
+        distance[i] = haversine(lat, lon, data.latitude[index], data.longitude[index]);
     }
     // O(nlogn) sort
-    let distanceIndexes = sort<number>(distance, ascending);
+    let distanceIndexes : number[] = sort<number>(distance, ascending);
     // O(n) conversion
     distance = indexToData(distanceIndexes, distance);
     // convert back to original indexes
@@ -111,8 +111,8 @@ function sortDistance(arr : number[], lat1 : number, lon1 : number) : Pair{
 // reconstruct path
 // loop backward since prev has previous nodes
 // returns indexes of the path
-function reconstructPath(prev : number[], cost : number[], endIndex : number) : Pair[]{
-    let path : Pair[] = new Array<Pair>;
+function reconstructPath(prev : number[], cost : number[], endIndex : number) : List<Pair>{
+    let path : List<Pair> = new List<Pair>;
     let cur : number = endIndex;
     while (cur !== -1) {
         let newPair : Pair = new Pair(cur, cost[cur]);

@@ -296,81 +296,35 @@ function shortestCandyDist(): void {
 
   map.setView([latInput, lngInput], map.getZoom());
 
-  const popupContent = `
-    <div style="text-align:center;">
-      <h3>Your Here</h3>
-      <p>Location: ${latInput.toFixed(4)}, ${lngInput.toFixed(4)}</p>
-    </div>
-  `;
+  let pathCoordinates : List<PokemonCoordWithDistance> = new List<PokemonCoordWithDistance>();
+  // input mon, starting latitude, longitude, numtargets
+  let path : List<Pair> = grindingCandies(candiesPokemon, latInput, lngInput, numOfPokemons);
+  for(let i=path.size()-1; i>=0; i--){
+    let cur : Pair = path.get(i) as Pair
+    let distance : number = cur.val;
+    console.log(cur)
+    pathCoordinates.push(new PokemonCoordWithDistance(data.latitude[cur.key], data.longitude[cur.key], distance, candiesPokemon));
+  }
+  let latlng : [number, number][] = []
+  for (let i = 0; i < pathCoordinates.size(); i++) {
+    let pokemon : PokemonCoordWithDistance = pathCoordinates.get(i) as PokemonCoordWithDistance;
+    let lat : number = pokemon.lat;
+    let lng : number = pokemon.lng;
+    let distance : number = pokemon.distance;
+    let species : string = pokemon.species;
 
-  const pathCoordinates: [number, number][] = [];
-
-  L.marker([latInput, lngInput]).addTo(map).bindPopup(popupContent);
-
-  fetch("../DO_NOT_TOUCH/pokedex.json")
-    .then((response) => response.json())
-    .then((pokedex) => {
-      pokedexData = pokedex;
-      // ensures pokedex is actually loaded before trying to load the data
-      return fetch("../DO_NOT_TOUCH/data.json");
-    })
-    .then((response) => response.json())
-    .then((locationData) => {
-      pokemonLocationData = locationData;
-
-      pokemonCoords = [];
-
-      for (let i = 0; i < pokemonLocationData.pokemonId.length; i++) {
-        const lat = pokemonLocationData.latitude[i];
-        const lng = pokemonLocationData.longitude[i];
-        const id = pokemonLocationData.pokemonId[i];
-        const index = pokedexData.ids.indexOf(id);
-        if (index === -1) continue;
-
-        const species = pokedexData.names_english[index];
-        const distance = map.distance([lat, lng], map.getCenter());
-
-        pokemonCoords.push(
-          new PokemonCoordWithDistance(lat, lng, distance, species)
-        );
-      }
-
-      pokemonCoords.sort((a, b) => a.distance - b.distance);
-
-      // WORK BELOW
-
-      const filteredPokemon = pokemonCoords.filter((pokemon) =>
-        pokemon.species.toLowerCase().includes(candiesPokemon)
-      );
-
-      const closestPokemons = filteredPokemon.slice(0, numOfPokemons);
-
-      pathCoordinates.push([latInput, lngInput]);
-
-      for (let i = 0; i < closestPokemons.length; i++) {
-        const pokemon = closestPokemons[i];
-        const lat = pokemon.lat;
-        const lng = pokemon.lng;
-        const distance = pokemon.distance;
-        const species = pokemon.species;
-
-        const popupContent = `
-          <div style="text-align:center;">
-            <h3>${species}</h3>
-            <p>Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
-            <p>Distance: ${distance.toFixed(2)} meters</p>
-          </div>
-        `;
-
-        L.marker([lat, lng]).addTo(map).bindPopup(popupContent);
-        pathCoordinates.push([lat, lng]);
-      }
-      // Create a polyline connecting the closest Pokémon
-      L.polyline(pathCoordinates, { color: 'blue', weight: 3 }).addTo(map);
-    })
-    .catch((error) => {
-      console.error("Error loading data:", error);
-    });
+    const popupContent = `
+      <div style="text-align:center;">
+        <h3>${species}</h3>
+        <p>Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
+        <p>Distance: ${distance.toFixed(2)} meters</p>
+      </div>
+    `;
+    latlng.push([lat, lng]) // dont know if this data structure is nessasary for the polyline // must use push
+    L.marker([lat, lng]).addTo(map).bindPopup(popupContent);
+  }
+  // Create a polyline connecting the closest Pokémon
+  L.polyline(latlng, { color: 'blue', weight: 3 }).addTo(map);
 }
 
 

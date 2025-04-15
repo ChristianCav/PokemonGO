@@ -254,6 +254,37 @@ function merge<T>(arr: PairNode<T>[], leftStart : number, rightEnd : number, sor
 
     return arr;
 }
+// returns the closest same pokemon as the pokemon given
+// uses haversine formula with the given pokemon as the comparision
+// and sorts it by it
+// therefore the closest pokemon is the second one in the return
+function grindingCandies(
+    mon: string,
+    lat: number,
+    lon: number,
+    numTargets: number
+  ): List<Pair> {
+    // search for all the indexes of the mon
+    let indexArray: number[] = search<string>(sortedData.names_english.key, mon);
+    indexArray = indexConverter(indexArray, sortedData.names_english.val)
+    // find shortest same pokemon (because we could be starting not on one)
+    let shortestDistance: Pair = sortDistance(indexArray, lat, lon);
+    let closest: number = shortestDistance.val[0]; // index of closest pokemon, (of sorted)
+    // check if its same
+    if(data.latitude[closest] === lat && data.longitude[closest] === lon){
+        closest = shortestDistance.val[1];
+    }
+
+    let startPokemon: Point = new Point(
+      data.longitude[closest],
+      data.latitude[closest],
+      closest,
+      0
+    );
+    // returns indexes as sorted name english, and distance
+    let path: List<Pair> = bfs(startPokemon, numTargets, indexArray);
+    return path;
+  }
 
 // bonus 3
 // find the distance between two points
@@ -262,10 +293,10 @@ function merge<T>(arr: PairNode<T>[], leftStart : number, rightEnd : number, sor
 // target --> number of pokemon to travel
 // arr --> array of indexes representing the same pokemon
 // returns path containing the index, and cost
-function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
+function bfs(start : Point, target : number, indexes : number[]) : List<Pair>{
     let startTime = performance.now();
     // variable to check if the pokemon we got is actually the same
-    let pokemon : string = sortedData.names_english.key[indexes[0]];
+    let pokemon : string = data2.names_english[indexes[0]];
     let q : Queue<Point> = new Queue();
     // both use data.pokemonId.length because easier to access using indexes
     let vis : Array<boolean> = new Array(data.pokemonId.length).fill(false); // visited array
@@ -281,7 +312,7 @@ function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
     next[start.index] = 1;
     while(!q.isEmpty()){
         let cur : Point = q.dequeue() as Point;
-        console.log(cur)
+        console.log(next[cur.index])
         if(next[cur.index] === target && lowest.key === -1 || dis[cur.index] < lowest.val){
             lowest.val = dis[cur.index];
             lowest.key = cur.index;
@@ -292,7 +323,7 @@ function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
         for(let i=0; i<graph[cur.index].length; i++){
             let nxt : number = graph[cur.index][i].id;
             // check if its same pokemon and its not visited
-            if(pokemon === pokedex.names_english[data.pokemonId[nxt]] && !vis[nxt]){
+            if(pokemon === data2.names_english[i] && !vis[nxt]){
                 foundOne = true;
                 vis[nxt] = true;
                 dis[nxt] = dis[cur.index] + graph[cur.index][i].distance;
@@ -309,26 +340,30 @@ function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
             let distance : Pair = sortDistance(indexes, cur.lat, cur.lon);
             // loop through until they meet conditions
             // O(n)
+            let amountofadds : number = 0;
             for(let i=0; i<distance.key.length; i++){
                 let nxt : number = distance.val[i];
                 // should be guarenteed same pokemon
-                if(pokemon === sortedData.names_english.key[nxt] && !vis[nxt]){
+                if(pokemon === data2.names_english[nxt] && !vis[nxt]){
                     vis[nxt] = true;
                     dis[nxt] = dis[cur.index] + distance.key[i];
                     next[nxt] = next[cur.index] + 1;
                     prev[nxt] = cur.index;
+                    amountofadds++;
                     // if we havent reached enough push next one
                     if(next[nxt] <= target) q.enqueue(new Point(data.longitude[nxt], data.latitude[nxt], nxt, dis[nxt]));
-                    break; // only 1 max because we don't want to make it extremely slow
+                    if(amountofadds === 2) break // only "k" max because we don't want to make it extremely slow
+                    // doenst work 100% because there can be cases where a overall path is greater
                 }
             }
         }
     }
     // return the original path
-    let path : Pair[] = reconstructPath(prev, dis, lowest.key)
+    let path : List<Pair> = reconstructPath(prev, dis, lowest.key)
     let endTime = performance.now();
     let time : Triplet = new Triplet("BFS Modified", endTime-startTime, false)
     performanceTime.enqueue(time);
+    console.log(path)
     return path;
     
 }
