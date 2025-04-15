@@ -27,6 +27,11 @@ function presort(){
   sortedData.heights = new Pair(indexToData(sort(findPokedex(pokedex.heights), ascending), findPokedex(pokedex.heights)), sort(findPokedex(pokedex.heights), ascending));
   sortedData.weights = new Pair(indexToData(sort(findPokedex(pokedex.weights), ascending), findPokedex(pokedex.weights)), sort(findPokedex(pokedex.weights), ascending));
 }
+
+// premake other information
+function precompile(){
+
+}
 presort();
 
 // function to take the data and create new elements for each pokemon
@@ -86,7 +91,7 @@ document.addEventListener("DOMContentLoaded", (): void => {
 // numTargets --> how many pokemon you want
 // returns a path of pairs (key is index in sorted.names_english), val is cost
 // (first is first node) last is last node
-function grindingCandies(mon : string, lat : number, lon : number, numTargets : number){
+function grindingCandies(mon : string, lat : number, lon : number, numTargets : number) : Pair[]{
 
   // search for all the indexes of the mon
   let indexArray : number[] = search<string>(sortedData.names_english.key, mon);
@@ -102,6 +107,27 @@ function grindingCandies(mon : string, lat : number, lon : number, numTargets : 
   return path.reverse();
 
 }
+
+// bonus 5
+// will give one of the shortest paths not guarenteed shortest because we do not have all the edges of the nodes only 5 of the closest
+// (cannot have more because it takes up too much memory)
+// couple assumptions
+// assume the first pokemon we start at has an optimal path
+// assume that majority of the pokemon required are all around us
+/*
+function catchThemAll(lon : number, lat : number){
+  let close : Pair = sortDistance(sortedData.names_english.val, lat, lon) // first go to closest pokemon
+  let filteredDistance : number[] = filterDistance(5000, lat, lon) // majority of all pokemon near start
+  let start : Point = new Point(data.longitude[close.val[1]], data.latitude[close.val[1]], close.val[1])
+  console.log(start)
+  console.log(prim(start, filteredDistance));
+  
+}
+
+
+console.log(filterDistance(5000, data.latitude[2], data.longitude[2]))
+catchThemAll(data.longitude[2], data.latitude[2]);
+
 //grindingCandies("Eevee", data.latitude[0], data.longitude[0])
 // test stuff
 /*

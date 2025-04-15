@@ -68,7 +68,7 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
     return foundIndexes;
 } 
 
-function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, type?: string){
+function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, type?: string) : number[]{
     const startTime = performance.now();
     // left bound
     let left: number = 0;
@@ -317,25 +317,74 @@ function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
     return path;
 }
 
-function twa(start : Point, target : number, arr : any[]){
-    let q : PriorityQueue<Point> = new PriorityQueue<Point>(hieuristicAscending);
-    q.enqueue(start); // queue the starting node
-    let prev : Array<number | null> = new Array(arr.length).fill(null);
-    let vis : Array<boolean> = new Array(arr.length).fill(false); // visited array
-    let gScore : Array<number> = new Array(arr.length).fill(-1); // cost from start
-    let hScore : Array<number> = new Array(arr.length).fill(0); // cost using hieuristic (cost from target)
-    let fScore : Array<number> = new Array(arr.length).fill(-1); // total estimated cost f() = g() + h()
-
-    // intialize first point
-    gScore[start.index] = 0;
-
-    while(!q.isEmpty()){
-        // grab front of q
-        let current : Point = q.dequeue() as Point;
-        
-    }
+// bonus 5
+// prim algorithm with a second check
+// check if node visited, and if the pokemon is already added
+function dijkstras(start: Point) {
 
 }
+/*
+// bonus 5
+// /*
+function prim(start : Point, indexes : number[]): number {
+    // use length of original arrays so i can just index them with indexes
+    let vis : boolean[] = new Array(data.pokemonId.length).fill(false);
+    let dis : number[] = new Array(data.pokemonId.length).fill(Infinity);
+    let hie : number[] = createDis(indexes, start.lat, start.lon); // create a hieuristic to the starting node
+    let hieuristic : number[] = new Array(data.pokemonId.length).fill(Infinity);
+    // move to the parrallel array
+    for(let i=0; i<indexes.length; i++){
+        hieuristic[indexes[i]] = hie[i];
+    }
+    // sort the indexes so we can binary search them
+    indexes = indexToData(sort(indexes, ascending), indexes);
+    // hieurisitic + distance will be the comparision
+    // this ensures that the minimum costs are closer to the starting poisiton
+    // of course this doesn't guarentee closest but will help
+    let total : number[] = new Array(data.pokemonId.length).fill(Infinity);
+    let unique : boolean[] = new Array(150).fill(false);
+    let prev : number[] = new Array(data.pokemonId.length).fill(-1); // holds prev node
+    dis[start.index] = 0;
+    total[start.index] = 0;
+    unique[data.pokemonId[start.index]] = true;
+
+    let q : PriorityQueue<Pair> = new PriorityQueue(mstCompare);
+    q.enqueue(new Pair(start.index, 0));
+
+    while(!q.isEmpty()){
+        let cur : Pair = q.dequeue() as Pair;
+        if(vis[cur.key] && unique[data.pokemonId[cur.key]]) continue; // skip dupes
+        vis[cur.key] = true;
+        unique[data.pokemonId[cur.key]] = true;
+        // loop through graph
+        for(let i=0; i<graph[cur.key].length; i++){
+            let nxt : Item = graph[cur.key][i];
+            console.log(nxt)
+            // make sure the node taken is in the range of indexes so we can ensure it is close to the start    
+            if(search(indexes, nxt.id)[0] === -1) continue; // guareenteed to only be one because indexes are unique
+            if(!vis[nxt.id] && !unique[data.pokemonId[nxt.id]] && nxt.distance + hieuristic[nxt.id] < total[nxt.id]){
+                dis[nxt.id] = nxt.distance;
+                total[nxt.id] = nxt.distance + hieuristic[nxt.id];
+                prev[nxt.id] = cur.key;
+                q.enqueue(new Pair(nxt.id, total[nxt.id]));
+            }
+        }
+        // add a 6th unique pokemon otherwise the pokemon will just stick in one place because if 5 are bunched up they will never leave
+    }
+
+    let totalCost : number = 0;
+    for(let i=0; i<total.length; i++){
+        if(total[i] !== Infinity){
+            totalCost += total[i];
+        }
+    }
+    console.log(vis)
+    console.log(unique)
+
+    return totalCost;
+}
+*/
+
 
 // returns indexes of data with (lat, lng) between two inputted points
 // O(n), since it loops through all inputted data points once
@@ -412,4 +461,17 @@ function filterType(pokemon: string[], type: string){
     const endTime = performance.now();
     console.log(`Filter time runtime: ${endTime-startTime}`);
     return validIndexes;
+}
+
+// returns indexes of pokemon within the given range
+// O(n) + O(nlogn) for sorting + O(logn) searching
+// range --> haversine distance
+// coords
+function filterDistance(range : number, lat : number, lon : number) : Array<number>{
+    let distances : Pair = sortDistance(sortedData.names_english.val, lat, lon);
+    let filterDistance : number[] = binarySearchBetween(0, range, distances.key, compareNum);
+
+    let newFilter = indexConverter(filterDistance, distances.val);
+
+    return newFilter;
 }

@@ -413,6 +413,6 @@ class Point {
         public lon : number,
         public lat : number,
         public index : number,
-        public cost : number,
+        public cost? : number,
     ){}
 }

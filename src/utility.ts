@@ -89,12 +89,9 @@ function search<T>(arr : T[], val : string | number) : number[]{
 // O(n) to compute distance + Sorting O(nlogn)
 function sortDistance(arr : number[], lat1 : number, lon1 : number) : Pair{
     let startTime = performance.now();
-    let distance : number[] = new Array(arr.length);
-    for(let i=0; i<distance.length; i++){
-        let index : number = arr[i];
-        // get distances from start node
-        distance[i] = haversine(lat1, lon1, data.latitude[index], data.longitude[index]);
-    }
+
+    let distance : number[] = createDis(arr, lat1, lon1);
+    
     // O(nlogn) sort
     let distanceIndexes = sort<number>(distance, ascending);
     // O(n) conversion
@@ -173,4 +170,18 @@ function haversine(lat1 : number, lon1 : number, lat2 : number, lon2 : number) :
 
     return distance;
 
+}
+
+// create distance array
+// returns distances (values)
+// given array of indexes
+// O(n)
+function createDis(arr : number[], lat : number, lon : number) : number[]{
+    let distance : number[] = new Array(arr.length);
+    for(let i=0; i<distance.length; i++){
+        let index : number = arr[i];
+        // get distances from start node
+        distance[i] = haversine(lat, lon, data.latitude[index], data.longitude[index]);
+    }
+    return distance;
 }
