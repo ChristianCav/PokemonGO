@@ -166,6 +166,7 @@ function handleSearchClick(): void {
 
 // call function when the DOM is loaded (webpage starts)
 // ! Only runs when in index.html file
+// ! Only runs when in index.html file
 document.addEventListener("DOMContentLoaded", (): void => {
   const path = window.location.pathname;
   const page = path.substring(path.lastIndexOf("/") + 1);
