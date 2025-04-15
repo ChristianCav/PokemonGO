@@ -221,14 +221,15 @@
 .pagination-button {
   padding: 8px 16px;
   margin: 0 5px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
+  background-color: black;
+  color: white;
   border-radius: 4px;
   cursor: pointer;
+  box-shadow: none;
 }
 
 .pagination-button:hover {
-  background-color: #e0e0e0;
+  background-color: rgb(39, 39, 39);
 }
 
 #pageInfo {
