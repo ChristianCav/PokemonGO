@@ -107,8 +107,10 @@
         <div>
           <label for="coordFilter">Shortest Distance Between 2 of the Same Pokemon</label>
           <div class="coordFilter">
+            <input type="string" id="candiesPokemon" placeholder="Pokemon Name..." autocomplete="off" />
             <input type="number" id="candiesLatitudeFilter" placeholder="Latitude..." step="0.0001" min="-90" max="90" />
             <input type="number" id="candiesLongitudeFilter" placeholder="Longitude..." step="0.0001" min="-180" max="180" />
+            <input type="number" id="numberOfPokemons" placeholder="How Many Pokemons..." step="1" min="1" />
           </div>
           <button type="button" onclick="shortestCandyDist()">Gotta Grind Em' Candies!</button>
         </div>
