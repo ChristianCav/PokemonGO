@@ -7,7 +7,7 @@ interface Data {
     latitude: number[];
 }  
 
-interface Pokedex{
+class Pokedex{
     ids: number[];
     names_english: string[];
     types: string[];

@@ -1,76 +1,32 @@
 //Don't remove this
-
 const data: Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete this line. All your data is here.
 
 const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
 
 let sortedData: AllSorted = new AllSorted();
+let data2: Pokedex = new Pokedex();
 
 // handles performance times
 // since functions are one by one we can use a queue to hold the performance times in order
 // input the function performance times and the name of the function
 let performanceTime: Queue<Pair> = new Queue();
-// presort all sorted data
-function presort() {
-  sortedData.localTime = new Pair(
-    indexToData(sort(data.localTime, ascending), data.localTime),
-    sort(data.localTime, ascending)
-  );
-  sortedData.pokemonId = new Pair(
-    indexToData(sort(data.pokemonId, ascending), data.pokemonId),
-    sort(data.pokemonId, ascending)
-  );
-  sortedData.longitude = new Pair(
-    indexToData(sort(data.longitude, ascending), data.longitude),
-    sort(data.longitude, ascending)
-  );
-  sortedData.latitude = new Pair(
-    indexToData(sort(data.latitude, ascending), data.latitude),
-    sort(data.latitude, ascending)
-  );
-  sortedData.ids = new Pair(
-    indexToData(
-      sort(findPokedex(pokedex.ids), ascending),
-      findPokedex(pokedex.ids)
-    ),
-    sort(findPokedex(pokedex.ids), ascending)
-  );
-  sortedData.names_english = new Pair(
-    indexToData(
-      sort(findPokedex(pokedex.names_english), compareAlphaAscending),
-      findPokedex(pokedex.names_english)
-    ),
-    sort(findPokedex(pokedex.names_english), compareAlphaAscending)
-  );
-  sortedData.heights = new Pair(
-    indexToData(
-      sort(findPokedex(pokedex.heights), ascending),
-      findPokedex(pokedex.heights)
-    ),
-    sort(findPokedex(pokedex.heights), ascending)
-  );
-  sortedData.weights = new Pair(
-    indexToData(
-      sort(findPokedex(pokedex.weights), ascending),
-      findPokedex(pokedex.weights)
-    ),
-    sort(findPokedex(pokedex.weights), ascending)
-  );
-}
-// // presort all sorted data
-// function presort(){
-//   sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
-//   sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, compareAlphaAscending), data.pokemonId), sort(data.pokemonId, compareAlphaAscending));
-//   sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
-//   sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
-//   sortedData.ids = new Pair(indexToData(sort(findPokedex(pokedex.ids), ascending), findPokedex(pokedex.ids)), sort(findPokedex(pokedex.ids), ascending));
-//   sortedData.names_english = new Pair(indexToData(sort(findPokedex(pokedex.names_english), ascending), findPokedex(pokedex.names_english)), sort(findPokedex(pokedex.names_english), compareAlphaAscending));
-//   sortedData.types = new Pair(indexToData(sort(findPokedex(pokedex.types), compareAlphaAscending), findPokedex(pokedex.types)), sort(findPokedex(pokedex.types), compareAlphaAscending));
-//   sortedData.heights = new Pair(indexToData(sort(findPokedex(pokedex.heights), ascending), findPokedex(pokedex.heights)), sort(findPokedex(pokedex.heights), ascending));
-//   sortedData.weights = new Pair(indexToData(sort(findPokedex(pokedex.weights), ascending), findPokedex(pokedex.weights)), sort(findPokedex(pokedex.weights), ascending));
-// }
 
-// presort();
+// presort all sorted data
+function presort(){
+  sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
+  sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, ascending), data.pokemonId), sort(data.pokemonId, ascending));
+  sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
+  sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
+  sortedData.ids = new Pair(indexToData(sort(findPokedex(pokedex.ids), ascending), findPokedex(pokedex.ids)), sort(findPokedex(pokedex.ids), ascending));
+  sortedData.names_english = new Pair(indexToData(sort(findPokedex(pokedex.names_english), compareAlphaAscending), findPokedex(pokedex.names_english)), sort(findPokedex(pokedex.names_english), compareAlphaAscending));
+  sortedData.heights = new Pair(indexToData(sort(findPokedex(pokedex.heights), ascending), findPokedex(pokedex.heights)), sort(findPokedex(pokedex.heights), ascending));
+  sortedData.weights = new Pair(indexToData(sort(findPokedex(pokedex.weights), ascending), findPokedex(pokedex.weights)), sort(findPokedex(pokedex.weights), ascending));
+}
+
+function precompile(): void{
+  data2.names_english = findPokedex(pokedex.names_english);
+  data2.types = findPokedex(pokedex.types);
+}
 
 // function to take the data and create new elements for each pokemon
 // @param takes the data from the json file
@@ -89,7 +45,7 @@ function displayPokedex(pokedex: Pokedex): void {
   }
 
   // loop through the first 149 pokemon
-  for (let i = 0; i < 151; i++) {
+  for (let i = 0; i < 149; i++) {
     // creates a string of the types of the pokemon
     let types = "";
     const typeList = pokedex.types[i];
@@ -119,104 +75,145 @@ function displayPokedex(pokedex: Pokedex): void {
   }
 }
 
-// function to hide and unhide the advanced search bar
-function toggleAdvancedSearch(): void {
-  const advSearchBar = document.querySelector(".advSearchBar");
-
-  if (advSearchBar) {
-    advSearchBar.classList.toggle("hidden");
-  }
-}
 
 function handleSearchClick(): void {
   const input = document.getElementById("searchBar") as HTMLInputElement | null;
-
   if (!input) return;
-
-  const query: string = input.value.toLowerCase().trim();
-
+  
+  const query = input.value.trim();
   if (query.length === 0) {
     alert("Please enter a Pokémon name before searching.");
     return;
   }
-
-  // Run the search
-  const searchResult = binarySearch(
-    query,
-    sortedData.names_english.val,
-    compareAlphaDescending
-  );
-
-  if (searchResult[0] === -1) {
-    alert("Pokémon not found.");
-    return;
-  }
-
-  const resultData = indexToData(searchResult, sortedData.names_english.val);
-
-  // Save the data to sessionStorage
-  sessionStorage.setItem("searchResults", JSON.stringify(resultData));
-
-  // Redirect to the table page
-  window.location.href = `../html/table.html`;
+  
+  // Redirect to the table page with the search query as a parameter
+  // Always start with page 1 for a new search
+  const encodedQuery = encodeURIComponent(query);
+  window.location.href = `../html/table.html?search=${encodedQuery}&page=1`;
 }
 
-// const encodedQuery = encodeURIComponent(query);
-// window.location.href = `../html/table.html?search=${encodedQuery}`;
+function populateTableWithResults(data: Data): void {
+  const path = window.location.pathname;
+  const page = path.substring(path.lastIndexOf("/") + 1);
+  if (page !== "table.html") return;
+  
+  const tableBody = document.getElementById("pokemonTableBody");
+  if (!tableBody) return;
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchQuery = urlParams.get("search");
+  const currentPage = parseInt(urlParams.get("page") || "1", 10);
+  
+  if (!searchQuery) {
+    tableBody.innerHTML = "<tr><td colspan='5'>No search query found.</td></tr>";
+    return;
+  }
+  
+  const searchResults = search(sortedData.names_english.key, searchQuery);
+  
+  if (searchResults.length === 0 || searchResults[0] === -1) {
+    tableBody.innerHTML = "<tr><td colspan='5'>No Pokémon found matching your search.</td></tr>";
+    return;
+  }
+  
+  tableBody.innerHTML = "";
+  
+  // Calculate the starting and ending indices for the current page
+  const resultsPerPage = 100;
+  const startIndex = (currentPage - 1) * resultsPerPage;
+  const endIndex = Math.min(startIndex + resultsPerPage, searchResults.length);
+  
+  // Get the slice of results for the current page
+  const currentPageResults = searchResults.slice(startIndex, endIndex);
+  
+  // Display the current page information
+  const pageInfo = document.getElementById("pageInfo");
+  if (pageInfo) {
+    pageInfo.textContent = `Page ${currentPage} of ${Math.ceil(searchResults.length / resultsPerPage)}`;
+  }
+  
+  // Show or hide pagination buttons
+  updatePaginationButtons(currentPage, searchResults.length, resultsPerPage, searchQuery);
+  
+  // Populate the table with the current page results
+  for (const i of currentPageResults) {
+    const name = sortedData.names_english.key[i];
+    const originalIndex = sortedData.names_english.val[i];
+    
+    const type = Array.isArray(data2.types[originalIndex])
+      ? data2.types[originalIndex].join("/")
+      : data2.types[originalIndex];
+    
+    const longitude = data.longitude[originalIndex]?.toFixed(4) ?? "-";
+    const latitude = data.latitude[originalIndex]?.toFixed(4) ?? "-";
+    const time = data.localTime[originalIndex] ?? "-";
+    
+    const rowHTML = `
+      <tr>
+        <td>${name}</td>
+        <td>${type}</td>
+        <td>${longitude}</td>
+        <td>${latitude}</td>
+        <td>${time}</td>
+      </tr>
+    `;
+    
+    tableBody.innerHTML += rowHTML;
+  }
+}
+
+function updatePaginationButtons(currentPage: number, totalResults: number, resultsPerPage: number, searchQuery: string): void {
+  const totalPages = Math.ceil(totalResults / resultsPerPage);
+  
+  const paginationContainer = document.getElementById("paginationContainer");
+  if (!paginationContainer) return;
+  
+  paginationContainer.innerHTML = "";
+  
+  // Previous page button
+  if (currentPage > 1) {
+    const prevButton = document.createElement("button");
+    prevButton.textContent = "Previous Page";
+    prevButton.classList.add("pagination-button");
+    prevButton.addEventListener("click", () => {
+      navigateToPage(currentPage - 1, searchQuery);
+    });
+    paginationContainer.appendChild(prevButton);
+  }
+  
+  // Next page button
+  if (currentPage < totalPages) {
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Next Page";
+    nextButton.classList.add("pagination-button");
+    nextButton.addEventListener("click", () => {
+      navigateToPage(currentPage + 1, searchQuery);
+    });
+    paginationContainer.appendChild(nextButton);
+  }
+}
+
+function navigateToPage(pageNumber: number, searchQuery: string): void {
+  const encodedQuery = encodeURIComponent(searchQuery);
+  window.location.href = `../html/table.html?search=${encodedQuery}&page=${pageNumber}`;
+}
 
 // call function when the DOM is loaded (webpage starts)
 // ! Only runs when in index.html file
 // ! Only runs when in index.html file
-document.addEventListener("DOMContentLoaded", (): void => {
+document.addEventListener("DOMContentLoaded", () => {
   const path = window.location.pathname;
   const page = path.substring(path.lastIndexOf("/") + 1);
+
+  presort();
+  precompile();
 
   if (page === "index.html" || page === "") {
     displayPokedex(pokedex);
   }
 
   if (page === "table.html") {
-    const tableBody = document.getElementById("pokemonTableBody");
-
-    if (!tableBody) return;
-
-    const rawData = sessionStorage.getItem("searchResults");
-
-    if (!rawData) {
-      tableBody.innerHTML =
-        "<tr><td colspan='5'>No search results found.</td></tr>";
-      return;
-    }
-
-    const dataArray = JSON.parse(rawData);
-
-    tableBody.innerHTML = "";
-
-    for (const data of dataArray) {
-      const row = document.createElement("tr");
-
-      // Create each cell
-      const nameCell = document.createElement("td");
-      nameCell.textContent = data.name;
-
-      const typeCell = document.createElement("td");
-      typeCell.textContent = Array.isArray(data.type)
-        ? data.type.join("/")
-        : data.type;
-
-      const longitudeCell = document.createElement("td");
-      longitudeCell.textContent = data.longitude?.toFixed(4) ?? "-";
-
-      const latitudeCell = document.createElement("td");
-      latitudeCell.textContent = data.latitude?.toFixed(4) ?? "-";
-
-      const timeCell = document.createElement("td");
-      timeCell.textContent = data.time ?? "-";
-
-      // Append cells to row
-      row.append(nameCell, typeCell, longitudeCell, latitudeCell, timeCell);
-      tableBody.appendChild(row);
-    }
+    populateTableWithResults(data);
   }
 });
 
@@ -248,6 +245,14 @@ function grindingCandies(mon: string, lat: number, lon: number) {
   return distanceArray.length <= 1 ? -1 : distanceArray[0]; // index 1 because 0 must be itself
 }
 
+// function to hide and unhide the advanced search bar
+function toggleAdvancedSearch(): void {
+  const advSearchBar = document.querySelector(".advSearchBar");
+
+  if (advSearchBar) {
+    advSearchBar.classList.toggle("hidden");
+  }
+}
 // test stuff
 /*
 console.log(pokedex.names_english[data.pokemonId[21]-1])

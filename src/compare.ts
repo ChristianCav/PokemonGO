@@ -2,7 +2,7 @@
 
 function compareAlphaAscending(target: string, mid:string): number{
     const len = Math.min(target.length,mid.length);
-    let a = target.toLowerCase()
+    let a = target.toLowerCase();
     let b = mid.toLowerCase();
     for(let i=0;i<len;i++){
         let aVal = a.charCodeAt(i);

@@ -88,14 +88,14 @@ function search<T>(arr : T[], val : string | number) : number[]{
 // must input the original data
 // just index the original sort indexes using current indexes
 // O(n)
-/*
+
 function indexConverter(indexes : number[], sortedData : number[]) : number[]{
     let newArray : Array<number> = new Array(indexes.length);
     for(let i=0; i<indexes.length; i++){
         newArray[i] = sortedData[indexes[i]];
     }
     return newArray;
-}*/
+}
 
 // returns the given array in ascending form
 // returns in indexed form
