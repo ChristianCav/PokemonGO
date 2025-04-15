@@ -5,16 +5,15 @@ const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; //
 
 const graph: Array<Array<Item>> = loadJSON("../DO_NOT_TOUCH/graph.json"); // closest 500 nodes adjacency list
 
+// handles performance times
+// since functions are one by one we can use a queue to hold the performance times in order
+// input the function performance times and the name of the function
+let performanceTime: Queue<Triplet> = new Queue();
+
 let sortedData: AllSorted = new AllSorted();
 let data2: Pokedex = new Pokedex();
 
 let currentRuntimeIndex: number = 0; // Keeps track of which runtime we’re displaying
-
-
-// handles performance times
-// since functions are one by one we can use a queue to hold the performance times in order
-// input the function performance times and the name of the function
-let performanceTime: Queue<Pair> = new Queue();
 
 // presort all sorted data
 
@@ -248,7 +247,12 @@ function populateTableWithResults(data: Data): void {
   }
 
   // run the search function to get the indexes of the pokemon that match the search query
-  const searchResults: number[] = search(sortedData.names_english.key, searchQuery);
+  let searchResults: number[] = filterName(searchQuery, sortedData.names_english.key);
+  let filterNames = indexToData(searchResults, sortedData.names_english.key);
+  console.log(filterNames);
+
+  console.log(searchResults)
+  
 
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
@@ -432,42 +436,47 @@ function grindingCandies(
   );
   let path: Pair[] = bfs(startPokemon, numTargets, indexArray);
   path.push(new Pair(shortestDistance.val[0], 0));
-
+  
   console.log(path);
   return path.reverse();
 }
 
 // Function to show the performance times
 function showPerformanceTime(): void {
-  // get the container to display the performance times
-  const container = document.querySelector(".runtimeDisplay") as HTMLElement;
-
-  // Clear existing content
-  container.innerHTML = "";
-
-  const count = performanceTime.size(); // get size of the performance time queue
-  const maxElements = 100; // max num of elements to show, if goes over, will remove the oldest ones
-  const tempList: Pair[] = []; // temp list to hold the performance times
-
-  // Loop through the queue and add the items to the temp list
-  for (let i = 0; i < count; i++) {
-    const item = performanceTime.dequeue();
-    if (item) {
-      tempList.push(item);
-      performanceTime.enqueue(item);
+  console.log(performanceTime)
+    const container = document.querySelector(".runtimeDisplay") as HTMLElement;
+    
+    // If queue is empty, show message and disable button
+    if (performanceTime.isEmpty()) {
+        container.innerHTML = "No more runtime data to display";
+        const button = document.getElementById("runtimeButton") as HTMLButtonElement;
+        button.disabled = true;
+        return;
     }
-  }
 
-  // take the last 100 elements from the temp list
-  // if list is shorter than 100, take all of them
-  const start = Math.max(0, tempList.length - maxElements);
-  const latestEntries = tempList.slice(start);
-
-  // Log each performance time in a new line, ordered most recent to oldest
-  for (let i = latestEntries.length - 1; i >= 0; i--) {
-    const pair = latestEntries[i];
-    container.innerHTML += `${pair.key}: ${pair.val.toFixed(3)}ms<br>`;
-  }
+    let output = "";
+    let firstIteration = true;
+    
+    // Process until we find a main function (after the first one)
+    while (!performanceTime.isEmpty()) {
+        const current = performanceTime.peek() as Triplet;
+        
+        // If we hit another main function after the first one, stop
+        if (!firstIteration && current.main) {
+            break;
+        }
+        
+        // Remove and process the item
+        const item = performanceTime.dequeue() as Triplet;
+        output += `Function: ${item.key} — Time: ${item.val.toFixed(2)} ms<br>`;
+        
+        // Mark that we've passed the first iteration
+        if (item.main) {
+            firstIteration = false;
+        }
+    }
+    
+    container.innerHTML = output;
 }
 
 // function to hide and unhide the advanced search bar

@@ -19,6 +19,9 @@ let activeCoordFilter: {
   toLng: null,
 };
 
+// pokemon coordinates closest to the user inputted coordinates
+let pokemonCoords: PokemonCoordWithDistance[] = [];
+
 // start the map at a default location
 var map = L.map("map").setView([20, 0], 3);
 
@@ -264,7 +267,9 @@ class PokemonCoordWithDistance {
 
 // function just to toggle visibility of instructions
 function toggleInstructions(): void {
-  const instructions = document.querySelector(".instructions") as HTMLElement | null;
+  const instructions = document.querySelector(
+    ".instructions"
+  ) as HTMLElement | null;
 
   if (instructions) {
     instructions.classList.toggle("hidden");
@@ -273,6 +278,35 @@ function toggleInstructions(): void {
 
 // gets the shortest distance to a Pokémon from the point user inputted
 function shortestCandyDist(): void {
+  const latInput: number = parseInt(
+    (document.getElementById("candiesLatitudeFilter") as HTMLInputElement).value
+  );
+  const lngInput: number = parseInt(
+    (document.getElementById("candiesLongitudeFilter") as HTMLInputElement)
+      .value
+  );
+  const candiesPokemon: string = (
+    document.getElementById("candiesPokemon") as HTMLInputElement
+  ).value
+    .trim()
+    .toLowerCase();
+  const numOfPokemons: number = parseInt(
+    (document.getElementById("numberOfPokemons") as HTMLInputElement).value
+  );
+
+  map.setView([latInput, lngInput], map.getZoom());
+
+  const popupContent = `
+    <div style="text-align:center;">
+      <h3>Your Here</h3>
+      <p>Location: ${latInput.toFixed(4)}, ${lngInput.toFixed(4)}</p>
+    </div>
+  `;
+
+  const pathCoordinates: [number, number][] = [];
+
+  L.marker([latInput, lngInput]).addTo(map).bindPopup(popupContent);
+
   fetch("../DO_NOT_TOUCH/pokedex.json")
     .then((response) => response.json())
     .then((pokedex) => {
@@ -284,7 +318,7 @@ function shortestCandyDist(): void {
     .then((locationData) => {
       pokemonLocationData = locationData;
 
-      const pokemonCoords: PokemonCoordWithDistance[] = [];
+      pokemonCoords = [];
 
       for (let i = 0; i < pokemonLocationData.pokemonId.length; i++) {
         const lat = pokemonLocationData.latitude[i];
@@ -296,14 +330,47 @@ function shortestCandyDist(): void {
         const species = pokedexData.names_english[index];
         const distance = map.distance([lat, lng], map.getCenter());
 
-        pokemonCoords.push(new PokemonCoordWithDistance(lat, lng, distance, species));
+        pokemonCoords.push(
+          new PokemonCoordWithDistance(lat, lng, distance, species)
+        );
       }
 
       pokemonCoords.sort((a, b) => a.distance - b.distance);
 
-      console.log("Sorted Pokémon by Distance:", pokemonCoords);
+      // WORK BELOW
+
+      const filteredPokemon = pokemonCoords.filter((pokemon) =>
+        pokemon.species.toLowerCase().includes(candiesPokemon)
+      );
+
+      const closestPokemons = filteredPokemon.slice(0, numOfPokemons);
+
+      pathCoordinates.push([latInput, lngInput]);
+
+      for (let i = 0; i < closestPokemons.length; i++) {
+        const pokemon = closestPokemons[i];
+        const lat = pokemon.lat;
+        const lng = pokemon.lng;
+        const distance = pokemon.distance;
+        const species = pokemon.species;
+
+        const popupContent = `
+          <div style="text-align:center;">
+            <h3>${species}</h3>
+            <p>Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
+            <p>Distance: ${distance.toFixed(2)} meters</p>
+          </div>
+        `;
+
+        L.marker([lat, lng]).addTo(map).bindPopup(popupContent);
+        pathCoordinates.push([lat, lng]);
+      }
+      // Create a polyline connecting the closest Pokémon
+      L.polyline(pathCoordinates, { color: 'blue', weight: 3 }).addTo(map);
     })
     .catch((error) => {
       console.error("Error loading data:", error);
     });
 }
+
+

@@ -15,6 +15,15 @@ class Item {
     distance : number;
 };
 
+// for the performance time
+class Triplet{
+    constructor(
+        public key : any,
+        public val : any,
+        public main : boolean,
+    ){}
+}
+
 // pair data struture
 // this one is similar to a map where it has a key and value
 class Pair{
@@ -43,10 +52,16 @@ class Queue<T>{
     private queueArray : List<T> = new List<T>;
     private numberOfElements : number = 0;
 
+    // special thing for the performance time
+    constructor(
+        public specialFn? : any
+    ){}
+
     //Add one element to the rear of the queue
     public enqueue(arg: T): void{
         this.queueArray.push(arg);
         this.numberOfElements++;
+        if(typeof this.specialFn === 'function') this.specialFn();
     }
     //Removes and returns the element at the front
     public dequeue(): T | null{
@@ -304,6 +319,10 @@ class List<T>{
         }
         this.data[this.numItems] = val;
         this.numItems++;
+    }
+
+    public getData() : T[]{
+        return this.data.slice(0, this.numItems);
     }
 }
 
