@@ -5,7 +5,6 @@
 // O(log n + k), k is the number of occurences of target
 // since, you halve the search area every time, is it log2n,
 // and then + O(k), since it loops k more times, to find all k other occurences of the target
-// Takes 2-6 ms to run on 99000 data, using performance.now()
 function binarySearch(target: number | string, data: any[], compareFn: any) : number[]{
     let startTime = performance.now();
     // left bound
@@ -68,7 +67,9 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
     return foundIndexes;
 } 
 
-function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, convert?: any){
+// Same as other binarySearch funtion, except it searches for elements within a range (max,min)
+// Also takes in a convert? function to convert string times, to time in numbers
+function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, convert?: any): number[]{
     const startTime = performance.now();
     // left bound
     let left: number = 0;
@@ -83,6 +84,7 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
     if(typeof compareFn !== 'function'){
         return [-1];
     }
+    // if no convert function was passed in, don't convert anything
     if(typeof convert !== 'function'){
         convert = nothing;
     }
@@ -91,7 +93,7 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
         let midIndex: number = Math.floor((left+right)/2);
         // store the return value of the compare function
         // O(1)
-        // if type is time, convert to seconds
+        // if type is time, convert to seconds, otherwise use nothing()
         let compareResult: number = compareFn(convert(data[midIndex]), min, max);
         // if the target was found at the midIndex, set the foundIndex to midIndex
         if(compareResult === 0){
@@ -130,6 +132,8 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
     }
     const endTime = performance.now();
     console.log(`Binary search runtime: ${endTime-startTime} ms`);
+    let newPair : Pair = new Pair("Binary Search", endTime-startTime)
+    performanceTime.enqueue(newPair);
     return foundIndexes;
 }
 
@@ -260,8 +264,9 @@ function aStar(start : Point, target : number, data : number[]){
 }
 
 // returns indexes of data with (lat, lng) between two inputted points
-// O(n), since it loops through all inputted data points once
-// 6 millisecond average runtime using performance.now()
+// O(log n + k), where k is the number of data that have latitude within the min and max latitude
+// This is because it runs binarysearch first, which is O(log n + k)
+// And then it loops through all k data points returned by the binary search once
 function filterCoords(latitudes: number[], unsortedLongitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number, latUnsortedIndexes: any[]): number[]{
     let startTime = performance.now();
     // store indexes of data that are within the two inputted points
@@ -281,6 +286,7 @@ function filterCoords(latitudes: number[], unsortedLongitudes: number[], lat1: n
         return [-1];
     }
     let validIndexes: number[] = [];
+    // loop through return data points
     for(let i=0;i<latIndexes.length;i++){
         // find the index of the sorted array index value, in the unsorted array
         let unsortedLatIndex = latUnsortedIndexes[latIndexes[i]];
@@ -323,12 +329,13 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
 
 // Returns indexes of pokemon that are an inputted type
 // O(n), since it looops through all given times once
-function filterType(pokemonIDs: number[], type: string){
+function filterType(pokemonIDs: number[], type: string): number[]{
     const startTime = performance.now();
     // store indexes
     let validIndexes: number[] = [];
     // loop through the inputted pokemon
     for(let i=0;i<pokemonIDs.length;i++){
+        // if the pokemon's type is the inputted type, add the index to the array
         if(pokedex.types[pokemonIDs[i]-1].includes(type)){
             validIndexes.push(i);
         }
@@ -338,6 +345,8 @@ function filterType(pokemonIDs: number[], type: string){
     return validIndexes;
 }
 
-function filterName(name: string, pokemon: any[]){
+// Returns indexes of pokemon that names are the same/contain as the inputted name
+// O(log n + k), k is number of occurences, since it calls binarySearch()
+function filterName(name: string, pokemon: any[]): number[]{
     return binarySearch(name, pokemon, compareAlphaAscendingSearch);
 }
