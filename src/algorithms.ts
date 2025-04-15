@@ -68,7 +68,7 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
     return foundIndexes;
 } 
 
-function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, type?: string){
+function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, convert?: any){
     const startTime = performance.now();
     // left bound
     let left: number = 0;
@@ -83,12 +83,16 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
     if(typeof compareFn !== 'function'){
         return [-1];
     }
+    if(typeof convert !== 'function'){
+        convert = nothing;
+    }
     while(left <= right){
         // find middle index
         let midIndex: number = Math.floor((left+right)/2);
         // store the return value of the compare function
         // O(1)
-        let compareResult : number = compareFn(data[midIndex], min, max);
+        // if type is time, convert to seconds
+        let compareResult: number = compareFn(convert(data[midIndex]), min, max);
         // if the target was found at the midIndex, set the foundIndex to midIndex
         if(compareResult === 0){
             foundIndex = midIndex;
@@ -112,7 +116,7 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
     // traverse to the left of the found index and check if element is also the target 
     // if it is add it to foundIndexes, and keep looking left until the next element is not the target
     let i: number = foundIndex -1;
-    while(i>=0 && compareFn(data[i], min, max) ===0){
+    while(i>=0 && compareFn(convert(data[i]), min, max) ===0){
         foundIndexes.push(i);
         i--;
     }
@@ -120,7 +124,7 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
     // traverse to the right of the found index and check if element is also the target 
     // if it is add it to foundIndexes, and keep looking right until the next element is not the target
     let j: number = foundIndex +1;
-    while(j<data.length && compareFn(data[j], min, max) === 0){
+    while(j<data.length && compareFn(convert(data[j]), min, max) === 0){
         foundIndexes.push(j);
         j++;
     }
@@ -337,10 +341,9 @@ function twa(start : Point, target : number, arr : any[]){
 // returns indexes of data with (lat, lng) between two inputted points
 // O(n), since it loops through all inputted data points once
 // 6 millisecond average runtime using performance.now()
-function filterCoords(latitudes: number[], longitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number): number[]{
+function filterCoords(latitudes: number[], unsortedLongitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number, latUnsortedIndexes: any[]): number[]{
     let startTime = performance.now();
     // store indexes of data that are within the two inputted points
-    let validIndexes: number[] = []
     // smallest latitude value of the two points
     let minLat: number = Math.min(lat1,lat2);
     // biggest latitude value of the two points
@@ -349,17 +352,22 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
     let minLng: number = Math.min(lng1,lng2);
     // biggest longitude value of the two points
     let maxLng: number = Math.max(lng1, lng2);
-
-    // loop through all the data
-    for(let i=0;i<latitudes.length;i++){
-        let lat: number = latitudes[i];
-        let lng: number = longitudes[i];
-
-        // check if lat is greater than the minLat and less than the maxLat
-        // and check if lng is greater than the minLng and less than the maxLng
-        // if it is then add it to the validIndexes
-        if(lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng){
-            validIndexes.push(i)
+    // returns indexes of sorted lat
+    // find indexes that latitude is within the max and min lat
+    let latIndexes : number[] = binarySearchBetween(minLat, maxLat, latitudes, compareRange);
+    // return -1 if no indexes are found
+    if(latIndexes[0] === -1){
+        return [-1];
+    }
+    let validIndexes: number[] = [];
+    for(let i=0;i<latIndexes.length;i++){
+        // find the index of the sorted array index value, in the unsorted array
+        let unsortedLatIndex = latUnsortedIndexes[latIndexes[i]];
+        // find the corresponding longitude value
+        let longitude: number = unsortedLongitudes[unsortedLatIndex];
+        // if the longitude value is between the max and min, add the index to the array
+        if(longitude >= minLng && longitude <= maxLng){
+            validIndexes.push(unsortedLatIndex);
         }
     }
     let endTime = performance.now();
@@ -369,8 +377,7 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
 }
 
 // Returns indexes of pokemon that were caught within 2 inputted times
-// O(n), since it looops through all given times once
-//
+// O(log n), as it calls the binarySearchBetween function which is log n, and doesn't do any seperate loops itself
 function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     const startTime = performance.now();
     // store indexes of data within the 2 times
@@ -385,8 +392,8 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     let minTime: number = Math.min(aVal, bVal);
     // find the max time
     let maxTime: number = Math.max(aVal, bVal);
-    validIndexes = binarySearchBetween(minTime, maxTime, times, compareTimes)
-    
+    // O(log n)
+    validIndexes = binarySearchBetween(minTime, maxTime, times, compareRange, toSeconds)
     const endTime = performance.now();
     let newPair : Pair = new Pair("Filter Time", endTime-startTime)
     performanceTime.enqueue(newPair);
@@ -395,18 +402,21 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
 
 // Returns indexes of pokemon that are an inputted type
 // O(n), since it looops through all given times once
-function filterType(pokemon: string[], type: string){
-
+function filterType(pokemonIDs: number[], type: string){
     const startTime = performance.now();
     // store indexes
     let validIndexes: number[] = [];
     // loop through the inputted pokemon
-    for(let i=0;i<pokemon.length;i++){
-        if(pokedex.types[i].includes(type)){
+    for(let i=0;i<pokemonIDs.length;i++){
+        if(pokedex.types[pokemonIDs[i]-1].includes(type)){
             validIndexes.push(i);
         }
     }
     const endTime = performance.now();
     console.log(`Filter time runtime: ${endTime-startTime}`);
     return validIndexes;
+}
+
+function filterName(name: string, pokemon: any[]){
+    return binarySearch(name, pokemon, compareAlphaAscendingSearch);
 }

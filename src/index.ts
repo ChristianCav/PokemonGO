@@ -18,7 +18,7 @@ let performanceTime : Queue<Pair> = new Queue();
 // KEY is ACTUAL VALUE
 // VAL is the INDEXES
 function presort(){
-  sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
+  sortedData.localTime = new Pair(indexToData(sort(data.localTime.map(toSeconds), ascending), data.localTime), sort(data.localTime.map(toSeconds), ascending));
   sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, ascending), data.pokemonId), sort(data.pokemonId, ascending));
   sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
   sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
@@ -102,6 +102,11 @@ function grindingCandies(mon : string, lat : number, lon : number){
 }
 grindingCandies("Eevee", data.latitude[0], data.longitude[0])
 // test stuff
+
+console.log(filterTimes(sortedData.localTime.key, "12:00:10 AM", "2:46:40 AM"));
+console.log(filterCoords(sortedData.latitude.key, data.longitude, 0, 0, 40, 60, sortedData.latitude.val)); // 4261
+console.log(filterType(sortedData.ids.key, "Dragon"));
+console.log(filterName("Pidgey", sortedData.names_english.key));
 /*
 console.log(pokedex.names_english[data.pokemonId[0]-1])
 let t = (grindingCandies(pokedex.names_english[data.pokemonId[0]-1], data.latitude[0], data.longitude[0]))
