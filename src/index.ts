@@ -12,7 +12,7 @@ let sortedData : AllSorted = new AllSorted;
 let performanceTime : Queue<Pair> = new Queue();
 // presort all sorted data
 function presort(){
-  sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
+  sortedData.localTime = new Pair(indexToData(sort(data.localTime.map(toSeconds), ascending), data.localTime), sort(data.localTime.map(toSeconds), ascending));
   sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, ascending), data.pokemonId), sort(data.pokemonId, ascending));
   sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
   sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
@@ -21,6 +21,7 @@ function presort(){
   sortedData.heights = new Pair(indexToData(sort(findPokedex(pokedex.heights), ascending), findPokedex(pokedex.heights)), sort(findPokedex(pokedex.heights), ascending));
   sortedData.weights = new Pair(indexToData(sort(findPokedex(pokedex.weights), ascending), findPokedex(pokedex.weights)), sort(findPokedex(pokedex.weights), ascending));
 }
+presort();
 
 // function to take the data and create new elements for each pokemon
 // @param takes the data from the json file
@@ -98,6 +99,11 @@ function grindingCandies(mon : string, lat : number, lon : number){
 
 }
 // test stuff
+
+console.log(filterTimes(sortedData.localTime.key, "12:00:10 AM", "2:46:40 AM"));
+console.log(filterCoords(sortedData.latitude.key, data.longitude, 0, 0, 40, 60, sortedData.latitude.val)); // 4261
+console.log(filterType(sortedData.ids.key, "Dragon"));
+console.log(filterName("Pidgey", sortedData.names_english.key));
 /*
 console.log(pokedex.names_english[data.pokemonId[21]-1])
 let t = (grindingCandies(pokedex.names_english[data.pokemonId[21]-1], data.latitude[21], data.longitude[21]))

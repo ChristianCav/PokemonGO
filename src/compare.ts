@@ -86,7 +86,7 @@ function ascending(target: number, mid: number): number{
     }
 }
 
-function compareTimes(time: number, min: number, max: number){
+function compareRange(time: number, min: number, max: number){
     if(time>= min && time<= max){
         return 0;
     }
@@ -96,4 +96,28 @@ function compareTimes(time: number, min: number, max: number){
     else{
         return -1;
     }
+}
+
+function nothing(data: string | number): string | number{
+    return data;
+}
+
+function compareAlphaAscendingSearch(target: string, mid:string): number{
+    const len = Math.min(target.length,mid.length);
+    let a = target.toLowerCase()
+    let b = mid.toLowerCase();
+    for(let i=0;i<len;i++){
+        let aVal = a.charCodeAt(i);
+        let bVal = b.charCodeAt(i);
+        if(aVal === bVal){
+            continue;
+        }
+        else if(aVal<bVal){
+            return -1;
+        }
+        else{
+            return 1;
+        }
+    }
+    return 0;
 }
