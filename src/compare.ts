@@ -85,3 +85,16 @@ function ascending(target: number, mid: number): number{
         return -1;
     }
 }
+
+// is inputted a point data structure
+function hieuristicAscending(arg1 : Point, arg2 : Point){
+    if(arg1.hCost === arg2.hCost){
+        return 0;
+    }
+    else if(arg1.hCost < arg2.hCost){
+        return 1;
+    }
+    else {
+        return -1;
+    }
+}
