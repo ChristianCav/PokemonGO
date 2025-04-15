@@ -88,13 +88,24 @@ function ascending(target: number, mid: number): number{
 
 // is inputted a point data structure
 function hieuristicAscending(arg1 : Point, arg2 : Point){
-    if(arg1.hCost === arg2.hCost){
+    if(arg1.cost === arg2.cost){
         return 0;
     }
-    else if(arg1.hCost < arg2.hCost){
+    else if(arg1.cost < arg2.cost){
         return 1;
     }
     else {
+        return -1;
+    }
+}
+function compareTimes(time: number, min: number, max: number){
+    if(time>= min && time<= max){
+        return 0;
+    }
+    else if(time<min){
+        return 1;
+    }
+    else{
         return -1;
     }
 }
