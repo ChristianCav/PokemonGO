@@ -9,6 +9,12 @@ class PairNode<T>{
     ){}
 }
 
+// used for graph
+class Item {
+    id : number;
+    distance : number;
+};
+
 // pair data struture
 // this one is similar to a map where it has a key and value
 class Pair{
@@ -406,6 +412,7 @@ class Point {
     constructor(
         public lon : number,
         public lat : number,
-        public index : number
+        public index : number,
+        public cost : number,
     ){}
 }

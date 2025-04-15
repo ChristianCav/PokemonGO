@@ -2,7 +2,7 @@
 
 function compareAlphaAscending(target: string, mid:string): number{
     const len = Math.min(target.length,mid.length);
-    let a = target.toLowerCase()
+    let a = target.toLowerCase();
     let b = mid.toLowerCase();
     for(let i=0;i<len;i++){
         let aVal = a.charCodeAt(i);
@@ -86,6 +86,53 @@ function ascending(target: number, mid: number): number{
     }
 }
 
+// is inputted a point data structure
+function hieuristicAscending(arg1 : Point, arg2 : Point){
+    if(arg1.cost === arg2.cost){
+        return 0;
+    }
+    else if(arg1.cost < arg2.cost){
+        return 1;
+    }
+    else {
+        return -1;
+    }
+}
+function compareRange(time: number, min: number, max: number){
+    if(time>= min && time<= max){
+        return 0;
+    }
+    else if(time<min){
+        return 1;
+    }
+    else{
+        return -1;
+    }
+}
+
+function nothing(data: string | number): string | number{
+    return data;
+}
+
+function compareAlphaAscendingSearch(target: string, mid:string): number{
+    const len = Math.min(target.length,mid.length);
+    let a = target.toLowerCase()
+    let b = mid.toLowerCase();
+    for(let i=0;i<len;i++){
+        let aVal = a.charCodeAt(i);
+        let bVal = b.charCodeAt(i);
+        if(aVal === bVal){
+            continue;
+        }
+        else if(aVal<bVal){
+            return -1;
+        }
+        else{
+            return 1;
+        }
+    }
+    return 0;
+}
 function compareTimes(time: number, min: number, max: number){
     if(time>= min && time<= max){
         return 0;
