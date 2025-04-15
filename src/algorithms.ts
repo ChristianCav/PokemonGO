@@ -68,7 +68,7 @@ function binarySearch(target: number | string, data: any[], compareFn: any) : nu
     return foundIndexes;
 } 
 
-function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, type?: string){
+function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, convert?: any){
     const startTime = performance.now();
     // left bound
     let left: number = 0;
@@ -83,12 +83,16 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
     if(typeof compareFn !== 'function'){
         return [-1];
     }
+    if(typeof convert !== 'function'){
+        convert = nothing;
+    }
     while(left <= right){
         // find middle index
         let midIndex: number = Math.floor((left+right)/2);
         // store the return value of the compare function
         // O(1)
-        let compareResult : number = compareFn(data[midIndex], min, max);
+        // if type is time, convert to seconds
+        let compareResult: number = compareFn(convert(data[midIndex]), min, max);
         // if the target was found at the midIndex, set the foundIndex to midIndex
         if(compareResult === 0){
             foundIndex = midIndex;
@@ -112,7 +116,7 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
     // traverse to the left of the found index and check if element is also the target 
     // if it is add it to foundIndexes, and keep looking left until the next element is not the target
     let i: number = foundIndex -1;
-    while(i>=0 && compareFn(data[i], min, max) ===0){
+    while(i>=0 && compareFn(convert(data[i]), min, max) ===0){
         foundIndexes.push(i);
         i--;
     }
@@ -120,7 +124,7 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
     // traverse to the right of the found index and check if element is also the target 
     // if it is add it to foundIndexes, and keep looking right until the next element is not the target
     let j: number = foundIndex +1;
-    while(j<data.length && compareFn(data[j], min, max) === 0){
+    while(j<data.length && compareFn(convert(data[j]), min, max) === 0){
         foundIndexes.push(j);
         j++;
     }
@@ -241,27 +245,105 @@ function merge<T>(arr: PairNode<T>[], leftStart : number, rightEnd : number, sor
     return arr;
 }
 
+// bonus 3
 // find the distance between two points
-// takes in intial position, target (amount of pokemon), array of the pokemon (binarysearched down)
 // takes the position and finds the shortest path until target is hit
-function aStar(start : Point, target : number, data : number[]){
-    let q : PriorityQueue<Point> = new PriorityQueue<Point>(ascending);
-    q.enqueue(start); // queue the starting node
-    let prev : Array<number> = new Array(data.length);
-    let gScore : Array<number> = new Array(data.length);
-    let fScore : Array<number> = new Array(data.length);
+// start --> start point
+// target --> number of pokemon to travel
+// arr --> array of indexes representing the same pokemon
+// returns path containing the index, and cost
+function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
+    // variable to check if the pokemon we got is actually the same
+    let pokemon : string = sortedData.names_english.key[indexes[0]];
+    let q : Queue<Point> = new Queue();
+    // both use data.pokemonId.length because easier to access using indexes
+    let vis : Array<boolean> = new Array(data.pokemonId.length).fill(false); // visited array
+    let dis : Array<number> = new Array(data.pokemonId.length).fill(-1); // distance array
+    let prev : Array<number> = new Array(data.pokemonId.length).fill(-1); // previous node array
+    let next : Array<number> = new Array(data.pokemonId.length).fill(-1); // used to check if we have reached target if so don't add more
+    // lowest cost target
+    let lowest : Pair = new Pair(-1, -1);
+    // initial node
+    q.enqueue(start);
+    vis[start.index] = true;
+    dis[start.index] = 0;
+    next[start.index] = 1;
+    while(!q.isEmpty()){
+        let cur : Point = q.dequeue() as Point;
+        console.log(cur)
+        if(next[cur.index] === target && lowest.key === -1 || dis[cur.index] < lowest.val){
+            lowest.val = dis[cur.index];
+            lowest.key = cur.index;
+        }
+        // access adjacency list 
+        // O(n) time to loop
+        let foundOne : boolean = false;
+        for(let i=0; i<graph[cur.index].length; i++){
+            let nxt : number = graph[cur.index][i].id;
+            // check if its same pokemon and its not visited
+            if(pokemon === pokedex.names_english[data.pokemonId[nxt]] && !vis[nxt]){
+                foundOne = true;
+                vis[nxt] = true;
+                dis[nxt] = dis[cur.index] + graph[cur.index][i].distance;
+                next[nxt] = next[cur.index] + 1;
+                prev[nxt] = cur.index;
+                // if we havent reached enough push next one
+                if(next[nxt] <= target) q.enqueue(new Point(data.longitude[nxt], data.latitude[nxt], nxt, dis[nxt]));
+            }
+        }
+        // if we are unable to find at least one
+        // means that the node on the graph doesnt have a close same pokemon
+        // manually search for one
+        if(!foundOne){
+            let distance : Pair = sortDistance(indexes, cur.lat, cur.lon);
+            // loop through until they meet conditions
+            // O(n)
+            for(let i=0; i<distance.key.length; i++){
+                let nxt : number = distance.val[i];
+                // should be guarenteed same pokemon
+                if(pokemon === sortedData.names_english.key[nxt] && !vis[nxt]){
+                    vis[nxt] = true;
+                    dis[nxt] = dis[cur.index] + distance.key[i];
+                    next[nxt] = next[cur.index] + 1;
+                    prev[nxt] = cur.index;
+                    // if we havent reached enough push next one
+                    if(next[nxt] <= target) q.enqueue(new Point(data.longitude[nxt], data.latitude[nxt], nxt, dis[nxt]));
+                    break; // only 1 max because we don't want to make it extremely slow
+                }
+            }
+        }
+    }
+    // return the original path
+    let path : Pair[] = reconstructPath(prev, dis, lowest.key)
+    return path;
+}
 
-    
+function twa(start : Point, target : number, arr : any[]){
+    let q : PriorityQueue<Point> = new PriorityQueue<Point>(hieuristicAscending);
+    q.enqueue(start); // queue the starting node
+    let prev : Array<number | null> = new Array(arr.length).fill(null);
+    let vis : Array<boolean> = new Array(arr.length).fill(false); // visited array
+    let gScore : Array<number> = new Array(arr.length).fill(-1); // cost from start
+    let hScore : Array<number> = new Array(arr.length).fill(0); // cost using hieuristic (cost from target)
+    let fScore : Array<number> = new Array(arr.length).fill(-1); // total estimated cost f() = g() + h()
+
+    // intialize first point
+    gScore[start.index] = 0;
+
+    while(!q.isEmpty()){
+        // grab front of q
+        let current : Point = q.dequeue() as Point;
+        
+    }
 
 }
 
 // returns indexes of data with (lat, lng) between two inputted points
 // O(n), since it loops through all inputted data points once
 // 6 millisecond average runtime using performance.now()
-function filterCoords(latitudes: number[], longitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number): number[]{
+function filterCoords(latitudes: number[], unsortedLongitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number, latUnsortedIndexes: any[]): number[]{
     let startTime = performance.now();
     // store indexes of data that are within the two inputted points
-    let validIndexes: number[] = []
     // smallest latitude value of the two points
     let minLat: number = Math.min(lat1,lat2);
     // biggest latitude value of the two points
@@ -270,17 +352,22 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
     let minLng: number = Math.min(lng1,lng2);
     // biggest longitude value of the two points
     let maxLng: number = Math.max(lng1, lng2);
-
-    // loop through all the data
-    for(let i=0;i<latitudes.length;i++){
-        let lat: number = latitudes[i];
-        let lng: number = longitudes[i];
-
-        // check if lat is greater than the minLat and less than the maxLat
-        // and check if lng is greater than the minLng and less than the maxLng
-        // if it is then add it to the validIndexes
-        if(lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng){
-            validIndexes.push(i)
+    // returns indexes of sorted lat
+    // find indexes that latitude is within the max and min lat
+    let latIndexes : number[] = binarySearchBetween(minLat, maxLat, latitudes, compareRange);
+    // return -1 if no indexes are found
+    if(latIndexes[0] === -1){
+        return [-1];
+    }
+    let validIndexes: number[] = [];
+    for(let i=0;i<latIndexes.length;i++){
+        // find the index of the sorted array index value, in the unsorted array
+        let unsortedLatIndex = latUnsortedIndexes[latIndexes[i]];
+        // find the corresponding longitude value
+        let longitude: number = unsortedLongitudes[unsortedLatIndex];
+        // if the longitude value is between the max and min, add the index to the array
+        if(longitude >= minLng && longitude <= maxLng){
+            validIndexes.push(unsortedLatIndex);
         }
     }
     let endTime = performance.now();
@@ -290,8 +377,7 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
 }
 
 // Returns indexes of pokemon that were caught within 2 inputted times
-// O(n), since it looops through all given times once
-//
+// O(log n), as it calls the binarySearchBetween function which is log n, and doesn't do any seperate loops itself
 function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     const startTime = performance.now();
     // store indexes of data within the 2 times
@@ -306,8 +392,8 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     let minTime: number = Math.min(aVal, bVal);
     // find the max time
     let maxTime: number = Math.max(aVal, bVal);
-    validIndexes = binarySearchBetween(minTime, maxTime, times, compareTimes)
-    
+    // O(log n)
+    validIndexes = binarySearchBetween(minTime, maxTime, times, compareRange, toSeconds)
     const endTime = performance.now();
     let newPair : Pair = new Pair("Filter Time", endTime-startTime)
     performanceTime.enqueue(newPair);
@@ -316,18 +402,21 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
 
 // Returns indexes of pokemon that are an inputted type
 // O(n), since it looops through all given times once
-function filterType(pokemon: string[], type: string){
-
+function filterType(pokemonIDs: number[], type: string){
     const startTime = performance.now();
     // store indexes
     let validIndexes: number[] = [];
     // loop through the inputted pokemon
-    for(let i=0;i<pokemon.length;i++){
-        if(pokedex.types[i].includes(type)){
+    for(let i=0;i<pokemonIDs.length;i++){
+        if(pokedex.types[pokemonIDs[i]-1].includes(type)){
             validIndexes.push(i);
         }
     }
     const endTime = performance.now();
     console.log(`Filter time runtime: ${endTime-startTime}`);
     return validIndexes;
+}
+
+function filterName(name: string, pokemon: any[]){
+    return binarySearch(name, pokemon, compareAlphaAscendingSearch);
 }

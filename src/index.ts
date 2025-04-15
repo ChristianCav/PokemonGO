@@ -3,6 +3,8 @@ const data: Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delete
 
 const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
 
+const graph : Array<Array<Item>> = loadJSON("../DO_NOT_TOUCH/graph.json") // closest 500 nodes adjacency list
+
 let sortedData: AllSorted = new AllSorted();
 let data2: Pokedex = new Pokedex();
 
@@ -12,8 +14,11 @@ let data2: Pokedex = new Pokedex();
 let performanceTime: Queue<Pair> = new Queue();
 
 // presort all sorted data
+
+// KEY is ACTUAL VALUE
+// VAL is the INDEXES
 function presort(){
-  sortedData.localTime = new Pair(indexToData(sort(data.localTime, ascending), data.localTime), sort(data.localTime, ascending));
+  sortedData.localTime = new Pair(indexToData(sort(data.localTime.map(toSeconds), ascending), data.localTime), sort(data.localTime.map(toSeconds), ascending));
   sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, ascending), data.pokemonId), sort(data.pokemonId, ascending));
   sortedData.longitude = new Pair(indexToData(sort(data.longitude, ascending), data.longitude), sort(data.longitude, ascending));
   sortedData.latitude = new Pair(indexToData(sort(data.latitude, ascending), data.latitude), sort(data.latitude, ascending));
@@ -223,40 +228,29 @@ document.addEventListener("DOMContentLoaded", () => {
 // therefore the closest pokemon is the second one in the return
 function grindingCandies(mon: string, lat: number, lon: number) {
   // search for all the indexes of the mon
-  let indexArray: number[] = search<string>(sortedData.names_english.key, mon);
-  // create new array to sort after
-  let distanceArray: number[] = new Array(indexArray.length);
+  let indexArray : number[] = search<string>(sortedData.names_english.key, mon);
+  
+  // find shortest same pokemon (because we could be starting not on one)
+  let shortestDistance : Pair = sortDistance(indexArray, lat, lon);
+  let closest : number = sortedData.names_english.val[shortestDistance.val[0]] // index of closest pokemon, (of sorted)
 
-  // create an array of haversine lengths compared to the starting node
-  // O(n)
-  for (let i = 0; i < indexArray.length; i++) {
-    let index: number = indexArray[i];
+  let startPokemon : Point = new Point(data.longitude[closest], data.latitude[closest], shortestDistance.val[0], 0);
+  let path : Pair[] = bfs(startPokemon, 2, indexArray);
+  path.push(new Pair(shortestDistance.val[0], 0));
 
-    // put the distance into array
-    distanceArray[i] = haversine(
-      lat,
-      lon,
-      data.latitude[index],
-      data.longitude[index]
-    );
-  }
+  return path.reverse();
 
-  // if the length is less 2 there is only 1 of that pokemon
-  return distanceArray.length <= 1 ? -1 : distanceArray[0]; // index 1 because 0 must be itself
 }
-
-// function to hide and unhide the advanced search bar
-function toggleAdvancedSearch(): void {
-  const advSearchBar = document.querySelector(".advSearchBar");
-
-  if (advSearchBar) {
-    advSearchBar.classList.toggle("hidden");
-  }
-}
+grindingCandies("Eevee", data.latitude[0], data.longitude[0])
 // test stuff
+
+console.log(filterTimes(sortedData.localTime.key, "12:00:10 AM", "2:46:40 AM"));
+console.log(filterCoords(sortedData.latitude.key, data.longitude, 0, 0, 40, 60, sortedData.latitude.val)); // 4261
+console.log(filterType(sortedData.ids.key, "Dragon"));
+console.log(filterName("Pidgey", sortedData.names_english.key));
 /*
-console.log(pokedex.names_english[data.pokemonId[21]-1])
-let t = (grindingCandies(pokedex.names_english[data.pokemonId[21]-1], data.latitude[21], data.longitude[21]))
+console.log(pokedex.names_english[data.pokemonId[0]-1])
+let t = (grindingCandies(pokedex.names_english[data.pokemonId[0]-1], data.latitude[0], data.longitude[0]))
 console.log(t);
 
 /*
