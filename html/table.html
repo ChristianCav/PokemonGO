@@ -1,97 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pokédex: Table</title>
     <link rel="stylesheet" href="../css/navbar.css" />
     <link rel="stylesheet" href="../css/table.css" />
     <link rel="icon" href="../images/pokeball.png" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-</head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
 
-<body>
+  <body>
     <!-- Title Bar -->
     <header class="bar">
-        <a href="../html/index.html" class="logo">
-            <img src="../images/pokeball.png" alt="Logo" />
-        </a>
+      <a href="../html/index.html" class="logo">
+        <img src="../images/pokeball.png" alt="Logo" />
+      </a>
 
-        <nav class="navLinks">
-            <a href="../html/index.html">Home</a>
-            <a href="../html/table.html">Table</a>
-            <a href="../html/map.html">Map</a>
-        </nav>
+      <nav class="navLinks">
+        <a href="../html/index.html">Home</a>
+        <a href="../html/table.html">Table</a>
+        <a href="../html/map.html">Map</a>
+      </nav>
 
-        <div class="gradientBar"></div>
-        <div class="shimmer"></div>
+      <div class="gradientBar"></div>
+      <div class="shimmer"></div>
     </header>
 
-    <div class="pokedex">
-
-        <div class="screenWrapper">
-            <div class="tableContainer">
-                <div class="pokedexTop">
-                    <div class="light big"></div>
-                    <div class="lights">
-                        <div class="light red"></div>
-                        <div class="light yellow"></div>
-                        <div class="light green"></div>
-                    </div>
-                </div>
-
-                <div class="table">
-                    <table id="pokemonTable">
-                        <thead>
-                            <tr>
-                                <th>Pokémon</th>
-                                <th>Type</th>
-                                <th>Longitude</th>
-                                <th>Latitude</th>
-                                <th>Time</th>
-                                <!-- <th>Height</th>
-                                <th>Weight</th> -->
-                            </tr>
-                        </thead>
-                        <tbody id="pokemonTableBody">
-                        </tbody>
-                    </table>
-                    <div id="pageInfo"></div>
-                    <div id="paginationContainer"></div>
-
-                </div>
-
-                <div class="pokedexControls">
-                    <div class="dpad">
-                        <div class="dpad-up"></div>
-                        <div class="dpad-left"></div>
-                        <div class="dpad-center"></div>
-                        <div class="dpad-right"></div>
-                        <div class="dpad-down"></div>
-                    </div>
-                    <div class="buttonGroup">
-                        <div class="roundButton red"></div>
-                        <div class="roundButton blue"></div>
-                        <div class="ovalButton">Select</div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+    <div class="runtimeDisplayContainer">
+      <h3>Runtime For Each Algorithm:</h3>
+      <br />
+      <p class="runtimeDisplay"></p>
     </div>
 
-</body>
+    <div class="pokedex">
+      <div class="screenWrapper">
+        <div class="tableContainer">
+          <div class="pokedexTop">
+            <div class="light big"></div>
+            <div class="lights">
+              <div class="light red"></div>
+              <div class="light yellow"></div>
+              <div class="light green"></div>
+            </div>
+          </div>
 
-<!--Do not move the line below-->
-<script src="../dist/DO_NOT_TOUCH.js"></script>
-<script src="../dist/datatypes.js"></script>
-<script src="../dist/compare.js"></script>
-<script src="../dist/utility.js"></script>
-<script src="../dist/datastructures.js"></script>
-<script src="../dist/algorithms.js"></script>
-<!--Do not move the line above-->
-<script src="../dist/index.js"></script>
+          <div class="table">
+            <table id="pokemonTable">
+              <thead>
+                <tr>
+                  <th>Pokémon</th>
+                  <th>Type</th>
+                  <th>Longitude</th>
+                  <th>Latitude</th>
+                  <th>Time</th>
+                  <!-- <th>Height</th>
+                                <th>Weight</th> -->
+                </tr>
+              </thead>
+              <tbody id="pokemonTableBody"></tbody>
+            </table>
+            <div id="pageInfo"></div>
+            <div id="paginationContainer"></div>
+          </div>
 
+          <div class="pokedexControls">
+            <div class="dpad">
+              <div class="dpad-up"></div>
+              <div class="dpad-left"></div>
+              <div class="dpad-center"></div>
+              <div class="dpad-right"></div>
+              <div class="dpad-down"></div>
+            </div>
+            <div class="buttonGroup">
+              <div class="roundButton red"></div>
+              <div class="roundButton blue"></div>
+              <div class="ovalButton">Select</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 
+  <!--Do not move the line below-->
+  <script src="../dist/DO_NOT_TOUCH.js"></script>
+  <script src="../dist/datatypes.js"></script>
+  <script src="../dist/compare.js"></script>
+  <script src="../dist/utility.js"></script>
+  <script src="../dist/datastructures.js"></script>
+  <script src="../dist/algorithms.js"></script>
+  <!--Do not move the line above-->
+  <script src="../dist/index.js"></script>
 </html>

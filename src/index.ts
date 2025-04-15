@@ -8,6 +8,9 @@ const graph: Array<Array<Item>> = loadJSON("../DO_NOT_TOUCH/graph.json"); // clo
 let sortedData: AllSorted = new AllSorted();
 let data2: Pokedex = new Pokedex();
 
+let currentRuntimeIndex: number = 0; // Keeps track of which runtime we’re displaying
+
+
 // handles performance times
 // since functions are one by one we can use a queue to hold the performance times in order
 // input the function performance times and the name of the function
@@ -296,6 +299,7 @@ function grindingCandies(
   let path: Pair[] = bfs(startPokemon, numTargets, indexArray);
   path.push(new Pair(shortestDistance.val[0], 0));
 
+  console.log(path);
   return path.reverse();
 }
 
