@@ -320,6 +320,10 @@ class List<T>{
         this.data[this.numItems] = val;
         this.numItems++;
     }
+
+    public getData() : T[]{
+        return this.data.slice(0, this.numItems);
+    }
 }
 
 // uses comparator

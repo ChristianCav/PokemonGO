@@ -166,7 +166,12 @@ function populateTableWithResults(data: Data): void {
   }
 
   // run the search function to get the indexes of the pokemon that match the search query
-  const searchResults: number[] = search(sortedData.names_english.key, searchQuery);
+  let searchResults: number[] = filterName(searchQuery, sortedData.names_english.key);
+  let filterNames = indexToData(searchResults, sortedData.names_english.key);
+  console.log(filterNames);
+
+  console.log(searchResults)
+  
 
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
