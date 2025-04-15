@@ -226,21 +226,23 @@ document.addEventListener("DOMContentLoaded", () => {
 // uses haversine formula with the given pokemon as the comparision
 // and sorts it by it
 // therefore the closest pokemon is the second one in the return
-function grindingCandies(mon: string, lat: number, lon: number) {
+function grindingCandies(mon : string, lat : number, lon : number, numTargets : number){
+
   // search for all the indexes of the mon
   let indexArray : number[] = search<string>(sortedData.names_english.key, mon);
-  
+
   // find shortest same pokemon (because we could be starting not on one)
   let shortestDistance : Pair = sortDistance(indexArray, lat, lon);
   let closest : number = sortedData.names_english.val[shortestDistance.val[0]] // index of closest pokemon, (of sorted)
 
   let startPokemon : Point = new Point(data.longitude[closest], data.latitude[closest], shortestDistance.val[0], 0);
-  let path : Pair[] = bfs(startPokemon, 2, indexArray);
+  let path : Pair[] = bfs(startPokemon, numTargets, indexArray);
   path.push(new Pair(shortestDistance.val[0], 0));
 
   return path.reverse();
 
 }
+
 // Function to show the performance times
 function showPerformanceTime(): void {
   // get the container to display the performance times
