@@ -245,17 +245,96 @@ function merge<T>(arr: PairNode<T>[], leftStart : number, rightEnd : number, sor
     return arr;
 }
 
+// bonus 3
 // find the distance between two points
-// takes in intial position, target (amount of pokemon), array of the pokemon (binarysearched down)
 // takes the position and finds the shortest path until target is hit
-function aStar(start : Point, target : number, data : number[]){
-    let q : PriorityQueue<Point> = new PriorityQueue<Point>(ascending);
-    q.enqueue(start); // queue the starting node
-    let prev : Array<number> = new Array(data.length);
-    let gScore : Array<number> = new Array(data.length);
-    let fScore : Array<number> = new Array(data.length);
+// start --> start point
+// target --> number of pokemon to travel
+// arr --> array of indexes representing the same pokemon
+// returns path containing the index, and cost
+function bfs(start : Point, target : number, indexes : number[]) : Pair[]{
+    // variable to check if the pokemon we got is actually the same
+    let pokemon : string = sortedData.names_english.key[indexes[0]];
+    let q : Queue<Point> = new Queue();
+    // both use data.pokemonId.length because easier to access using indexes
+    let vis : Array<boolean> = new Array(data.pokemonId.length).fill(false); // visited array
+    let dis : Array<number> = new Array(data.pokemonId.length).fill(-1); // distance array
+    let prev : Array<number> = new Array(data.pokemonId.length).fill(-1); // previous node array
+    let next : Array<number> = new Array(data.pokemonId.length).fill(-1); // used to check if we have reached target if so don't add more
+    // lowest cost target
+    let lowest : Pair = new Pair(-1, -1);
+    // initial node
+    q.enqueue(start);
+    vis[start.index] = true;
+    dis[start.index] = 0;
+    next[start.index] = 1;
+    while(!q.isEmpty()){
+        let cur : Point = q.dequeue() as Point;
+        console.log(cur)
+        if(next[cur.index] === target && lowest.key === -1 || dis[cur.index] < lowest.val){
+            lowest.val = dis[cur.index];
+            lowest.key = cur.index;
+        }
+        // access adjacency list 
+        // O(n) time to loop
+        let foundOne : boolean = false;
+        for(let i=0; i<graph[cur.index].length; i++){
+            let nxt : number = graph[cur.index][i].id;
+            // check if its same pokemon and its not visited
+            if(pokemon === pokedex.names_english[data.pokemonId[nxt]] && !vis[nxt]){
+                foundOne = true;
+                vis[nxt] = true;
+                dis[nxt] = dis[cur.index] + graph[cur.index][i].distance;
+                next[nxt] = next[cur.index] + 1;
+                prev[nxt] = cur.index;
+                // if we havent reached enough push next one
+                if(next[nxt] <= target) q.enqueue(new Point(data.longitude[nxt], data.latitude[nxt], nxt, dis[nxt]));
+            }
+        }
+        // if we are unable to find at least one
+        // means that the node on the graph doesnt have a close same pokemon
+        // manually search for one
+        if(!foundOne){
+            let distance : Pair = sortDistance(indexes, cur.lat, cur.lon);
+            // loop through until they meet conditions
+            // O(n)
+            for(let i=0; i<distance.key.length; i++){
+                let nxt : number = distance.val[i];
+                // should be guarenteed same pokemon
+                if(pokemon === sortedData.names_english.key[nxt] && !vis[nxt]){
+                    vis[nxt] = true;
+                    dis[nxt] = dis[cur.index] + distance.key[i];
+                    next[nxt] = next[cur.index] + 1;
+                    prev[nxt] = cur.index;
+                    // if we havent reached enough push next one
+                    if(next[nxt] <= target) q.enqueue(new Point(data.longitude[nxt], data.latitude[nxt], nxt, dis[nxt]));
+                    break; // only 1 max because we don't want to make it extremely slow
+                }
+            }
+        }
+    }
+    // return the original path
+    let path : Pair[] = reconstructPath(prev, dis, lowest.key)
+    return path;
+}
 
-    
+function twa(start : Point, target : number, arr : any[]){
+    let q : PriorityQueue<Point> = new PriorityQueue<Point>(hieuristicAscending);
+    q.enqueue(start); // queue the starting node
+    let prev : Array<number | null> = new Array(arr.length).fill(null);
+    let vis : Array<boolean> = new Array(arr.length).fill(false); // visited array
+    let gScore : Array<number> = new Array(arr.length).fill(-1); // cost from start
+    let hScore : Array<number> = new Array(arr.length).fill(0); // cost using hieuristic (cost from target)
+    let fScore : Array<number> = new Array(arr.length).fill(-1); // total estimated cost f() = g() + h()
+
+    // intialize first point
+    gScore[start.index] = 0;
+
+    while(!q.isEmpty()){
+        // grab front of q
+        let current : Point = q.dequeue() as Point;
+        
+    }
 
 }
 

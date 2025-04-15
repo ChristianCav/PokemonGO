@@ -4,13 +4,19 @@ const data : Data = loadJSON("../DO_NOT_TOUCH/data.json") as Data; //Don't delet
 
 const pokedex: Pokedex = loadJSON("../DO_NOT_TOUCH/pokedex.json") as Pokedex; // Don't delete.
 
+const graph : Array<Array<Item>> = loadJSON("../DO_NOT_TOUCH/graph.json") // closest 500 nodes adjacency list
+
 let sortedData : AllSorted = new AllSorted;
 
 // handles performance times
 // since functions are one by one we can use a queue to hold the performance times in order
 // input the function performance times and the name of the function
 let performanceTime : Queue<Pair> = new Queue();
+
 // presort all sorted data
+
+// KEY is ACTUAL VALUE
+// VAL is the INDEXES
 function presort(){
   sortedData.localTime = new Pair(indexToData(sort(data.localTime.map(toSeconds), ascending), data.localTime), sort(data.localTime.map(toSeconds), ascending));
   sortedData.pokemonId = new Pair(indexToData(sort(data.pokemonId, ascending), data.pokemonId), sort(data.pokemonId, ascending));
@@ -82,22 +88,19 @@ function grindingCandies(mon : string, lat : number, lon : number){
 
   // search for all the indexes of the mon
   let indexArray : number[] = search<string>(sortedData.names_english.key, mon);
-  // create new array to sort after
-  let distanceArray : number[] = new Array(indexArray.length);
+  
+  // find shortest same pokemon (because we could be starting not on one)
+  let shortestDistance : Pair = sortDistance(indexArray, lat, lon);
+  let closest : number = sortedData.names_english.val[shortestDistance.val[0]] // index of closest pokemon, (of sorted)
 
-  // create an array of haversine lengths compared to the starting node
-  // O(n)
-  for(let i=0; i<indexArray.length; i++){
-    let index : number = indexArray[i];
+  let startPokemon : Point = new Point(data.longitude[closest], data.latitude[closest], shortestDistance.val[0], 0);
+  let path : Pair[] = bfs(startPokemon, 2, indexArray);
+  path.push(new Pair(shortestDistance.val[0], 0));
 
-    // put the distance into array
-    distanceArray[i] = haversine(lat, lon, data.latitude[index], data.longitude[index]);
-  }
-
-  // if the length is less 2 there is only 1 of that pokemon
-  return (distanceArray.length <= 1) ? -1 : distanceArray[0]; // index 1 because 0 must be itself
+  return path.reverse();
 
 }
+grindingCandies("Eevee", data.latitude[0], data.longitude[0])
 // test stuff
 
 console.log(filterTimes(sortedData.localTime.key, "12:00:10 AM", "2:46:40 AM"));
@@ -105,8 +108,8 @@ console.log(filterCoords(sortedData.latitude.key, data.longitude, 0, 0, 40, 60, 
 console.log(filterType(sortedData.ids.key, "Dragon"));
 console.log(filterName("Pidgey", sortedData.names_english.key));
 /*
-console.log(pokedex.names_english[data.pokemonId[21]-1])
-let t = (grindingCandies(pokedex.names_english[data.pokemonId[21]-1], data.latitude[21], data.longitude[21]))
+console.log(pokedex.names_english[data.pokemonId[0]-1])
+let t = (grindingCandies(pokedex.names_english[data.pokemonId[0]-1], data.latitude[0], data.longitude[0]))
 console.log(t);
 
 /*

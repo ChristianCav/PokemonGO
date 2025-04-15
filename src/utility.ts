@@ -81,21 +81,59 @@ function search<T>(arr : T[], val : string | number) : number[]{
     let newPair : Pair = new Pair("Searching", endTime-startTime)
     performanceTime.enqueue(newPair);
     return indexes; // indexes of sorted data
-}   
+}  
+
+// returns a sorted ascending distance from given node 
+// arr --> indexes of originals
+// starting lat & lon
+// O(n) to compute distance + Sorting O(nlogn)
+function sortDistance(arr : number[], lat1 : number, lon1 : number) : Pair{
+    let startTime = performance.now();
+    let distance : number[] = new Array(arr.length);
+    for(let i=0; i<distance.length; i++){
+        let index : number = arr[i];
+        // get distances from start node
+        distance[i] = haversine(lat1, lon1, data.latitude[index], data.longitude[index]);
+    }
+    // O(nlogn) sort
+    let distanceIndexes = sort<number>(distance, ascending);
+    // O(n) conversion
+    distance = indexToData(distanceIndexes, distance);
+    // convert back to original indexes
+    distanceIndexes = indexConverter(distanceIndexes, arr);    
+
+    let endTime = performance.now();
+    let newPair : Pair = new Pair("Sorting Distance From Point", endTime-startTime)
+    performanceTime.enqueue(newPair);
+    return new Pair(distance, distanceIndexes);
+}
+
+// reconstruct path
+// loop backward since prev has previous nodes
+// returns indexes of the path
+function reconstructPath(prev : number[], cost : number[], endIndex : number) : Pair[]{
+    let path : Pair[] = new Array<Pair>;
+    let cur : number = endIndex;
+    while (cur !== -1) {
+        let newPair : Pair = new Pair(cur, cost[cur]);
+        path.push(newPair);
+        cur = prev[cur];
+    }
+    return path;
+}
 
 // since the search function returns the sorted indexes of the sorted array
 // we must be able to convert these indexes to their original form otherwise they will only ever work on the sorted data type
 // must input the original data
 // just index the original sort indexes using current indexes
 // O(n)
-/*
-function indexConverter(indexes : number[], sortedData : number[]) : number[]{
+function indexConverter(indexes : number[], sortedIndex : number[]) : number[]{
     let newArray : Array<number> = new Array(indexes.length);
     for(let i=0; i<indexes.length; i++){
-        newArray[i] = sortedData[indexes[i]];
+        newArray[i] = sortedIndex[indexes[i]];
     }
     return newArray;
-}*/
+}
 
 // returns the given array in ascending form
 // returns in indexed form
