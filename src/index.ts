@@ -14,7 +14,7 @@ let currentRuntimeIndex: number = 0; // Keeps track of which runtime we’re dis
 // handles performance times
 // since functions are one by one we can use a queue to hold the performance times in order
 // input the function performance times and the name of the function
-let performanceTime: Queue<Pair> = new Queue();
+let performanceTime: Queue<Triplet> = new Queue(showPerformanceTime());
 
 // presort all sorted data
 
@@ -338,31 +338,27 @@ function showPerformanceTime(): void {
   const container = document.querySelector(".runtimeDisplay") as HTMLElement;
 
   // Clear existing content
-  container.innerHTML = "";
+  //container.innerHTML = ""; // only clear if you click next
 
-  const count = performanceTime.size(); // get size of the performance time queue
-  const maxElements = 100; // max num of elements to show, if goes over, will remove the oldest ones
-  const tempList: Pair[] = []; // temp list to hold the performance times
+  // if there is currently content do not run
+  // call this function when next is clicked
 
-  // Loop through the queue and add the items to the temp list
-  for (let i = 0; i < count; i++) {
-    const item = performanceTime.dequeue();
-    if (item) {
-      tempList.push(item);
-      performanceTime.enqueue(item);
-    }
-  }
+  if(container.innerHTML != "") return; // return if its not empty
 
-  // take the last 100 elements from the temp list
-  // if list is shorter than 100, take all of them
-  const start = Math.max(0, tempList.length - maxElements);
-  const latestEntries = tempList.slice(start);
+  // ENSURE EACH FUNCTION THAT CALLS NON MAIN FUNCTIONS ARE A MAIN FUNCTION
+  for(let i=0; i<performanceTime.size(); i++){ // loop through the q
+    // THIS IS WHERE YOU ADD THE INFO
+    let cur : Triplet = performanceTime.dequeue() as Triplet;
+    // key is the name of the function
+    // val is the time it takes 
+    // main does not matter
+    // add the info the to performance time display
 
-  // Log each performance time in a new line, ordered most recent to oldest
-  for (let i = latestEntries.length - 1; i >= 0; i--) {
-    const pair = latestEntries[i];
-    container.innerHTML += `${pair.key}: ${pair.val.toFixed(3)}ms<br>`;
-  }
+    // stop when we hit main
+    if(cur.main === true) break;
+
+  } 
+
 }
 
 // function to hide and unhide the advanced search bar
