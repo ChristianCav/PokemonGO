@@ -2,7 +2,7 @@
 
 function compareAlphaAscending(target: string, mid:string): number{
     const len = Math.min(target.length,mid.length);
-    let a = target.toLowerCase()
+    let a = target.toLowerCase();
     let b = mid.toLowerCase();
     for(let i=0;i<len;i++){
         let aVal = a.charCodeAt(i);
@@ -132,4 +132,15 @@ function compareAlphaAscendingSearch(target: string, mid:string): number{
         }
     }
     return 0;
+}
+function compareTimes(time: number, min: number, max: number){
+    if(time>= min && time<= max){
+        return 0;
+    }
+    else if(time<min){
+        return 1;
+    }
+    else{
+        return -1;
+    }
 }

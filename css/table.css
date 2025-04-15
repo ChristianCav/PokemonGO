@@ -23,6 +23,22 @@
   padding: 15px;
   border-radius: 20px;
   border: 3px inset #000;
+  max-height: 400px; /* Or whatever fits nicely in your layout */
+  overflow-y: auto;
+}
+
+.table::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table::-webkit-scrollbar-thumb {
+  background: #ffcb05;
+  border-radius: 4px;
+}
+
+.table::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 4px;
 }
 
 /* Table stays clean */
@@ -200,4 +216,28 @@
 
 .ovalButton:hover {
   background-color: #ffe66d;
+}
+
+.pagination-button {
+  padding: 8px 16px;
+  margin: 0 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-button:hover {
+  background-color: #e0e0e0;
+}
+
+#pageInfo {
+  margin: 10px 0;
+  text-align: center;
+}
+
+#paginationContainer {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
 }
