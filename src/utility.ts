@@ -76,7 +76,7 @@ function search<T>(arr : T[], val : string | number) : number[]{
     let startTime = performance.now();
     // check whether string or num and change function based off it
     let descension = (typeof val === 'string') ? compareAlphaDescending : descending;
-    let indexes : number[] = binarySearch(val, arr, descension);
+    let indexes : number[] = binarySearch(val, arr, descension).getData();
     let endTime = performance.now();
     let time : Triplet = new Triplet("Searching", endTime-startTime, true)
     performanceTime.enqueue(time);

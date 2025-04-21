@@ -164,12 +164,14 @@ function populateTableWithResults(data: Data): void {
   }
 
   // run the search function to get the indexes of the pokemon that match the search query
-  let searchResults: number[] = filterName(searchQuery, sortedData.names_english.key);
+  let searchResults: number[] = filterName(
+    searchQuery,
+    sortedData.names_english.key
+  );
   let filterNames = indexToData(searchResults, sortedData.names_english.key);
   console.log(filterNames);
 
-  console.log(searchResults)
-  
+  console.log(searchResults);
 
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
@@ -183,10 +185,16 @@ function populateTableWithResults(data: Data): void {
   // calculate the starting and ending indices for the current page
   const resultsPerPage: number = 100;
   const startIndex: number = (currentPage - 1) * resultsPerPage;
-  const endIndex: number = Math.min(startIndex + resultsPerPage, searchResults.length);
+  const endIndex: number = Math.min(
+    startIndex + resultsPerPage,
+    searchResults.length
+  );
 
   // get the slice of results for the current page
-  const currentPageResults: number[] = searchResults.slice(startIndex, endIndex);
+  const currentPageResults: number[] = searchResults.slice(
+    startIndex,
+    endIndex
+  );
 
   // display the current page information
   const pageInfo = document.getElementById("pageInfo");
@@ -218,7 +226,7 @@ function populateTableWithResults(data: Data): void {
     const latitude: string = data.latitude[originalIndex]?.toFixed(4) ?? "-";
     const time: string = data.localTime[originalIndex] ?? "-";
 
-    // creates a new row for the table 
+    // creates a new row for the table
     const rowHTML = `
       <tr>
         <td>${name}</td>
@@ -308,42 +316,40 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Function to show the performance times
+// function to show the performance times
 function showPerformanceTime(): void {
-  console.log(performanceTime)
-    const container = document.querySelector(".runtimeDisplay") as HTMLElement;
-    
-    // If queue is empty, show message and disable button
-    if (performanceTime.isEmpty()) {
-        container.innerHTML = "No more runtime data to display";
-        const button = document.getElementById("runtimeButton") as HTMLButtonElement;
-        button.disabled = true;
-        return;
+  console.log(performanceTime);
+  const container = document.querySelector(".runtimeDisplay") as HTMLElement;
+
+  // if queue is empty, show message
+  if (performanceTime.isEmpty()) {
+    container.innerHTML = "No more runtime data to display";
+    return;
+  }
+
+  let output = "";
+  let firstIteration = true;
+
+  // proceed until we find a main function (after the first one)
+  while (!performanceTime.isEmpty()) {
+    const current = performanceTime.peek() as Triplet;
+
+    // if we hit another main function after the first one, stop
+    if (!firstIteration && current.main) {
+      break;
     }
 
-    let output = "";
-    let firstIteration = true;
-    
-    // Process until we find a main function (after the first one)
-    while (!performanceTime.isEmpty()) {
-        const current = performanceTime.peek() as Triplet;
-        
-        // If we hit another main function after the first one, stop
-        if (!firstIteration && current.main) {
-            break;
-        }
-        
-        // Remove and process the item
-        const item = performanceTime.dequeue() as Triplet;
-        output += `Function: ${item.key} — Time: ${item.val.toFixed(2)} ms<br>`;
-        
-        // Mark that we've passed the first iteration
-        if (item.main) {
-            firstIteration = false;
-        }
+    // remove and output the result
+    const item = performanceTime.dequeue() as Triplet;
+    output += `Function: ${item.key} — Time: ${item.val.toFixed(2)} ms<br>`;
+
+    // mark that we've passed the first iteration
+    if (item.main) {
+      firstIteration = false;
     }
-    
-    container.innerHTML = output;
+  }
+
+  container.innerHTML = output;
 }
 
 // function to hide and unhide the advanced search bar
