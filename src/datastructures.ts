@@ -525,30 +525,37 @@ class CoordList {
 // class to store the indexes of the caught pokemon
 // this is used to ensure the same pokemon is not caught multiple times
 class CaughtIndices {
-  private data: number[];
+  private spawnIndices: number[];  // tracks which spawn points have been caught
+  private pokemonIds: number[];    // tracks which pokemon species have been caught
   private count: number;
 
   constructor(maxSize: number) {
-    // max size of 149, as there are only 149 pokemon in the dataset
-    // this is used to store the indexes of the caught pokemon
-    this.data = new Array(maxSize);
+    this.spawnIndices = new Array(maxSize);
+    this.pokemonIds = new Array(149); // only 149 Gen 1 pokemon
     this.count = 0;
   }
 
   // adds a new index to the list of caught pokemon
   // O(1) time complexity for adding a new index
-  public add(value: number): void {
-    this.data[this.count] = value;
+  public add(spawnIndex: number, pokemonId: number): void {
+    this.spawnIndices[this.count] = spawnIndex;
+    this.pokemonIds[pokemonId - 1] = pokemonId; // IDs start at 1
     this.count++;
   }
 
-  // checks if the index is already in the list of caught pokemon
+  // checks if the spawn index is already in the list of caught pokemon
   // O(n) time complexity for checking if the index is in the list
-  public contains(value: number): boolean {
+  public containsSpawn(spawnIndex: number): boolean {
     for (let i = 0; i < this.count; i++) {
-      if (this.data[i] === value) return true;
+      if (this.spawnIndices[i] === spawnIndex) return true;
     }
     return false;
+  }
+
+  // checks if the pokemon species has already been caught
+  // O(1) time complexity since we're using direct indexing
+  public containsPokemon(pokemonId: number): boolean {
+    return this.pokemonIds[pokemonId - 1] !== undefined;
   }
 
   // gets the size of the list of caught pokemon
@@ -560,7 +567,7 @@ class CaughtIndices {
   // gets the index of the caught pokemon at the given index
   // O(1) time complexity for getting the index of the caught pokemon
   public get(index: number): number {
-    return this.data[index];
+    return this.spawnIndices[index];
   }
 }
 
