@@ -58,7 +58,7 @@ function toSeconds(time: string): number{
     // Split "11:23:40 AM" to ["11:23:40", "AM"]
     let [timePart, modifierPart] = time.split(' ');
     // Split "11:23:40" to [11, 23, 40]
-    let [hours, seconds, minutes] = timePart.split(':').map(Number);
+    let [hours, minutes, seconds] = timePart.split(':').map(Number);
     // Add 12 hours if the time is PM
     if(modifierPart === "PM" && hours !== 12){
         hours+=12

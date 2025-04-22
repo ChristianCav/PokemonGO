@@ -173,8 +173,15 @@ function handleSearchClick(): void {
     // just add all the inputs together and split them a part after
     let query : string = `${name}, ${timeStart}, ${timeEnd}, ${minLng}, ${maxLng}, ${minLat}, ${maxLat}`;
 
-    const encodedQuery = encodeURIComponent(query);
-    window.location.href = `../html/table.html?search=${encodedQuery}&page=1`;
+    const encodedQuery = encodeURIComponent(name);
+    const encodedTime1 = encodeURIComponent(timeStart)
+    const encodedTime2 = encodeURIComponent(timeEnd)
+    const encodedlng1 = encodeURIComponent(minLng)
+    const encodedlng2 = encodeURIComponent(maxLng)
+    const encodedlat1 = encodeURIComponent(minLat)
+    const encodedlat2 = encodeURIComponent(maxLat)
+    const encodedType = encodeURIComponent(type);
+    window.location.href = `../html/table.html?search=${encodedQuery}&type=${encodedType}&time1=${encodedTime1}&time2=${encodedTime2}&lng1=${encodedlng1}&lng2=${encodedlng2}&lat1=${encodedlat1}&lat2=${encodedlat2}&page=1`;
 
   }
 }
@@ -192,26 +199,78 @@ function populateTableWithResults(): void {
   // if no table body, return
   if (!tableBody) return;
 
-  // get the search query from the URL
+  // get all queries from the URL
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery: string | null = urlParams.get("search");
+  const typeQuery: string | null = urlParams.get("type");
+  console.log(typeQuery);
+  const time1Query: string | null = urlParams.get("time1");
+  console.log(time1Query);
+  const time2Query: string | null = urlParams.get("time2");
+  console.log(time2Query);
+  const lng1Query: string | null = urlParams.get("lng1");
+  console.log(lng1Query);
+  const lng2Query: string | null = urlParams.get("lng2");
+  console.log(lng2Query);
+  const lat1Query: string | null = urlParams.get("lat1");
+  console.log(lat1Query);
+  const lat2Query: string | null = urlParams.get("lat2");
+  console.log(lat2Query);
+
   const currentPage: number = parseInt(urlParams.get("page") || "1", 10);
 
-  // if no search query, return and display error on tabel container
-  if (!searchQuery) {
-    tableBody.innerHTML =
-      "<tr><td colspan='5'>No search query found.</td></tr>";
-    return;
+
+  // run filter functions to get the indexes of the pokemon that match all filter queries
+
+  // start with all indexes as searchResults
+  let searchResultsList: List<number> = new List<number>();
+  for(let k=0;k<99333;k++){
+    searchResultsList.push(k);
   }
+  let searchResults: number[] = searchResultsList.getData();
 
-  // run the search function to get the indexes of the pokemon that match the search query
-  let searchResults: number[] = filterName(searchQuery, sortedData.names_english.key);
-  let filterNames = indexToData(searchResults, sortedData.names_english.key);
-  console.log(filterNames);
+  // if the user inputted a name query, filter it
+  if(searchQuery){
+    searchResults = filterName(searchQuery, sortedData.names_english.key);
+    console.log(searchResults);
+  }
+  // if the user inputted times, filter between those times
+  if(time1Query && time2Query){
+    // times after filtering by name
+    let times = indexToData(searchResults, data.localTime);
+    // filtered data, sorted by time ascendingly (indexes)
+    // passing in data filtered by name
+    let newIndexes = sort(times.map(toSeconds), ascending);
 
-  console.log(searchResults)
-  
+    let searchResults2 = filterTimes(indexToData(newIndexes, times), time1Query as string, time2Query as string);
+    let timeIndexes = indexToData(searchResults2, newIndexes);
+    searchResults = indexToData(timeIndexes, searchResults);
+    console.log(searchResults);
+  }
+  // if the user inputted coordinates, filter between those coordinates
+  if(Number(lat1Query) && Number(lat2Query) && Number(lng1Query) && Number(lng2Query)){
+    // filter by lng, lat 
+    let lats = indexToData(searchResults, data.latitude);
+    let lngs = indexToData(searchResults, data.longitude);
+    let searchResults3 = filterCoords(lats,lngs,Number(lat1Query),Number(lng1Query),Number(lat2Query), Number(lng2Query));
+    console.log(searchResults3);
+    searchResults = indexToData(searchResults3, searchResults);
+    console.log(searchResults);
+  }
+  // if the user inputted a type, filter by that type
+  if(typeQuery){
+    // filter by type
+    let types = indexToData(searchResults, data2.types);
 
+    let searchResults4 = filterType(types, typeQuery as string);
+    searchResults = indexToData(searchResults4, searchResults);
+    console.log(searchResults);
+  }
+  console.log(searchResults);
+  // sort the results after filtering alphabetically
+  let alphasort: number[] = sort(indexToData(searchResults, data2.names_english), compareAlphaAscending);
+  searchResults = indexToData(alphasort, searchResults);
+  console.log(searchResults);
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
     tableBody.innerHTML =
@@ -242,22 +301,28 @@ function populateTableWithResults(): void {
     currentPage,
     searchResults.length,
     resultsPerPage,
-    searchQuery
+    searchQuery as string,
+    typeQuery as string,
+    time1Query as string, 
+    time2Query as string,
+    lat1Query as string,
+    lat2Query as string,
+    lng1Query as string,
+    lng2Query as string
   );
 
   // Populate the table with the current page results
   for (const i of currentPageResults) {
-    const name: any = sortedData.names_english.key[i];
-    const originalIndex: any = sortedData.names_english.val[i];
+    const name: any = data2.names_english[i];
 
-    const type: string = Array.isArray(data2.types[originalIndex])
-      ? data2.types[originalIndex].join("/")
-      : data2.types[originalIndex];
+    const type: string = Array.isArray(data2.types[i])
+      ? data2.types[i].join("/")
+      : data2.types[i];
 
     // if returns null then display a placeholder
-    const longitude: string = data.longitude[originalIndex]?.toFixed(4) ?? "-";
-    const latitude: string = data.latitude[originalIndex]?.toFixed(4) ?? "-";
-    const time: string = data.localTime[originalIndex] ?? "-";
+    const longitude: string = data.longitude[i]?.toFixed(4) ?? "-";
+    const latitude: string = data.latitude[i]?.toFixed(4) ?? "-";
+    const time: string = data.localTime[i] ?? "-";
 
     // creates a new row for the table 
     const rowHTML = `
@@ -279,11 +344,25 @@ function populateTableWithResults(): void {
 // @param totalResults holds the total num of results
 // @param resultsPerPage holds the num of results per page
 // @param searchQuery holds the search query
+// @param typeQuery holds the type query
+// @param time1Query holds the time1 query
+// @param time2Query holds the time2 query
+// @param lat1Query holds the lat1 query
+// @param lat2hQuery holds the lat2 query
+// @param lng1Query holds the lng1 query
+// @param lng2Query holds the lng2 query
 function updatePaginationButtons(
   currentPage: number,
   totalResults: number,
   resultsPerPage: number,
-  searchQuery: string
+  searchQuery: string,
+  typeQuery: string, 
+  time1Query: string, 
+  time2Query: string, 
+  lat1Query: string, 
+  lat2Query: string, 
+  lng1Query: string,
+  lng2Query: string
 ): void {
   // calcs the total number of pages needed
   const totalPages: number = Math.ceil(totalResults / resultsPerPage);
@@ -300,7 +379,7 @@ function updatePaginationButtons(
     prevButton.classList.add("pagination-button");
     // when the user clicks, navigates to the previous page
     prevButton.addEventListener("click", () => {
-      navigateToPage(currentPage - 1, searchQuery);
+      navigateToPage(currentPage - 1, searchQuery, typeQuery, time1Query, time2Query, lat1Query, lat2Query, lng1Query, lng2Query);
     });
     paginationContainer.appendChild(prevButton);
   }
@@ -312,16 +391,24 @@ function updatePaginationButtons(
     nextButton.classList.add("pagination-button");
     // when the user clicks, navigates to the next page
     nextButton.addEventListener("click", () => {
-      navigateToPage(currentPage + 1, searchQuery);
+      navigateToPage(currentPage + 1, searchQuery, typeQuery, time1Query, time2Query, lat1Query, lat2Query, lng1Query, lng2Query);
     });
     paginationContainer.appendChild(nextButton);
   }
 }
 
 // function to navigate to the specified page
-function navigateToPage(pageNumber: number, searchQuery: string): void {
+function navigateToPage(pageNumber: number, searchQuery: string, typeQuery: string, time1Query: string, time2Query: string, lat1Query:string, lat2Query: string, lng1Query:string, lng2Query:string): void {
+  // encode all queries
   const encodedQuery = encodeURIComponent(searchQuery);
-  window.location.href = `../html/table.html?search=${encodedQuery}&page=${pageNumber}`;
+  const encodedTime1 = encodeURIComponent(time1Query)
+  const encodedTime2 = encodeURIComponent(time2Query)
+  const encodedlng1 = encodeURIComponent(lng1Query)
+  const encodedlng2 = encodeURIComponent(lng2Query)
+  const encodedlat1 = encodeURIComponent(lat1Query)
+  const encodedlat2 = encodeURIComponent(lat2Query)
+  const encodedType = encodeURIComponent(typeQuery);
+  window.location.href = `../html/table.html?search=${encodedQuery}&type=${encodedType}&time1=${encodedTime1}&time2=${encodedTime2}&lng1=${encodedlng1}&lng2=${encodedlng2}&lat1=${encodedlat1}&lat2=${encodedlat2}&page=${pageNumber}`;
 }
 
 // call function when the DOM is loaded (webpage starts)
