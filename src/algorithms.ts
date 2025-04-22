@@ -101,12 +101,44 @@ function binarySearch(target: number | string, sortedArr : any[], compareFn : an
     return foundIndexes;
 }
 
-function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, convert?: any) : List<number>{
-    let index : number = binarySearchBetweenSingle(min, max, data, compareFn, convert);
-    return binarySearchFill(index, data, compareFn);
+function binarySearchBetween(min: number, max: number, sorted: any[], compareFn: any) : List<number>{
+    let index : number = binarySearchBetweenSingle(min, max, sorted, compareFn);
+    return binarySearchFillBetween(index, sorted, min, max, compareFn);
 }
 
-function binarySearchBetweenSingle(min: number, max: number, data: any[], compareFn: any, convert?: any): number{
+// O(n) time if all elements are the same,
+// since we have searched for an index in a sorted array that is correct
+// the elements beside it should all be the same attributes so loop both sides until we get them all
+function binarySearchFillBetween(found : number, arr : any[], min : number, max : number, compareFn : any) : List<number>{
+    let startTime = performance.now();
+    let indexes : List<number> = new List<number>();
+    if(typeof compareFn !== 'function'){
+        indexes.push(-1);
+        return indexes;
+    }
+    // traverse to the left of the found index and check if element is also the target 
+    // if it is add it to foundIndexes, and keep looking left until the next element is not the target
+    let i: number = found -1;
+    while(i>=0 && compareFn(arr[i], min, max) === 0){
+        indexes.push(i);
+        i--;
+    }
+
+    // traverse to the right of the found index and check if element is also the target 
+    // if it is add it to foundIndexes, and keep looking right until the next element is not the target
+    let j: number = found +1;
+    while(j<=arr.length && compareFn(arr[j], min, max) === 0){
+        indexes.push(j);
+        j++;
+    }
+    let endTime = performance.now();
+    let time : Triplet = new Triplet("Binary Search Fill Between", endTime-startTime, false)
+    performanceTime.enqueue(time);
+    console.log(indexes);
+    return indexes;
+}
+
+function binarySearchBetweenSingle(min: number, max: number, data: any[], compareFn: any): number{
     const startTime = performance.now();
     // left bound
     let left: number = 0;
@@ -118,16 +150,13 @@ function binarySearchBetweenSingle(min: number, max: number, data: any[], compar
     if(typeof compareFn !== 'function'){
         return -1;
     }
-    if(typeof convert !== 'function'){
-        convert = nothing;
-    }
     while(left <= right){
         // find middle index
         let midIndex: number = Math.floor((left+right)/2);
         // store the return value of the compare function
         // O(1)
         // if type is time, convert to seconds
-        let compareResult: number = compareFn(convert(data[midIndex]), min, max);
+        let compareResult: number = compareFn(data[midIndex], min, max);
         // if the target was found at the midIndex, set the foundIndex to midIndex
         if(compareResult === 0){
             foundIndex = midIndex;
@@ -375,7 +404,7 @@ function bfs(start : Point, target : number, indexes : number[]) : List<Pair>{
 
 // Returns indexes of pokemon that were caught within 2 inputted times
 // O(log n), as it calls the binarySearchBetween function which is log n, and doesn't do any seperate loops itself
-function filterTimes(times: string[], timeA: string, timeB: string): number[]{
+function filterTimes(times: string[], timeA: string, timeB: string): List<number>{
     const startTime = performance.now();
     // store indexes of data within the 2 times
     let validIndexes: List<number> = new List<number>;
@@ -390,11 +419,11 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     // find the max time
     let maxTime: number = Math.max(aVal, bVal);
     // O(log n)
-    validIndexes = binarySearchBetween(minTime, maxTime, times, compareRange, toSeconds);
+    validIndexes = binarySearchBetween(minTime, maxTime, times, compareTimes);
     const endTime = performance.now();
     let time : Triplet = new Triplet("Filter Time", endTime-startTime, false)
     performanceTime.enqueue(time);
-    return validIndexes.getData();
+    return validIndexes
 }
 
 // Returns indexes of pokemon that are an inputted type
@@ -420,34 +449,24 @@ function filterType(types: any[], type: string): number[]{
 // returns indexes in unsorted names_english array
 // O(log n + k), where k is the number of occurences, since it uses binarySearch
 function filterName(name: string, pokemon: any[]): number[]{
-    let sortedIndexes = binarySearch(name, pokemon, compareAlphaAscendingSearch).getData();
-    return indexConverter(sortedIndexes);
+    return binarySearch(name, pokemon, compareAlphaAscendingSearch).getData();
 }
 
 // returns indexes of data with (lat, lng) between two inputted points
 // O(n), since it loops through all inputted data points once
-function filterCoords(latitudes: number[], longitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number): number[]{
+function filterCoords(latitudes: number[], longitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number): List<number>{
     let startTime = performance.now();
-    // store indexes of data that are within the two inputted points
-    // smallest latitude value of the two points
-    let minLat: number = Math.min(lat1,lat2);
-    // biggest latitude value of the two points
-    let maxLat: number = Math.max(lat1,lat2);
-    // smallest longitude value of the two points
-    let minLng: number = Math.min(lng1,lng2);
-    // biggest longitude value of the two points
-    let maxLng: number = Math.max(lng1, lng2);
     let validIndexes: List<number> = new List<number>;
     // if lat is between max and min lat, and if lng is between max and min lng, add the index
     for(let i=0;i<latitudes.length;i++){
-        if(latitudes[i] <= maxLat && latitudes[i] >= minLat && longitudes[i] >= minLng && longitudes[i] <= maxLng){
+        if(compareBetweenArea(lat1, lat2, lng1, lng2, latitudes[i], longitudes[i]) === 0){
             validIndexes.push(i);
         }
     }
     let endTime = performance.now();
     let time : Triplet = new Triplet("Filter Coords", endTime-startTime, false)
     performanceTime.enqueue(time);
-    return validIndexes.getData();
+    return validIndexes;
 }
 // put -1 into input if nothing
 // put "" into input if nothing
@@ -455,30 +474,27 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
     let startTime = performance.now();
 
     // create a sub data set to hold the guareented at least one matching attribute
-    let foundIndexes : List<number> | null;
-    let sortedIndexes : Pair | null;
+    let foundIndexes : List<number> | null = null;
+    let sortedIndexes : Array<number> | null = null;
     
     let returnIndexes : List<number> = new List<number>();
 
     // if it exists then make the compare that
     if(name !== "") {
         foundIndexes = binarySearch(name, sortedData.names_english.key, compareAlphaAscendingSearch)
-        sortedIndexes = sortedData.names_english;
+        sortedIndexes = sortedData.names_english.val;
     }
-    else if(type !== ""){}
+    else if(type !== ""){
+        
+    }
     else if(time1 !== ""){
-        foundIndexes = binarySearchBetween(toSeconds(time1), toSeconds(time2), sortedData.localTime.key, compareRange, toSeconds)
-        sortedIndexes = sortedData.localTime;
+        foundIndexes = filterTimes(sortedData.localTime.key, time1, time2);
+        sortedIndexes = sortedData.localTime.val;
     }
-    else if(lat1 !== -1){
-         // for lats
-        let minLat: number = Math.min(lat1,lat2);
-        // biggest latitude value of the two points
-        let maxLat: number = Math.max(lat1,lat2);
-        // dont need longitude because we can compare that after
-        // find indexes that latitude is within the max and min lat
-        foundIndexes = binarySearchBetween(minLat, maxLat, sortedData.latitude.key, compareRange)
-        sortedIndexes = sortedData.latitude;
+    else if(lat1 !== -1000){
+        // already in original form
+        foundIndexes = filterCoords(data.latitude, data.longitude, lat1, lon1, lat2, lon2);
+        sortedIndexes = null;
     }
     // guarentee assignment
     else{
@@ -486,18 +502,17 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
         sortedIndexes = null;
     }
 
-    if(foundIndexes! !== null && sortedIndexes! !== null){
+    if(foundIndexes !== null){
     // traverse found indexes to match them
     // O(n) worst case but smaller since the found indexes will guarentee one match 
         for(let i=0; i<foundIndexes!.size(); i++){
-            let target : number = foundIndexes!.get(i) as number;
-            if(compareAll(target, name, type, time1, time2, lat1, lon1, lat2 , lon2, sortedIndexes!.val) === 1){
+            let target : number = foundIndexes.get(i) as number;
+            if(sortedIndexes !== null) target = sortedIndexes[target];
+            if(compareAll(target, name, type, time1, time2, lat1, lon1, lat2 , lon2) === 1){
                 returnIndexes.push(target); // indexes the sorted indexes
             }
         }
     }
-
-    returnIndexes = indexConverterList(returnIndexes, sortedIndexes!.val)
 
     let endTime = performance.now();
     let time : Triplet = new Triplet("Filter All", endTime-startTime, true)

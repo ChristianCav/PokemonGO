@@ -123,67 +123,57 @@ function displayPokedex(pokedex: Pokedex): void {
 
 // function to handle the search button click
 function handleSearchClick(): void {
-  // check if advanceed is on if so we need all the inputs
-  const advSearchBar = document.querySelector(".advSearchBar");
-  if(advSearchBar?.classList.contains('hidden')){
-    // when hidden requires name
-    const input = document.getElementById("searchBar") as HTMLInputElement | null;
-    // if no input, return
-    if (!input) return;
 
-    // get val of input and trim
-    const query = input.value.trim();
-    // if no query, alert user to enter a pokemon name
-    if (query.length === 0) {
-      alert("Please enter a Pokémon name before searching.");
-      return;
-    }
+  const nameInput = document.getElementById("searchBar") as HTMLInputElement | null;
+  const timeStartInput = document.getElementById("timePickerStart") as HTMLInputElement | null;
+  const timeEndInput = document.getElementById("timePickerEnd") as HTMLInputElement | null;
+  const minLngInput = document.getElementById("minLongitude") as HTMLInputElement | null;
+  const maxLngInput = document.getElementById("maxLongitude") as HTMLInputElement | null;
+  const minLatInput = document.getElementById("minLatitude") as HTMLInputElement | null;
+  const maxLatInput = document.getElementById("maxLatitude") as HTMLInputElement | null;
+  const typeInput = document.getElementById("typeInput") as HTMLInputElement | null;
 
-    // redirect to the table page with the search query as a parameter
-    // always start with page 1 for a new search
-    const encodedQuery = encodeURIComponent(query);
-    window.location.href = `../html/table.html?search=${encodedQuery}&page=1`;
+  // check if they all exist
+  if(!nameInput || !timeStartInput || !timeEndInput || !minLngInput || !maxLngInput || !minLatInput || !maxLatInput || !typeInput) return;
+
+  // does not require all but one
+  let name : string = nameInput.value.trim().length === 0 ? "" : nameInput.value.trim();
+  let timeStart : string = (timeStartInput.value !== "") ? timeStartInput.value : "";
+  let timeEnd : string = (timeEndInput.value !== "") ? timeEndInput.value : "";
+  // allow decimals
+  let minLng : number | null = isValidLongitude(parseFloat(minLngInput.value)) ? parseFloat(minLngInput.value) : -1000;
+  let maxLng : number | null = isValidLongitude(parseFloat(maxLngInput.value)) ? parseFloat(maxLngInput.value) : -1000;
+  let minLat : number | null = isValidLatitude(parseFloat(minLatInput.value)) ? parseFloat(minLatInput.value) : -1000;
+  let maxLat : number | null = isValidLatitude(parseFloat(maxLatInput.value)) ? parseFloat(maxLatInput.value) : -1000;
+
+  let type : string = (typeInput.value) !== "" ? typeInput.value.trim() : ""; 
+
+  // need at least 1 value
+  if(name === "" && (timeStart === "" || timeEnd === "") && (minLng === -1000 || maxLng === -1000 || minLat === -1000 || maxLat === -1000)) return;
+
+  // if any of the pairs are null make them all null
+  if(timeStart === "" || timeEnd === ""){
+    timeStart = "";
+    timeEnd = "";
   }
-  else {
-    // not hidden
-    const nameInput = document.getElementById("searchBar") as HTMLInputElement | null;
-    const timeStartInput = document.getElementById("timePickerStart") as HTMLInputElement | null;
-    const timeEndInput = document.getElementById("timePickerEnd") as HTMLInputElement | null;
-    const minLngInput = document.getElementById("minLongitude") as HTMLInputElement | null;
-    const maxLngInput = document.getElementById("maxLongitude") as HTMLInputElement | null;
-    const minLatInput = document.getElementById("minLatitude") as HTMLInputElement | null;
-    const maxLatInput = document.getElementById("maxLatitude") as HTMLInputElement | null;
 
-    // check if they all exist
-    if(!nameInput || !timeStartInput || !timeEndInput || !minLngInput || !maxLngInput || !minLatInput || !maxLatInput) return;
-
-    // does not require all but one
-    let name : string = nameInput.value.trim().length === 0 ? "" : nameInput.value.trim();
-    let timeStart : string = (timeStartInput.value !== "") ? timeStartInput.value : "";
-    let timeEnd : string = (timeEndInput.value !== "") ? timeEndInput.value : "";
-    // allow decimals
-    let minLng : number = isValidLongitude(parseFloat(minLngInput.value)) ? parseFloat(minLngInput.value) : -1;
-    let maxLng : number = isValidLongitude(parseFloat(maxLngInput.value)) ? parseFloat(maxLngInput.value) : -1;
-    let minLat : number = isValidLatitude(parseFloat(minLatInput.value)) ? parseFloat(minLatInput.value) : -1;
-    let maxLat : number = isValidLatitude(parseFloat(maxLatInput.value)) ? parseFloat(maxLatInput.value) : -1;
-
-    // need at least 1 value
-    if(name === "" && (timeStart === "" || timeEnd === "") && (minLng === -1 || maxLng === -1 || minLat === -1 || maxLat === -1)) return;
-
-    // just add all the inputs together and split them a part after
-    let query : string = `${name}, ${timeStart}, ${timeEnd}, ${minLng}, ${maxLng}, ${minLat}, ${maxLat}`;
-
-    const encodedQuery = encodeURIComponent(name);
-    const encodedTime1 = encodeURIComponent(timeStart)
-    const encodedTime2 = encodeURIComponent(timeEnd)
-    const encodedlng1 = encodeURIComponent(minLng)
-    const encodedlng2 = encodeURIComponent(maxLng)
-    const encodedlat1 = encodeURIComponent(minLat)
-    const encodedlat2 = encodeURIComponent(maxLat)
-    const encodedType = encodeURIComponent(type);
-    window.location.href = `../html/table.html?search=${encodedQuery}&type=${encodedType}&time1=${encodedTime1}&time2=${encodedTime2}&lng1=${encodedlng1}&lng2=${encodedlng2}&lat1=${encodedlat1}&lat2=${encodedlat2}&page=1`;
-
+  if(minLng === -1000 || maxLng === -1000 || minLat === -1000 || maxLat === -1000){
+    minLng = -1000
+    maxLng = -1000
+    minLat = -1000
+    maxLat = -1000
   }
+
+  const encodedQuery = encodeURIComponent(name);
+  const encodedTime1 = encodeURIComponent(timeStart)
+  const encodedTime2 = encodeURIComponent(timeEnd)
+  const encodedlng1 = encodeURIComponent(minLng)
+  const encodedlng2 = encodeURIComponent(maxLng)
+  const encodedlat1 = encodeURIComponent(minLat)
+  const encodedlat2 = encodeURIComponent(maxLat)
+  const encodedType = encodeURIComponent(type);
+  window.location.href = `../html/table.html?search=${encodedQuery}&type=${encodedType}&time1=${encodedTime1}&time2=${encodedTime2}&lng1=${encodedlng1}&lng2=${encodedlng2}&lat1=${encodedlat1}&lat2=${encodedlat2}&page=1`;
+
 }
 
 // populates the table with the search results
@@ -201,76 +191,31 @@ function populateTableWithResults(): void {
 
   // get all queries from the URL
   const urlParams = new URLSearchParams(window.location.search);
-  const searchQuery: string | null = urlParams.get("search");
-  const typeQuery: string | null = urlParams.get("type");
+  const searchQuery: string | null = urlParams.get("search") as string;
+  const typeQuery: string | null = urlParams.get("type") as string;
   console.log(typeQuery);
-  const time1Query: string | null = urlParams.get("time1");
+  const time1Query: string | null = urlParams.get("time1") as string;
   console.log(time1Query);
-  const time2Query: string | null = urlParams.get("time2");
+  const time2Query: string | null = urlParams.get("time2") as string;
   console.log(time2Query);
-  const lng1Query: string | null = urlParams.get("lng1");
+  const lng1Query: string | null = urlParams.get("lng1") as string;
   console.log(lng1Query);
-  const lng2Query: string | null = urlParams.get("lng2");
+  const lng2Query: string | null = urlParams.get("lng2") as string;
   console.log(lng2Query);
-  const lat1Query: string | null = urlParams.get("lat1");
+  const lat1Query: string | null = urlParams.get("lat1") as string;
   console.log(lat1Query);
-  const lat2Query: string | null = urlParams.get("lat2");
+  const lat2Query: string | null = urlParams.get("lat2") as string;
   console.log(lat2Query);
 
   const currentPage: number = parseInt(urlParams.get("page") || "1", 10);
 
-
   // run filter functions to get the indexes of the pokemon that match all filter queries
 
   // start with all indexes as searchResults
-  let searchResultsList: List<number> = new List<number>();
-  for(let k=0;k<99333;k++){
-    searchResultsList.push(k);
-  }
+  let searchResultsList: List<number> = filterAll(searchQuery, typeQuery, time1Query, time2Query, Number(lat1Query), Number(lng1Query), Number(lat2Query), Number(lng2Query));
+
   let searchResults: number[] = searchResultsList.getData();
 
-  // if the user inputted a name query, filter it
-  if(searchQuery){
-    searchResults = filterName(searchQuery, sortedData.names_english.key);
-    console.log(searchResults);
-  }
-  // if the user inputted times, filter between those times
-  if(time1Query && time2Query){
-    // times after filtering by name
-    let times = indexToData(searchResults, data.localTime);
-    // filtered data, sorted by time ascendingly (indexes)
-    // passing in data filtered by name
-    let newIndexes = sort(times.map(toSeconds), ascending);
-
-    let searchResults2 = filterTimes(indexToData(newIndexes, times), time1Query as string, time2Query as string);
-    let timeIndexes = indexToData(searchResults2, newIndexes);
-    searchResults = indexToData(timeIndexes, searchResults);
-    console.log(searchResults);
-  }
-  // if the user inputted coordinates, filter between those coordinates
-  if(Number(lat1Query) && Number(lat2Query) && Number(lng1Query) && Number(lng2Query)){
-    // filter by lng, lat 
-    let lats = indexToData(searchResults, data.latitude);
-    let lngs = indexToData(searchResults, data.longitude);
-    let searchResults3 = filterCoords(lats,lngs,Number(lat1Query),Number(lng1Query),Number(lat2Query), Number(lng2Query));
-    console.log(searchResults3);
-    searchResults = indexToData(searchResults3, searchResults);
-    console.log(searchResults);
-  }
-  // if the user inputted a type, filter by that type
-  if(typeQuery){
-    // filter by type
-    let types = indexToData(searchResults, data2.types);
-
-    let searchResults4 = filterType(types, typeQuery as string);
-    searchResults = indexToData(searchResults4, searchResults);
-    console.log(searchResults);
-  }
-  console.log(searchResults);
-  // sort the results after filtering alphabetically
-  let alphasort: number[] = sort(indexToData(searchResults, data2.names_english), compareAlphaAscending);
-  searchResults = indexToData(alphasort, searchResults);
-  console.log(searchResults);
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
     tableBody.innerHTML =
@@ -429,7 +374,6 @@ document.addEventListener("DOMContentLoaded", () => {
     presort();
     precompile();
     populateTableWithResults();
-    filterAll("char", "", "", "", -1, -1, -1, -1);
   }
   if (page === "map.html") {
     presort();
