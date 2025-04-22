@@ -51,15 +51,14 @@
                     <table id="pokemonTable">
                         <thead>
                             <tr>
-                                <th>Pokémon</th>
-                                <th>Type</th>
-                                <th>Longitude</th>
-                                <th>Latitude</th>
-                                <th>Time</th>
-                                <!-- <th>Height</th>
-                                <th>Weight</th> -->
+                              <th><button type="button" class="sortable-header" onclick="sortTableBy('name')">Pokémon</button></th>
+                              <th><button type="button" class="sortable-header" onclick="sortTableBy('type')">Type</button></th>
+                              <th><button type="button" class="sortable-header" onclick="sortTableBy('longitude')">Longitude</button></th>
+                              <th><button type="button" class="sortable-header" onclick="sortTableBy('latitude')">Latitude</button></th>
+                              <th><button type="button" class="sortable-header" onclick="sortTableBy('time')">Time</button></th>
                             </tr>
-                        </thead>
+                          </thead>
+                          
                         <tbody id="pokemonTableBody"></tbody>
                     </table>
 

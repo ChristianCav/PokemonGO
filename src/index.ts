@@ -118,24 +118,102 @@ function displayPokedex(pokedex: Pokedex): void {
   }
 }
 
-// function to handle the search button click
 function handleSearchClick(): void {
   const input = document.getElementById("searchBar") as HTMLInputElement | null;
-  // if no input, return
+  
+  // Get advanced search parameters
+  const minLongitude = (document.getElementById("minLongitude") as HTMLInputElement)?.value;
+  const maxLongitude = (document.getElementById("maxLongitude") as HTMLInputElement)?.value;
+  const minLatitude = (document.getElementById("minLatitude") as HTMLInputElement)?.value;
+  const maxLatitude = (document.getElementById("maxLatitude") as HTMLInputElement)?.value;
+  const timeStart = (document.getElementById("timePickerStart") as HTMLInputElement)?.value;
+  const timeEnd = (document.getElementById("timePickerEnd") as HTMLInputElement)?.value;
+  // Get type filter from your existing dropdown
+  const typeFilter = (document.getElementById("typeInput") as HTMLSelectElement)?.value;
+  
+  // If no input, return
   if (!input) return;
-
-  // get val of input and trim
+  
+  // Get val of input and trim
   const query = input.value.trim();
-  // if no query, alert user to enter a pokemon name
-  if (query.length === 0) {
-    alert("Please enter a Pokémon name before searching.");
-    return;
+  
+  // Build the URL with search parameters
+  let searchParams = new URLSearchParams();
+  searchParams.set("page", "1"); // Always start with page 1 for a new search
+  
+  // Add name search if provided
+  if (query.length > 0) {
+    searchParams.set("search", query);
+  }
+  
+  // Add type filter if provided
+  if (typeFilter) {
+    searchParams.set("type", typeFilter);
   }
 
-  // redirect to the table page with the search query as a parameter
-  // always start with page 1 for a new search
-  const encodedQuery = encodeURIComponent(query);
-  window.location.href = `../html/table.html?search=${encodedQuery}&page=1`;
+  // Add coordinate filters if both min and max are provided
+  if (minLongitude && maxLongitude) {
+    // Validate longitude values
+    const minLong = parseFloat(minLongitude);
+    const maxLong = parseFloat(maxLongitude);
+    
+    if (isNaN(minLong) || isNaN(maxLong)) {
+      alert("Longitude values must be numbers.");
+      return;
+    }
+    
+    if (minLong < -180 || minLong > 180 || maxLong < -180 || maxLong > 180) {
+      alert("Longitude values must be between -180 and 180.");
+      return;
+    }
+    
+    searchParams.set("minLong", minLongitude);
+    searchParams.set("maxLong", maxLongitude);
+  } else if (minLongitude || maxLongitude) {
+    alert("Please enter both minimum and maximum longitude values.");
+    return;
+  }
+  
+  if (minLatitude && maxLatitude) {
+    // Validate latitude values
+    const minLat = parseFloat(minLatitude);
+    const maxLat = parseFloat(maxLatitude);
+    
+    if (isNaN(minLat) || isNaN(maxLat)) {
+      alert("Latitude values must be numbers.");
+      return;
+    }
+    
+    if (minLat < -90 || minLat > 90 || maxLat < -90 || maxLat > 90) {
+      alert("Latitude values must be between -90 and 90.");
+      return;
+    }
+    
+    searchParams.set("minLat", minLatitude);
+    searchParams.set("maxLat", maxLatitude);
+  } else if (minLatitude || maxLatitude) {
+    alert("Please enter both minimum and maximum latitude values.");
+    return;
+  }
+  
+  // Add time filters if both start and end are provided
+  if (timeStart && timeEnd) {
+    // Convert HTML time input (HH:MM) to the format needed (HH:MM:00 AM/PM)
+    searchParams.set("timeStart", formatTimeForFilter(timeStart));
+    searchParams.set("timeEnd", formatTimeForFilter(timeEnd));
+  } else if (timeStart || timeEnd) {
+    alert("Please enter both start and end time values.");
+    return;
+  }
+  
+  // If no search parameters were provided, prompt user
+  if (searchParams.toString() === "page=1") {
+    alert("Please enter a search term or use the advanced search options.");
+    return;
+  }
+  
+  // Redirect to the table page with all the parameters
+  window.location.href = `../html/table.html?${searchParams.toString()}`;
 }
 
 // populates the table with the search results
@@ -173,6 +251,7 @@ function populateTableWithResults(data: Data): void {
 
   console.log(searchResults);
 
+  
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
     tableBody.innerHTML =
@@ -239,6 +318,29 @@ function populateTableWithResults(data: Data): void {
 
     tableBody.innerHTML += rowHTML;
   }
+}
+// Helper function to convert HTML time input format (HH:MM) to the format needed by filterTimes (HH:MM:00 AM/PM)
+function formatTimeForFilter(timeString: string): string {
+  // Handle input with or without seconds (e.g., "14:23" or "14:23:45")
+  const [hoursStr, minutesStr] = timeString.split(':');
+  const hours = Number(hoursStr);
+  const minutes = Number(minutesStr);
+
+  // Convert to 12-hour format with AM/PM
+  let period = "AM";
+  let hours12 = hours;
+
+  if (hours >= 12) {
+    period = "PM";
+    hours12 = hours === 12 ? 12 : hours - 12;
+  }
+
+  if (hours12 === 0) {
+    hours12 = 12;
+  }
+
+  // Always set seconds to 00
+  return `${hours12}:${minutes.toString().padStart(2, '0')}:00 ${period}`;
 }
 
 // update the pagination buttons
