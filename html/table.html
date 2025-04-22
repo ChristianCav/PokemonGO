@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
-<body>
+<body onload="showPerformanceTime()">
     <!-- Title Bar -->
     <header class="bar">
         <a href="../html/index.html" class="logo">
@@ -30,7 +30,7 @@
 
     <div class="runtimeDisplayContainer">
         <h3>Runtime For Each Algorithm:</h3>
-        <button type="button" id="runtimeButton" onclick="nextRuntime()">Next </button>
+        <button type="button" id="runtimeButton" onclick="showPerformanceTime()">Next </button>
         <br />
         <p class="runtimeDisplay"></p>
     </div>

@@ -1,31 +1,6 @@
 // variable for global filter
 let globalFilters: any[] | null = null;
 
-// variable for the current name filter
-let activeNameFilter: string | null = null;
-
-// variable for the current time filter
-let activeTimeFilter: {
-  from: string | null;
-  to: string | null;
-} = { from: null, to: null };
-
-// variable for the current coords filter
-let activeCoordFilter: {
-  fromLat: number | null;
-  toLat: number | null;
-  fromLng: number | null;
-  toLng: number | null;
-} = {
-  fromLat: null,
-  toLat: null,
-  fromLng: null,
-  toLng: null,
-};
-
-// pokemon coordinates closest to the user inputted coordinates
-let pokemonCoords: PokemonCoordWithDistance[] = [];
-
 // start the map at a default location
 var map = L.map("map").setView([20, 0], 3);
 
@@ -54,16 +29,26 @@ map.on("zoomend", () => {
   if (zoomDiv) zoomDiv.innerHTML = `Zoom Level: ${map.getZoom()}`;
 });
 
-let pokedexData: Pokedex; // Store the Pokedex data
-let pokemonLocationData: Data; // Store the pokemon location data
+let pokedexData: Pokedex; // store the Pokedex data
+let pokemonLocationData: Data; // store the pokemon location data
 
-// function that zooms into the country of input
-function goToCountry(country: string, filters: any[] | null = globalFilters) {
-  // make sure the map is zoomed in enough, pervents overloading of the markers
-
+/**
+ * Function to go to a specific country on the map and render the pokemon markers
+ * function runs in O(n) time, as it loops through all the pokemon location data once
+ * @param country the country to go to
+ * @param filters filters to apply to the pokemon markers
+ * @returns void
+ */
+function goToCountry(
+  country: string,
+  filters: any[] | null = globalFilters
+): void {
+  let startTime = performance.now();
+  // clear the markers and polyline on the map
   clearMarkers();
   clearPolyline();
 
+  // make sure the map is zoomed in enough, pervents overloading of the markers
   if (map.getZoom() > 3) {
     let location = (
       country ||
@@ -89,8 +74,8 @@ function goToCountry(country: string, filters: any[] | null = globalFilters) {
         // checks if data actually exists
         if (data.length > 0) {
           // get the lat and lng of the country and zoom map to it
-          const lat = parseFloat(data[0].lat);
-          const lng = parseFloat(data[0].lon);
+          const lat: number = parseFloat(data[0].lat);
+          const lng: number = parseFloat(data[0].lon);
           map.setView([lat, lng], map.getZoom());
 
           // get the data for the pokedex
@@ -136,16 +121,28 @@ function goToCountry(country: string, filters: any[] | null = globalFilters) {
     // gives an alert if the user does not zoom in enough
     alert("Please zoom in to at least level 4 before entering a country name.");
   }
+  let endTime = performance.now();
+  let time: Triplet = new Triplet("Go To Country: ", endTime - startTime, true);
+  performanceTime.enqueue(time);
 }
 
-// function that displays all the pokemon markers
+/**
+ * function to render the pokemon markers on the map
+ * function runs in O(n) time, as it loops through all the pokemon location data once
+ * @param pokedex pokedex data
+ * @param locationData location data
+ * @param filters filters to apply to the pokemon markers
+ */
 function renderPokemonMarkers(
   pokedex: Pokedex,
   locationData: Data,
   filters?: any[] | null
-) {
-  // clear the markers
+): void {
+  let startTime = performance.now();
+
+  // clear the markers and polyline on the map
   clearMarkers();
+  clearPolyline();
 
   // get the current bounds of the map (what is currently visible)
   const bounds = map.getBounds();
@@ -153,31 +150,33 @@ function renderPokemonMarkers(
   // cycles through the length of location data
   for (let i = 0; i < locationData.pokemonId.length; i++) {
     // constant for the pokemonId
-    const pokemonId = locationData.pokemonId[i];
+    const pokemonId: number = locationData.pokemonId[i];
 
     // ensures the pokemon is in gen 1 (as the data has up to gen 8)
     if (pokemonId >= 1 && pokemonId <= 149) {
       // set the lat, lng and time of the current pokemon
-      const lat = locationData.latitude[i];
-      const lng = locationData.longitude[i];
-      const time = locationData.localTime?.[i];
+      const lat: number = locationData.latitude[i];
+      const lng: number = locationData.longitude[i];
+      const time: string = locationData.localTime?.[i];
 
       // if the bounds of the map does not contain the pokemon, skip it
+      // contains is a method from leaflet that checks if the bounds of the map contains the coordinates
+      // this is used to prevent overloading the map with markers
       if (!bounds.contains([lat, lng])) continue;
 
       // if the bounds do contain it, get the index of the pokemonId in the pokedex
-      const index = pokedex.ids.indexOf(pokemonId);
+      const index: number = pokedex.ids.indexOf(pokemonId);
       if (index === -1) continue;
 
       // get the name, image and id of the pokemon
-      const name = pokedex.names_english[index];
-      const image = pokedex.images[index];
-      const id = pokedex.ids[index];
+      const name: string = pokedex.names_english[index];
+      const image: string = pokedex.images[index];
+      const id: number = pokedex.ids[index];
 
       // apply the filters the user inputted, ensure the filters exist and has parameters within it
       if (filters && filters.length > 0) {
         // set a constant for the first filter
-        const f = filters[0];
+        const f: any = filters[0];
 
         // name filter, if does not apply to current pokemon, skip it
         // sets name to lowercase to ensure filter is not case senstive
@@ -194,16 +193,16 @@ function renderPokemonMarkers(
         // Latitude filter, if does not apply skip it
         if (f.fromLat && f.toLat) {
           // parse the latitude values to float, works with the decimals in the dataset
-          const fromLat = parseFloat(f.fromLat);
-          const toLat = parseFloat(f.toLat);
+          const fromLat: number = parseFloat(f.fromLat);
+          const toLat: number = parseFloat(f.toLat);
           if (lat < fromLat || lat > toLat) continue;
         }
 
         // Longitude filter
         if (f.fromLng && f.toLng) {
           // parse the longitude values to float, works with the decimals in the dataset
-          const fromLng = parseFloat(f.fromLng);
-          const toLng = parseFloat(f.toLng);
+          const fromLng: number = parseFloat(f.fromLng);
+          const toLng: number = parseFloat(f.toLng);
           if (lng < fromLng || lng > toLng) continue;
         }
       }
@@ -223,10 +222,22 @@ function renderPokemonMarkers(
       L.marker([lat, lng]).addTo(map).bindPopup(marker);
     }
   }
+  let endTime = performance.now();
+  let time: Triplet = new Triplet(
+    "Render Pokemon Markers: ",
+    endTime - startTime,
+    false
+  );
+  performanceTime.enqueue(time);
 }
 
-// function that receives the users filters and applies it
-function applyFilters() {
+/**
+ * function to get the filters from the input fields and store them in the globalFilters variable
+ * function runs in O(1) time, as it only does simple operations
+ * @returns void
+ */
+function applyFilters(): void {
+  let startTime = performance.now();
   // constants for the input fields
   const nameInput = document.getElementById("nameFilter") as HTMLInputElement;
   const fromTimeInput = document.getElementById(
@@ -274,9 +285,16 @@ function applyFilters() {
     // this will ensure the filters are applied to the markers
     goToCountry(countryInput.value.trim(), globalFilters);
   }
+  let endTime = performance.now();
+  let time: Triplet = new Triplet("Apply Filters:", endTime - startTime, false);
+  performanceTime.enqueue(time);
 }
 
-// clears the markers on the map
+/**
+ * function to clear the markers on the map
+ * function runs in O(n) time, as it loops through all the layers on the map
+ * for our purposes, this is O(1) as we only have 1 marker at a time
+ */
 function clearMarkers() {
   map.eachLayer((layer) => {
     if (layer instanceof L.Marker) {
@@ -285,7 +303,11 @@ function clearMarkers() {
   });
 }
 
-// clears the polyline on the map
+/**
+ * function to clear the polyline on the map
+ * function runs in O(n) time, as it loops through all the layers on the map
+ * for our purposes, this is O(1) as we only have 1 polyline at a time
+ */
 function clearPolyline() {
   map.eachLayer((layer) => {
     if (layer instanceof L.Polyline) {
@@ -294,7 +316,13 @@ function clearPolyline() {
   });
 }
 
-// converts 12 hours to 24 hours time
+/**
+ * function to convert 12 hour format to 24 hour format
+ * function runs in O(1) time, as it only does simple operations
+ * @param time12h time in 12 hour format (eg. "11:23:40 AM")
+ * @returns time in 24 hour format (eg. "23:23:40")
+ */
+
 function convert12to24(time12h: string): string {
   // Split 12 hour format into its components
   let [time, AMorPM] = time12h.split(" ");
@@ -312,22 +340,9 @@ function convert12to24(time12h: string): string {
   return `${hours}:${minutes}:${seconds}`;
 }
 
-// class to represent pokemon coordinates with distance and species
-class PokemonCoordWithDistance {
-  lat: number;
-  lng: number;
-  distance: number;
-  species: string;
-
-  constructor(lat: number, lng: number, distance: number, species: string) {
-    this.lat = lat;
-    this.lng = lng;
-    this.distance = distance;
-    this.species = species;
-  }
-}
-
-// function just to toggle visibility of instructions
+/**
+ * function to toggle the instructions on and off
+ */
 function toggleInstructions(): void {
   const instructions = document.querySelector(
     ".instructions"
@@ -338,15 +353,19 @@ function toggleInstructions(): void {
   }
 }
 
-// gets the shortest distance to a pokemon from the point user inputted
+/**
+ * function to get the shortest distance to catch x number of pokemons of the same type from the users inputted coordinates (1km = $1)
+ * function runs in O(n^2) time, as it loops through all the pokemon location data for each pokemon
+ * @returns void
+ */
 function shortestCandyDist(): void {
+  let startTime = performance.now();
   // get user inputs
   const latInput: number = parseFloat(
     (document.getElementById("candiesLatitudeFilter") as HTMLInputElement).value
   );
   const lngInput: number = parseFloat(
-    (document.getElementById("candiesLongitudeFilter") as HTMLInputElement)
-      .value
+    (document.getElementById("candiesLongitudeFilter") as HTMLInputElement).value
   );
   const candiesPokemon: string = (
     (document.getElementById("candiesPokemon") as HTMLInputElement).value || ""
@@ -394,43 +413,50 @@ function shortestCandyDist(): void {
       pokemonLocationData = locationData;
 
       // constants for the path and current location
-      const pathCoordinates: [number, number][] = [[latInput, lngInput]];
-      let currentLat = latInput;
-      let currentLng = lngInput;
-      let totalDistance = 0;
-      let foundCount = 0;
+      const pathCoordinates: CoordList = new CoordList([latInput, lngInput]);
+      let currentLat: number = latInput;
+      let currentLng: number = lngInput;
+      let totalDistance: number = 0;
+      let foundCount: number = 0;
       // stores the indices of caught pokemon
-      // this is used to ensure the same pokemon is not caught multiple times
-      const caughtIndices = new Array<number>();
+      const caughtIndices: CaughtIndices = new CaughtIndices(numOfPokemons);
+      // stores the target pokemon ID once found
+      let targetPokemonId: number | null = null;
 
       // loop while the number of found pokemon is less than the number of pokemon to find
       while (foundCount < numOfPokemons) {
-        let closestIndex = -1;
-        let minDistance = Infinity;
+        let closestIndex: number = -1;
+        let minDistance: number = Infinity;
         let closestPokemon: PokemonCoordWithDistance | null = null;
 
         // find nearest matching pokemon that hasn't been caught yet
         for (let i = 0; i < pokemonLocationData.pokemonId.length; i++) {
-          // skip already caught pokemon
-          if (caughtIndices.indexOf(i) !== -1) continue;
+          // skip already caught spawn points
+          if (caughtIndices.containsSpawn(i)) continue;
 
-          const pokemonId = pokemonLocationData.pokemonId[i];
-          const index = pokedexData.ids.indexOf(pokemonId);
+          const pokemonId: number = pokemonLocationData.pokemonId[i];
+          const index: number = pokedexData.ids.indexOf(pokemonId);
 
           // if the index exists, get the species of the pokemon
           if (index !== -1) {
-            const species = pokedexData.names_english[index];
-            if (species.toLowerCase().includes(candiesPokemon)) {
-              const pokemonLat = pokemonLocationData.latitude[i];
-              const pokemonLng = pokemonLocationData.longitude[i];
+            const species: string = pokedexData.names_english[index];
+            
+            // find pokemon id if not already found
+            if (targetPokemonId === null && species.toLowerCase().includes(candiesPokemon)) {
+              targetPokemonId = pokemonId;
+            }
+            
+            // only consider exact matches to the target pokemon ID
+            if (pokemonId === targetPokemonId) {
+              const pokemonLat: number = pokemonLocationData.latitude[i];
+              const pokemonLng: number = pokemonLocationData.longitude[i];
               // calculate distance from current location to pokemon
-              // using the map's distance method
               const distance = map.distance(
                 [currentLat, currentLng],
                 [pokemonLat, pokemonLng]
               );
 
-              // if the distance is less than the current minimum distance, set the closest pokemon to the current pokemon
+              // if the distance is less than the current minimum distance, set the closest pokemon
               if (distance < minDistance) {
                 minDistance = distance;
                 closestIndex = i;
@@ -454,16 +480,18 @@ function shortestCandyDist(): void {
         // set the current location to the closest pokemon
         currentLat = closestPokemon.lat;
         currentLng = closestPokemon.lng;
-        pathCoordinates.push([currentLat, currentLng]);
-        caughtIndices.push(closestIndex);
+        pathCoordinates.add(currentLat, currentLng);
+        caughtIndices.add(closestIndex, pokemonLocationData.pokemonId[closestIndex]);
 
         // get pokemon image
-        const pokemonIndex = pokedexData.ids.indexOf(
+        const pokemonIndex: number = pokedexData.ids.indexOf(
           pokemonLocationData.pokemonId[closestIndex]
         );
-        const image = pokedexData.images[pokemonIndex];
+        const image: string = pokedexData.images[pokemonIndex];
 
-        // add marker to the map
+        // add marker to the map with debug info
+        console.log(`Caught #${foundCount}: ${closestPokemon.species} (ID: ${pokemonLocationData.pokemonId[closestIndex]}) at index ${closestIndex}`);
+        
         L.marker([currentLat, currentLng]).addTo(map).bindPopup(`
           <div style="text-align:center;">
             <img src="${image}" width="96" height="96">
@@ -477,8 +505,11 @@ function shortestCandyDist(): void {
       }
 
       // draw path on the map if there are more than 1 coordinate in there
-      if (pathCoordinates.length > 1) {
-        L.polyline(pathCoordinates, { color: "blue", weight: 3 }).addTo(map);
+      if (pathCoordinates.size() > 1) {
+        L.polyline(pathCoordinates.toLeafletPath(), {
+          color: "blue",
+          weight: 3,
+        }).addTo(map);
       }
 
       // show results as a alert
@@ -502,15 +533,28 @@ function shortestCandyDist(): void {
       console.error("Error loading data:", error);
       alert("Failed to load pokemon data");
     });
+
+  let endTime = performance.now();
+  let time: Triplet = new Triplet(
+    "Shortest Candy Distance: ",
+    endTime - startTime,
+    true
+  );
+  performanceTime.enqueue(time);
 }
 
-// function that gets the shortest distance to catch all 149 pokmeons in order from the point user inputted
+/**
+ * function to find the shortest distance to catch all the pokemons from the user inputted coordinates (1km = $1)
+ * function runs in O(n^2) time, as it loops through all the pokemon location data for each pokemon
+ * @returns void
+ */
 function shortestDist(): void {
+  let startTime = performance.now();
   // constants for the user inputted coordinates
-  const startLat = parseFloat(
+  const startLat: number = parseFloat(
     (document.getElementById("SDLatitudeFilter") as HTMLInputElement).value
   );
-  const startLng = parseFloat(
+  const startLng: number = parseFloat(
     (document.getElementById("SDLongitudeFilter") as HTMLInputElement).value
   );
 
@@ -546,47 +590,49 @@ function shortestDist(): void {
       pokemonLocationData = locationData;
 
       // create a list of all unique pokemon using their ID and pokemon names
-      const pokemonToCatch: { id: number; species: string }[] = []; // array of objects, best to store as I need the info together
+      const pokemonToCatch = new PokemonToCatch();
       for (let id = 1; id <= 149; id++) {
-        const index = pokedexData.ids.indexOf(id);
-        if (index !== -1) {
-          pokemonToCatch.push({
-            id,
-            species: pokedexData.names_english[index],
-          });
+        for (let i = 0; i < pokedexData.ids.length; i++) {
+          if (pokedexData.ids[i] === id) {
+            pokemonToCatch.add(id, pokedexData.names_english[i]);
+            break;
+          }
         }
       }
 
       // create a list of all the pokemon coordinates
-      const pathCoordinates: [number, number][] = [[startLat, startLng]];
-      let currentLat = startLat;
-      let currentLng = startLng;
-      let totalDistance = 0;
-      const caughtIndices: number[] = [];
+      const pathCoordinates: CoordList = new CoordList([startLat, startLng]);
+      let currentLat: number = startLat;
+      let currentLng: number = startLng;
+      let totalDistance: number = 0;
+      // stores the indices of caught pokemons
+      const caughtIndices: CaughtIndices = new CaughtIndices(149);
 
       // while we haven't caught all pokemon
-      while (caughtIndices.length < pokemonToCatch.length) {
+      while (caughtIndices.size() < 149) {
         let closestPokemon: PokemonCoordWithDistance | null = null;
-        let closestPokemonIndex = -1;
-        let closestPokemonDataIndex = -1;
-        let minDistance = Infinity;
+        let closestPokemonIndex: number = -1;
+        let closestPokemonDataIndex: number = -1;
+        let minDistance: number = Infinity;
 
-        // Find the closest remaining pokemon
+        // find the closest remaining pokemon
         for (let i = 0; i < pokemonLocationData.pokemonId.length; i++) {
-          if (caughtIndices.indexOf(i) !== -1) continue;
+          // skip already caught spawn points
+          if (caughtIndices.containsSpawn(i)) continue;
 
-          const pokemonId = pokemonLocationData.pokemonId[i];
-          const pokedexIndex = pokedexData.ids.indexOf(pokemonId);
+          const pokemonId: number = pokemonLocationData.pokemonId[i];
+          const pokedexIndex: number = pokedexData.ids.indexOf(pokemonId);
 
-          // Only consider Gen 1 pokemon
-          if (pokedexIndex !== -1 && pokemonId <= 149) {
-            const pokemonLat = pokemonLocationData.latitude[i];
-            const pokemonLng = pokemonLocationData.longitude[i];
-            const distance = map.distance(
+          // only consider the first 149 pokemons and ones we haven't caught yet
+          if (pokedexIndex !== -1 && pokemonId <= 149 && !caughtIndices.containsPokemon(pokemonId)) {
+            const pokemonLat: number = pokemonLocationData.latitude[i];
+            const pokemonLng: number = pokemonLocationData.longitude[i];
+            const distance: number = map.distance(
               [currentLat, currentLng],
               [pokemonLat, pokemonLng]
             );
 
+            // if the distance is less than the current minimum distance, set the closest pokemon
             if (distance < minDistance) {
               minDistance = distance;
               closestPokemon = new PokemonCoordWithDistance(
@@ -601,35 +647,42 @@ function shortestDist(): void {
           }
         }
 
+        // if no matching pokemon is found, break the loop
         if (!closestPokemon) break;
 
-        // Update path and markers
-        caughtIndices.push(closestPokemonIndex);
+        // update path and markers
+        caughtIndices.add(closestPokemonIndex, pokemonLocationData.pokemonId[closestPokemonIndex]);
         totalDistance += closestPokemon.distance;
         currentLat = closestPokemon.lat;
         currentLng = closestPokemon.lng;
-        pathCoordinates.push([currentLat, currentLng]);
+        pathCoordinates.add(currentLat, currentLng);
 
-        // Add marker
+        // log the caught pokemon
+        console.log(`Caught #${caughtIndices.size()}: ${closestPokemon.species} (ID: ${pokemonLocationData.pokemonId[closestPokemonIndex]}) at index ${closestPokemonIndex}`);
+
+        // add marker to map
         L.marker([currentLat, currentLng]).addTo(map).bindPopup(`
           <div style="text-align:center;">
             <img src="${
               pokedexData.images[closestPokemonDataIndex]
             }" width="96" height="96">
-            <h3>${closestPokemon.species} (#${caughtIndices.length})</h3>
+            <h3>${closestPokemon.species} (#${caughtIndices.size()})</h3>
             <p>Distance: ${(closestPokemon.distance / 1000).toFixed(2)}km</p>
             <p>Total: $${(totalDistance / 1000).toFixed(2)}</p>
           </div>
         `);
       }
 
-      // Draw path if we caught at least one pokemon
-      if (pathCoordinates.length > 1) {
-        L.polyline(pathCoordinates, { color: "red", weight: 3 }).addTo(map);
+      // draw path if we caught at least one pokemon
+      if (pathCoordinates.size() > 1) {
+        L.polyline(pathCoordinates.toLeafletPath(), {
+          color: "red",
+          weight: 3,
+        }).addTo(map);
       }
 
       alert(
-        `Caught ${caughtIndices.length} pokemon\nTotal distance: ${(
+        `Caught ${caughtIndices.size()} unique pokemon\nTotal distance: ${(
           totalDistance / 1000
         ).toFixed(2)}km\nCost: $${(totalDistance / 1000).toFixed(2)}`
       );
@@ -637,31 +690,46 @@ function shortestDist(): void {
     .catch((error) => {
       console.error("Error loading data:", error);
     });
+    let endTime = performance.now();
+    let time : Triplet = new Triplet("Shortest Distance to Catch All Pokemons", endTime-startTime, true)
+    performanceTime.enqueue(time);
 }
-
-// function to find the nearest pokemon to the given coordinates, helper function for shortestDIst and shortestCandyDist
+/**
+ * function to find the nearest pokemon to the given coordinates, helper function for shortestDIst and shortestCandyDist
+ * functions runs in O(n) time, as it loops through all the pokemon location data once
+ * @param lat latitude coordinates of the inputted location
+ * @param lng longitude coordinates of the inputted location
+ * @param targetPokemon pokemon name to find
+ * @returns returns the closest pokemon coordinates and distance from the inputted location
+ *          or null if no pokemon is found
+ */
 function findNearestPokemon(
   lat: number,
   lng: number,
   targetPokemon: string
 ): PokemonCoordWithDistance | null {
+  
   // variables to store the closest pokemon
   let closest: PokemonCoordWithDistance | null = null;
-  let minDistance = Infinity;
+  let minDistance: number = Infinity;
 
   // loops through the pokemon location data and finds the closest pokemon to the user inputted coordinates
   for (let i = 0; i < pokemonLocationData.pokemonId.length; i++) {
-    const pokemonId = pokemonLocationData.pokemonId[i];
-    const index = pokedexData.ids.indexOf(pokemonId);
+    const pokemonId: number = pokemonLocationData.pokemonId[i];
+    const index: number = pokedexData.ids.indexOf(pokemonId);
 
     // if the index exists, get the species of the pokemon
     if (index !== -1) {
-      const species = pokedexData.names_english[index];
+      const species: string = pokedexData.names_english[index];
       // if the species of pokemon equals that of the target pokemon, get the lat and lng of the pokemon
       if (species.toLowerCase() === targetPokemon.toLowerCase()) {
-        const pokemonLat = pokemonLocationData.latitude[i];
-        const pokemonLng = pokemonLocationData.longitude[i];
-        const distance = map.distance([lat, lng], [pokemonLat, pokemonLng]);
+        const pokemonLat: number = pokemonLocationData.latitude[i];
+        const pokemonLng: number = pokemonLocationData.longitude[i];
+        // calculate the distance from the inputted coordinates to the pokemon coordinates, map.distance is a method that uses the haversine formula to calculate the distance between two points on the earth
+        const distance: number = map.distance(
+          [lat, lng],
+          [pokemonLat, pokemonLng]
+        );
 
         // if the distance is less than the current minimum distance, set the closest pokemon to the current pokemon
         if (distance < minDistance) {
@@ -678,35 +746,3 @@ function findNearestPokemon(
   }
   return closest;
 }
-
-  let pathCoordinates : List<PokemonCoordWithDistance> = new List<PokemonCoordWithDistance>();
-  // input mon, starting latitude, longitude, numtargets
-  let path : List<Pair> = grindingCandies(candiesPokemon, latInput, lngInput, numOfPokemons);
-  for(let i=path.size()-1; i>=0; i--){
-    let cur : Pair = path.get(i) as Pair
-    let distance : number = cur.val;
-    pathCoordinates.push(new PokemonCoordWithDistance(data.latitude[cur.key], data.longitude[cur.key], distance, candiesPokemon));
-  }
-  let latlng : [number, number][] = []
-  for (let i = 0; i < pathCoordinates.size(); i++) {
-    let pokemon : PokemonCoordWithDistance = pathCoordinates.get(i) as PokemonCoordWithDistance;
-    let lat : number = pokemon.lat;
-    let lng : number = pokemon.lng;
-    let distance : number = pokemon.distance;
-    let species : string = pokemon.species;
-
-    const popupContent = `
-      <div style="text-align:center;">
-        <h3>${species}</h3>
-        <p>Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
-        <p>Distance: ${distance.toFixed(2)} meters</p>
-      </div>
-    `;
-    latlng.push([lat, lng]) // dont know if this data structure is nessasary for the polyline // must use push
-    L.marker([lat, lng]).addTo(map).bindPopup(popupContent);
-  }
-  // Create a polyline connecting the closest Pokémon
-  L.polyline(latlng, { color: 'blue', weight: 3 }).addTo(map);
-}
-
-

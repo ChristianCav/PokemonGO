@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 
-<body>
+<body onload="showPerformanceTime()">
   <!-- Title Bar -->
   <header class="bar">
     <a href="../html/index.html" class="logo">
@@ -36,6 +36,14 @@
       <img src="../images/pokeball.png" class="pokeball-icon" alt="Pokéball icon" />
     </h1>
   </div>
+
+  <div class="runtimeDisplayContainer">
+    <h3>Runtime For Each Algorithm:</h3>
+    <button type="button" id="runtimeButton" onclick="showPerformanceTime()">Next </button>
+    <br />
+    <p class="runtimeDisplay"></p>
+  </div>
+  
 
 
   <!-- Search Bar -->
