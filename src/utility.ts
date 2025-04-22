@@ -58,7 +58,7 @@ function toSeconds(time: string): number{
     // Split "11:23:40 AM" to ["11:23:40", "AM"]
     let [timePart, modifierPart] = time.split(' ');
     // Split "11:23:40" to [11, 23, 40]
-    let [hours, seconds, minutes] = timePart.split(':').map(Number);
+    let [hours, minutes, seconds] = timePart.split(':').map(Number);
     // Add 12 hours if the time is PM
     if(modifierPart === "PM" && hours !== 12){
         hours+=12
@@ -135,6 +135,15 @@ function indexConverter(indexes : number[], sortedIndex : number[]) : number[]{
     return newArray;
 }
 
+function indexConverterList(indexes : List<number>, sortedIndex : number[]) : List<number>{
+    let newArray : List<number> = new List<number>();
+    for(let i=0; i<indexes.size(); i++){
+        newArray.push(sortedIndex[indexes.get(i) as number]);
+    }
+    return newArray;
+}
+
+
 // returns the given array in ascending form
 // returns in indexed form
 // O(nlogn)
@@ -173,4 +182,13 @@ function haversine(lat1 : number, lon1 : number, lat2 : number, lon2 : number) :
 
     return distance;
 
+}
+
+// check if latitude and longitude valid
+function isValidLatitude(lat: number): boolean {
+    return lat >= -90 && lat <= 90;
+}
+  
+function isValidLongitude(lng: number): boolean {
+    return lng >= -180 && lng <= 180;
 }
