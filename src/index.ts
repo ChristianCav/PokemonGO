@@ -124,10 +124,38 @@ function handleSearchClick(): void {
   let input = document.getElementById("searchBar") as HTMLInputElement | null;
   let time1: string = (document.getElementById("timePickerStart") as HTMLInputElement).value;
   let time2: string = (document.getElementById("timePickerEnd") as HTMLInputElement).value;
-  let lng1: number = Number((document.getElementById("minLongitude") as HTMLInputElement).value);
-  let lng2: number = Number((document.getElementById("maxLongitude") as HTMLInputElement).value);
-  let lat1: number = Number((document.getElementById("minLatitude") as HTMLInputElement).value);
-  let lat2: number = Number((document.getElementById("maxLatitude") as HTMLInputElement).value);
+  let lng1: string | number | boolean = (document.getElementById("minLongitude") as HTMLInputElement).value;
+  let lng2: string | number | boolean = (document.getElementById("maxLongitude") as HTMLInputElement).value;
+  let lat1: string | number | boolean = (document.getElementById("minLatitude") as HTMLInputElement).value;
+  let lat2: string | number | boolean = (document.getElementById("maxLatitude") as HTMLInputElement).value;
+  if(lng1 === ""){
+    lng1 = false;
+  }
+  else{
+    lng1 = Number(lng1)
+  }
+
+  if(lng2 === ""){
+    lng2 = false;
+  }
+  else{
+    lng2 = Number(lng2);
+  }
+
+  if(lat1 === ""){
+    lat1 = false;
+  }
+  else{
+    lat1 = Number(lat1);
+  }
+
+  if(lat2 === ""){
+    lat2 = false;
+  }
+  else{
+    lat2 = Number(lat2);
+  }
+
   let type: string = (document.getElementById("typeInput") as HTMLInputElement).value;
   // if no input, return
   if (!input) return;
@@ -189,11 +217,10 @@ function populateTableWithResults(data: Data): void {
   // run filter functions to get the indexes of the pokemon that match all filter queries
 
   // start with all indexes as searchResults
-  let searchResultsList: List<number> = new List<number>();
+  let searchResults: number[] = new Array(99333)
   for(let k=0;k<99333;k++){
-    searchResultsList.push(k);
+    searchResults[k] = k;
   }
-  let searchResults: number[] = searchResultsList.getData();
 
   // if the user inputted a name query, filter it
   if(searchQuery){
@@ -214,7 +241,7 @@ function populateTableWithResults(data: Data): void {
     console.log(searchResults);
   }
   // if the user inputted coordinates, filter between those coordinates
-  if(Number(lat1Query) && Number(lat2Query) && Number(lng1Query) && Number(lng2Query)){
+  if(lat1Query !== "false" && lat2Query !== "false" && lng1Query !== "false" && lng2Query !== "false"){
     // filter by lng, lat 
     let lats = indexToData(searchResults, data.latitude);
     let lngs = indexToData(searchResults, data.longitude);

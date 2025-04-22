@@ -416,8 +416,9 @@ function filterType(types: any[], type: string): number[]{
     // store indexes
     let validIndexes: List<number> = new List<number>;
     // loop through the inputted pokemon
+    let capitalized = type.substring(0,1).toUpperCase() + type.substring(1,type.length);
     for(let i=0;i<types.length;i++){
-        if(types[i].includes(type)){
+        if(types[i].includes(capitalized)){
             validIndexes.push(i);
         }
     }
