@@ -203,8 +203,10 @@ function compareAll(index : number, name : string, type : string, time1 : string
 // checks for the type in an array
 // O(n) time but max types is 2 os bascially constant.
 function checkType(typeArray : string[], target : string) : number{
+    target = target.toLowerCase();
     for(let i=0; i<typeArray.length; i++){
-        if(typeArray[i] === target){
+        let compare : string = typeArray[i].toLowerCase();
+        if(compareLetter(compare, target) === 1){
             return 1;
         }
     }

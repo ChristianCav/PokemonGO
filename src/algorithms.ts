@@ -428,20 +428,20 @@ function filterTimes(times: string[], timeA: string, timeB: string): List<number
 
 // Returns indexes of pokemon that are an inputted type
 // O(n), since it looops through all given times once
-function filterType(types: any[], type: string): number[]{
+function filterType(types: string[][], type: string): List<number>{
     const startTime = performance.now();
     // store indexes
     let validIndexes: List<number> = new List<number>;
     // loop through the inputted pokemon
     for(let i=0;i<types.length;i++){
-        if(types[i].includes(type)){
+        if(checkType(types[i], type) === 1){
             validIndexes.push(i);
         }
     }
     const endTime = performance.now();
     let time : Triplet = new Triplet("Filter Type", endTime-startTime, false)
     performanceTime.enqueue(time);
-    return validIndexes.getData();
+    return validIndexes;
 }
 
 // filter pokemon by name
@@ -480,12 +480,15 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
     let returnIndexes : List<number> = new List<number>();
 
     // if it exists then make the compare that
+    // all ones that give sorted indexes as null are O(n) time to sort
+    // others are O(logn)
     if(name !== "") {
         foundIndexes = binarySearch(name, sortedData.names_english.key, compareAlphaAscendingSearch)
         sortedIndexes = sortedData.names_english.val;
     }
     else if(type !== ""){
-        
+        foundIndexes = filterType(data2.types, type);
+        sortedIndexes = null;
     }
     else if(time1 !== ""){
         foundIndexes = filterTimes(sortedData.localTime.key, time1, time2);
@@ -502,9 +505,12 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
         sortedIndexes = null;
     }
 
+    console.log(foundIndexes)
+
     if(foundIndexes !== null){
     // traverse found indexes to match them
     // O(n) worst case but smaller since the found indexes will guarentee one match 
+    // O(k) k being a constant that is based on the size of the filtered down array
         for(let i=0; i<foundIndexes!.size(); i++){
             let target : number = foundIndexes.get(i) as number;
             if(sortedIndexes !== null) target = sortedIndexes[target];
