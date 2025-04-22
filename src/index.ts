@@ -157,40 +157,38 @@ function handleSearchClick(): void {
     const minLong = parseFloat(minLongitude);
     const maxLong = parseFloat(maxLongitude);
     
-    if (isNaN(minLong) || isNaN(maxLong)) {
-      alert("Longitude values must be numbers.");
-      return;
-    }
-    
+    // checks if input is within the max and min longs
     if (minLong < -180 || minLong > 180 || maxLong < -180 || maxLong > 180) {
       alert("Longitude values must be between -180 and 180.");
       return;
     }
-    
+    // set the url query
     searchParams.set("minLong", minLongitude);
     searchParams.set("maxLong", maxLongitude);
+
+    // errors if there is no max or min longs
   } else if (minLongitude || maxLongitude) {
     alert("Please enter both minimum and maximum longitude values.");
     return;
   }
   
+  // check if there is a lat or min 
   if (minLatitude && maxLatitude) {
     // Validate latitude values
     const minLat = parseFloat(minLatitude);
     const maxLat = parseFloat(maxLatitude);
     
-    if (isNaN(minLat) || isNaN(maxLat)) {
-      alert("Latitude values must be numbers.");
-      return;
-    }
-    
+  // checks if input is within the max and min lats
     if (minLat < -90 || minLat > 90 || maxLat < -90 || maxLat > 90) {
       alert("Latitude values must be between -90 and 90.");
       return;
     }
     
+    // set the url query
     searchParams.set("minLat", minLatitude);
     searchParams.set("maxLat", maxLatitude);
+  
+    // errors if there is no max or min lats
   } else if (minLatitude || maxLatitude) {
     alert("Please enter both minimum and maximum latitude values.");
     return;
