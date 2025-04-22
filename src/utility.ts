@@ -58,7 +58,7 @@ function toSeconds(time: string): number{
     // Split "11:23:40 AM" to ["11:23:40", "AM"]
     let [timePart, modifierPart] = time.split(' ');
     // Split "11:23:40" to [11, 23, 40]
-    let [hours, seconds, minutes] = timePart.split(':').map(Number);
+    let [hours, minutes, seconds] = timePart.split(':').map(Number);
     // Add 12 hours if the time is PM
     if(modifierPart === "PM" && hours !== 12){
         hours+=12
@@ -76,7 +76,7 @@ function search<T>(arr : T[], val : string | number) : number[]{
     let startTime = performance.now();
     // check whether string or num and change function based off it
     let descension = (typeof val === 'string') ? compareAlphaDescending : descending;
-    let indexes : number[] = binarySearch(val, arr, descension);
+    let indexes : number[] = binarySearch(val, arr, descension).getData();
     let endTime = performance.now();
     let time : Triplet = new Triplet("Searching", endTime-startTime, true)
     performanceTime.enqueue(time);
@@ -173,4 +173,12 @@ function haversine(lat1 : number, lon1 : number, lat2 : number, lon2 : number) :
 
     return distance;
 
+}
+
+function sortedtoUnsortedIndexes(sortedIndexes: number[]){
+    let unsortedIndexes: List<number> = new List<number>;
+    for(let i=0;i<sortedIndexes.length;i++){
+        unsortedIndexes.push(sortedData.names_english.val[sortedIndexes[i]]);
+    }
+    return unsortedIndexes.getData();
 }

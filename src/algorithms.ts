@@ -6,18 +6,12 @@
 // since, you halve the search area every time, is it log2n,
 // and then + O(k), since it loops k more times, to find all k other occurences of the target
 // Takes 2-6 ms to run on 99000 data, using performance.now()
-function binarySearch(target: number | string, data: any[], compareFn: any, rightIndex?: number) : List<number>{
+function binarySearch(target: number | string, data: any[], compareFn: any) : List<number>{
     let startTime = performance.now();
     // left bound
     let left: number = 0;
     // right bound
-    let right: number;
-    if(rightIndex){
-        right = rightIndex-1
-    }
-    else{
-        right = data.length-1;
-    }
+    let right: number = data.length-1
     // stores indexes of targets found
     let foundIndexes: List<number> = new List<number>
     // stores current index of target
@@ -388,48 +382,11 @@ function twa(start : Point, target : number, arr : any[]){
 
 }
 
-// returns indexes of data with (lat, lng) between two inputted points
-// O(n), since it loops through all inputted data points once
-// returns indexes of unsorted data
-// 6 millisecond average runtime using performance.now()
-function filterCoords(latitudes: number[], unsortedLongitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number, latUnsortedIndexes: any[]): number[]{
-    let startTime = performance.now();
-    // store indexes of data that are within the two inputted points
-    // smallest latitude value of the two points
-    let minLat: number = Math.min(lat1,lat2);
-    // biggest latitude value of the two points
-    let maxLat: number = Math.max(lat1,lat2);
-    // smallest longitude value of the two points
-    let minLng: number = Math.min(lng1,lng2);
-    // biggest longitude value of the two points
-    let maxLng: number = Math.max(lng1, lng2);
-    // returns indexes of sorted lat
-    // find indexes that latitude is within the max and min lat
-    let latIndexes : number[] = binarySearchBetween(minLat, maxLat, latitudes, compareRange).getData();
-    // return -1 if no indexes are found
-    if(latIndexes[0] === -1){
-        return [-1];
-    }
-    let validIndexes: List<number> = new List<number>;
-    for(let i=0;i<latIndexes.length;i++){
-        // find the index of the sorted array index value, in the unsorted array
-        let unsortedLatIndex = latUnsortedIndexes[latIndexes[i]];
-        // find the corresponding longitude value
-        let longitude: number = unsortedLongitudes[unsortedLatIndex];
-        // if the longitude value is between the max and min, add the index to the array
-        if(longitude >= minLng && longitude <= maxLng){
-            validIndexes.push(unsortedLatIndex);
-        }
-    }
-    let endTime = performance.now();
-    let time : Triplet = new Triplet("Filter Coords", endTime-startTime, false)
-    performanceTime.enqueue(time);
-    return validIndexes.getData();
-}
+
+
 
 // Returns indexes of pokemon that were caught within 2 inputted times
 // O(log n), as it calls the binarySearchBetween function which is log n, and doesn't do any seperate loops itself
-// 
 function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     const startTime = performance.now();
     // store indexes of data within the 2 times
@@ -446,28 +403,22 @@ function filterTimes(times: string[], timeA: string, timeB: string): number[]{
     let maxTime: number = Math.max(aVal, bVal);
     // O(log n)
     validIndexes = binarySearchBetween(minTime, maxTime, times, compareRange, toSeconds);
-    let data = validIndexes.getData();
-    let unorderdIndexes : List<number> = new List<number>
-    for(let i=0;i<data.length;i++){
-        unorderdIndexes.push(sortedData.localTime.val[data[i]]);
-    }
     const endTime = performance.now();
     let time : Triplet = new Triplet("Filter Time", endTime-startTime, false)
     performanceTime.enqueue(time);
-    return unorderdIndexes.getData();
+    return validIndexes.getData();
 }
 
 // Returns indexes of pokemon that are an inputted type
 // O(n), since it looops through all given times once
-function filterType(pokemonIDs: number[], type: string): number[]{
+function filterType(types: any[], type: string): number[]{
     const startTime = performance.now();
     // store indexes
     let validIndexes: List<number> = new List<number>;
     // loop through the inputted pokemon
-    for(let i=0;i<pokemonIDs.length;i++){
-        let id = data.pokemonId[sortedData.names_english.val[pokemonIDs[i]]];
-        if(pokedex.types[id].includes(type)){
-            validIndexes.push(pokemonIDs[i]);
+    for(let i=0;i<types.length;i++){
+        if(types[i].includes(type)){
+            validIndexes.push(i);
         }
     }
     const endTime = performance.now();
@@ -476,11 +427,37 @@ function filterType(pokemonIDs: number[], type: string): number[]{
     return validIndexes.getData();
 }
 
-// indexes of sorted
+// filter pokemon by name
+// works with full name, or just starting letters
+// returns indexes in unsorted names_english array
+// O(log n + k), where k is the number of occurences, since it uses binarySearch
 function filterName(name: string, pokemon: any[]): number[]{
-    return binarySearch(name, pokemon, compareAlphaAscendingSearch).getData();
+    let sortedIndexes = binarySearch(name, pokemon, compareAlphaAscendingSearch).getData();
+    return sortedtoUnsortedIndexes(sortedIndexes);
 }
 
-function filterAll(name?: string, ){
-
+// returns indexes of data with (lat, lng) between two inputted points
+// O(n), since it loops through all inputted data points once
+function filterCoords(latitudes: number[], longitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number): number[]{
+    let startTime = performance.now();
+    // store indexes of data that are within the two inputted points
+    // smallest latitude value of the two points
+    let minLat: number = Math.min(lat1,lat2);
+    // biggest latitude value of the two points
+    let maxLat: number = Math.max(lat1,lat2);
+    // smallest longitude value of the two points
+    let minLng: number = Math.min(lng1,lng2);
+    // biggest longitude value of the two points
+    let maxLng: number = Math.max(lng1, lng2);
+    let validIndexes: List<number> = new List<number>;
+    // if lat is between max and min lat, and if lng is between max and min lng, add the index
+    for(let i=0;i<latitudes.length;i++){
+        if(latitudes[i] <= maxLat && latitudes[i] >= minLat && longitudes[i] >= minLng && longitudes[i] <= maxLng){
+            validIndexes.push(i);
+        }
+    }
+    let endTime = performance.now();
+    let time : Triplet = new Triplet("Filter Coords", endTime-startTime, false)
+    performanceTime.enqueue(time);
+    return validIndexes.getData();
 }
