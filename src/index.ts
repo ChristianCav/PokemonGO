@@ -152,10 +152,7 @@ function handleSearchClick(): void {
   if (typeFilter) {
     searchParams.set("type", typeFilter);
   }
-  
-  // Rest of your validation code for coordinates and times
-  // ...
-  
+
   // Add coordinate filters if both min and max are provided
   if (minLongitude && maxLongitude) {
     // Validate longitude values
@@ -223,86 +220,82 @@ function handleSearchClick(): void {
 
 // populates the table with the search results
 function populateTableWithResults(data: Data): void {
-  const path = window.location.pathname;
-  const page = path.substring(path.lastIndexOf("/") + 1);
-
+  // identify the current page
+  const path: string = window.location.pathname;
+  // get the last part of the path after the /
+  const page: string = path.substring(path.lastIndexOf("/") + 1);
+  // check if we are on the table page
   if (page !== "table.html") return;
 
   const tableBody = document.getElementById("pokemonTableBody");
+  // if no table body, return
   if (!tableBody) return;
 
+  // get the search query from the URL
   const urlParams = new URLSearchParams(window.location.search);
+  const searchQuery: string | null = urlParams.get("search");
+  const currentPage: number = parseInt(urlParams.get("page") || "1", 10);
 
-  // All filters from URL
-  const searchQuery = urlParams.get("search");
-  const typeFilter = urlParams.get("type");
-  const minLong = parseFloat(urlParams.get("minLong") || "");
-  const maxLong = parseFloat(urlParams.get("maxLong") || "");
-  const minLat = parseFloat(urlParams.get("minLat") || "");
-  const maxLat = parseFloat(urlParams.get("maxLat") || "");
-  const timeStart = urlParams.get("timeStart");
-  const timeEnd = urlParams.get("timeEnd");
-  const currentPage = parseInt(urlParams.get("page") || "1", 10);
-
-  let baseIndexes: number[] = Array.from({ length: data.latitude.length }, (_, i) => i);
-
-  // Filter by name
-  if (searchQuery) {
-    const nameIndexes = filterName(searchQuery, sortedData.names_english.key)
-      .map(i => sortedData.names_english.val[i]);
-    baseIndexes = baseIndexes.filter(i => nameIndexes.includes(i));
+  // if no search query, return and display error on tabel container
+  if (!searchQuery) {
+    tableBody.innerHTML =
+      "<tr><td colspan='5'>No search query found.</td></tr>";
+    return;
   }
+
+  // run the search function to get the indexes of the pokemon that match the search query
+  let searchResults: number[] = filterName(searchQuery, sortedData.names_english.key);
+  let filterNames = indexToData(searchResults, sortedData.names_english.key);
   
-  // Filter by type (expects indexes)
-  if (typeFilter) {
-    const typeIndexes = filterType(baseIndexes, typeFilter); // gets relative indexes
-    baseIndexes = typeIndexes.map(i => baseIndexes[i]); // convert back to absolute indexes
-  }
-  
-  // Filter by coordinates
-  if (!isNaN(minLong) && !isNaN(maxLong) && !isNaN(minLat) && !isNaN(maxLat)) {
-    baseIndexes = baseIndexes.filter(i =>
-      data.longitude[i] >= minLong &&
-      data.longitude[i] <= maxLong &&
-      data.latitude[i] >= minLat &&
-      data.latitude[i] <= maxLat
-    );
-  }
-  
-  // Filter by time (expects localTime: string[])
-  if (timeStart && timeEnd) {
-    const filteredByTime = filterTimes(
-      baseIndexes.map(i => data.localTime[i]), // create a filtered string[] from indexes
-      timeStart,
-      timeEnd
-    );
-    baseIndexes = filteredByTime.map(i => baseIndexes[i]); // map back to absolute indexes
-  }  
-
-  const resultsPerPage = 100;
-  const startIndex = (currentPage - 1) * resultsPerPage;
-  const endIndex = Math.min(startIndex + resultsPerPage, baseIndexes.length);
-  const currentPageResults = baseIndexes.slice(startIndex, endIndex);
-
-  // Page info
-  const pageInfo = document.getElementById("pageInfo");
-  if (pageInfo) {
-    pageInfo.textContent = `Page ${currentPage} of ${Math.ceil(baseIndexes.length / resultsPerPage)}`;
+  // if no results, display error on table container
+  if (searchResults.length === 0 || searchResults[0] === -1) {
+    tableBody.innerHTML =
+      "<tr><td colspan='5'>No Pokémon found matching your search.</td></tr>";
+    return;
   }
 
-  updatePaginationButtons(currentPage, baseIndexes.length, resultsPerPage, searchQuery || "");
-
-  // Step 8: Display the results
   tableBody.innerHTML = "";
 
-  for (const index of currentPageResults) {
-    const name = sortedData.names_english.key[sortedData.names_english.val.indexOf(index)];
-    const type = Array.isArray(data2.types[index]) ? data2.types[index].join("/") : data2.types[index];
-    const longitude = data.longitude[index]?.toFixed(4) ?? "-";
-    const latitude = data.latitude[index]?.toFixed(4) ?? "-";
-    const time = data.localTime[index] ?? "-";
+  // calculate the starting and ending indices for the current page
+  const resultsPerPage: number = 100;
+  const startIndex: number = (currentPage - 1) * resultsPerPage;
+  const endIndex: number = Math.min(startIndex + resultsPerPage, searchResults.length);
 
-    tableBody.innerHTML += `
+  // get the slice of results for the current page
+  const currentPageResults: number[] = searchResults.slice(startIndex, endIndex);
+
+  // display the current page information
+  const pageInfo = document.getElementById("pageInfo");
+  if (pageInfo) {
+    pageInfo.textContent = `Page ${currentPage} of ${Math.ceil(
+      searchResults.length / resultsPerPage
+    )}`;
+  }
+
+  // show or hide pagination buttons
+  updatePaginationButtons(
+    currentPage,
+    searchResults.length,
+    resultsPerPage,
+    searchQuery
+  );
+
+  // Populate the table with the current page results
+  for (const i of currentPageResults) {
+    const name: any = sortedData.names_english.key[i];
+    const originalIndex: any = sortedData.names_english.val[i];
+
+    const type: string = Array.isArray(data2.types[originalIndex])
+      ? data2.types[originalIndex].join("/")
+      : data2.types[originalIndex];
+
+    // if returns null then display a placeholder
+    const longitude: string = data.longitude[originalIndex]?.toFixed(4) ?? "-";
+    const latitude: string = data.latitude[originalIndex]?.toFixed(4) ?? "-";
+    const time: string = data.localTime[originalIndex] ?? "-";
+
+    // creates a new row for the table 
+    const rowHTML = `
       <tr>
         <td>${name}</td>
         <td>${type}</td>
@@ -311,9 +304,10 @@ function populateTableWithResults(data: Data): void {
         <td>${time}</td>
       </tr>
     `;
+
+    tableBody.innerHTML += rowHTML;
   }
 }
-
 // Helper function to convert HTML time input format (HH:MM) to the format needed by filterTimes (HH:MM:00 AM/PM)
 function formatTimeForFilter(timeString: string): string {
   // Handle input with or without seconds (e.g., "14:23" or "14:23:45")
