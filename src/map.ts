@@ -302,7 +302,6 @@ function shortestCandyDist(): void {
   for(let i=path.size()-1; i>=0; i--){
     let cur : Pair = path.get(i) as Pair
     let distance : number = cur.val;
-    console.log(cur)
     pathCoordinates.push(new PokemonCoordWithDistance(data.latitude[cur.key], data.longitude[cur.key], distance, candiesPokemon));
   }
   let latlng : [number, number][] = []

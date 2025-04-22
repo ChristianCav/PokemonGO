@@ -14,7 +14,6 @@ let sortedData: AllSorted = new AllSorted();
 let data2: Pokedex = new Pokedex();
 
 // presort all sorted data
-
 // KEY is ACTUAL VALUE
 // VAL is the INDEXES
 function presort() {
@@ -68,7 +67,11 @@ function presort() {
 // only take name and types as thats all we need for the table
 function precompile(): void {
   data2.names_english = findPokedex(pokedex.names_english);
-  data2.types = findPokedex(pokedex.types);
+  data2.types = new Array<string[]>(data2.names_english.length);
+  for(let i=0; i<data.localTime.length; i++){
+    let index : number = data.pokemonId[i];
+    data2.types[i] = pokedex.types[index];
+  }
 }
 
 // function to take the data and create new elements for each pokemon
@@ -91,7 +94,7 @@ function displayPokedex(pokedex: Pokedex): void {
   for (let i = 0; i < 149; i++) {
     // creates a string of the types of the pokemon
     let types: string = "";
-    const typeList: string = pokedex.types[i];
+    const typeList: string[] = pokedex.types[i];
 
     // splits the types by the comma and adds them to the string
     for (let t = 0; t < typeList.length; t++) {
@@ -120,26 +123,64 @@ function displayPokedex(pokedex: Pokedex): void {
 
 // function to handle the search button click
 function handleSearchClick(): void {
-  const input = document.getElementById("searchBar") as HTMLInputElement | null;
-  // if no input, return
-  if (!input) return;
+  // check if advanceed is on if so we need all the inputs
+  const advSearchBar = document.querySelector(".advSearchBar");
+  if(advSearchBar?.classList.contains('hidden')){
+    // when hidden requires name
+    const input = document.getElementById("searchBar") as HTMLInputElement | null;
+    // if no input, return
+    if (!input) return;
 
-  // get val of input and trim
-  const query = input.value.trim();
-  // if no query, alert user to enter a pokemon name
-  if (query.length === 0) {
-    alert("Please enter a Pokémon name before searching.");
-    return;
+    // get val of input and trim
+    const query = input.value.trim();
+    // if no query, alert user to enter a pokemon name
+    if (query.length === 0) {
+      alert("Please enter a Pokémon name before searching.");
+      return;
+    }
+
+    // redirect to the table page with the search query as a parameter
+    // always start with page 1 for a new search
+    const encodedQuery = encodeURIComponent(query);
+    window.location.href = `../html/table.html?search=${encodedQuery}&page=1`;
   }
+  else {
+    // not hidden
+    const nameInput = document.getElementById("searchBar") as HTMLInputElement | null;
+    const timeStartInput = document.getElementById("timePickerStart") as HTMLInputElement | null;
+    const timeEndInput = document.getElementById("timePickerEnd") as HTMLInputElement | null;
+    const minLngInput = document.getElementById("minLongitude") as HTMLInputElement | null;
+    const maxLngInput = document.getElementById("maxLongitude") as HTMLInputElement | null;
+    const minLatInput = document.getElementById("minLatitude") as HTMLInputElement | null;
+    const maxLatInput = document.getElementById("maxLatitude") as HTMLInputElement | null;
 
-  // redirect to the table page with the search query as a parameter
-  // always start with page 1 for a new search
-  const encodedQuery = encodeURIComponent(query);
-  window.location.href = `../html/table.html?search=${encodedQuery}&page=1`;
+    // check if they all exist
+    if(!nameInput || !timeStartInput || !timeEndInput || !minLngInput || !maxLngInput || !minLatInput || !maxLatInput) return;
+
+    // does not require all but one
+    let name : string = nameInput.value.trim().length === 0 ? "" : nameInput.value.trim();
+    let timeStart : string = (timeStartInput.value !== "") ? timeStartInput.value : "";
+    let timeEnd : string = (timeEndInput.value !== "") ? timeEndInput.value : "";
+    // allow decimals
+    let minLng : number = isValidLongitude(parseFloat(minLngInput.value)) ? parseFloat(minLngInput.value) : -1;
+    let maxLng : number = isValidLongitude(parseFloat(maxLngInput.value)) ? parseFloat(maxLngInput.value) : -1;
+    let minLat : number = isValidLatitude(parseFloat(minLatInput.value)) ? parseFloat(minLatInput.value) : -1;
+    let maxLat : number = isValidLatitude(parseFloat(maxLatInput.value)) ? parseFloat(maxLatInput.value) : -1;
+
+    // need at least 1 value
+    if(name === "" && (timeStart === "" || timeEnd === "") && (minLng === -1 || maxLng === -1 || minLat === -1 || maxLat === -1)) return;
+
+    // just add all the inputs together and split them a part after
+    let query : string = `${name}, ${timeStart}, ${timeEnd}, ${minLng}, ${maxLng}, ${minLat}, ${maxLat}`;
+
+    const encodedQuery = encodeURIComponent(query);
+    window.location.href = `../html/table.html?search=${encodedQuery}&page=1`;
+
+  }
 }
 
 // populates the table with the search results
-function populateTableWithResults(data: Data): void {
+function populateTableWithResults(): void {
   // identify the current page
   const path: string = window.location.pathname;
   // get the last part of the path after the /
@@ -300,7 +341,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (page === "table.html") {
     presort();
     precompile();
-    populateTableWithResults(data);
+    populateTableWithResults();
+    filterAll("char", "", "", "", -1, -1, -1, -1);
   }
   if (page === "map.html") {
     presort();
@@ -355,6 +397,8 @@ function toggleAdvancedSearch(): void {
     advSearchBar.classList.toggle("hidden");
   }
 }
+
+// DOENST WORK BECUASE PRESORT IS CALLED AFTER
 
 // grindingCandies("Eevee", data.latitude[0], data.longitude[0]);
 // test stuff

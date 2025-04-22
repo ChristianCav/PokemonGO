@@ -144,3 +144,44 @@ function compareTimes(time: number, min: number, max: number){
         return -1;
     }
 }
+
+// for the final find the rest of indexes
+function compareAll(index : number, name : string, type : string, time1 : string, time2 : string, lat1 : number, lon1 : number, lat2 : number, lon2 : number, sortedArrayIndexes : number[]): number{
+    // convert to original
+    let originalIndex : number = sortedArrayIndexes[index];
+
+    let check : number = 0;
+    // check everytype
+    // if it staifies give a increment
+    // if its not a requirement give it for free
+    if(name === "" || compareAlphaAscending(name, data2.names_english[originalIndex])) {
+        check++;
+    }
+    if(type === "" || checkType(data2.types[originalIndex], type) === 1){
+        check++;
+    }
+    if(time1 === "" || compareRange(toSeconds(data.localTime[index]), toSeconds(time1), toSeconds(time2))){
+        check++;
+    }
+    if(lat1 === -1){
+        check++;
+    }
+    if(check === 4){
+        return 1;
+    } 
+    else {
+        console.log(check)
+        return -1;
+    }
+}
+
+// checks for the type in an array
+// O(n) time but max types is 2 os bascially constant.
+function checkType(typeArray : string[], target : string) : number{
+    for(let i=0; i<typeArray.length; i++){
+        if(typeArray[i] === target){
+            return 1;
+        }
+    }
+    return -1;
+}

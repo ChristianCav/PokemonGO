@@ -76,7 +76,7 @@ function search<T>(arr : T[], val : string | number) : number[]{
     let startTime = performance.now();
     // check whether string or num and change function based off it
     let descension = (typeof val === 'string') ? compareAlphaDescending : descending;
-    let indexes : number[] = binarySearch(val, arr, descension);
+    let indexes : number[] = binarySearch(val, arr, descension).getData();
     let endTime = performance.now();
     let time : Triplet = new Triplet("Searching", endTime-startTime, true)
     performanceTime.enqueue(time);
@@ -135,6 +135,15 @@ function indexConverter(indexes : number[], sortedIndex : number[]) : number[]{
     return newArray;
 }
 
+function indexConverterList(indexes : List<number>, sortedIndex : number[]) : List<number>{
+    let newArray : List<number> = new List<number>();
+    for(let i=0; i<indexes.size(); i++){
+        newArray.push(sortedIndex[indexes.get(i) as number]);
+    }
+    return newArray;
+}
+
+
 // returns the given array in ascending form
 // returns in indexed form
 // O(nlogn)
@@ -173,4 +182,13 @@ function haversine(lat1 : number, lon1 : number, lat2 : number, lon2 : number) :
 
     return distance;
 
+}
+
+// check if latitude and longitude valid
+function isValidLatitude(lat: number): boolean {
+    return lat >= -90 && lat <= 90;
+}
+  
+function isValidLongitude(lng: number): boolean {
+    return lng >= -180 && lng <= 180;
 }

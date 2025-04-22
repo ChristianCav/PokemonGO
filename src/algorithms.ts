@@ -6,7 +6,7 @@
 // since, you halve the search area every time, is it log2n,
 // and then + O(k), since it loops k more times, to find all k other occurences of the target
 // Takes 2-6 ms to run on 99000 data, using performance.now()
-function binarySearch(target: number | string, data: any[], compareFn: any, rightIndex?: number) : List<number>{
+function binarySearchSingle(target: number | string, data: any[], compareFn: any, rightIndex?: number) : number{
     let startTime = performance.now();
     // left bound
     let left: number = 0;
@@ -18,15 +18,13 @@ function binarySearch(target: number | string, data: any[], compareFn: any, righ
     else{
         right = data.length-1;
     }
-    // stores indexes of targets found
-    let foundIndexes: List<number> = new List<number>
+
     // stores current index of target
     let foundIndex: number = -1;
 
     // check if the compareFn inputted is a function  
     if(typeof compareFn !== 'function'){
-        foundIndexes.push(-1);
-        return foundIndexes;
+        return -1;
     }
     while(left <= right){
         // find middle index
@@ -49,48 +47,76 @@ function binarySearch(target: number | string, data: any[], compareFn: any, righ
         }
     }
     if(foundIndex === -1){
-        foundIndexes.push(-1);
-        return foundIndexes;
+        return -1;
     }
-    // add the target's index to the foundIndexes
-    foundIndexes.push(foundIndex);
+    let endTime = performance.now();
+    let time : Triplet = new Triplet("Binary Search Single", endTime-startTime, false)
+    performanceTime.enqueue(time);
+    return foundIndex
+} 
 
+// O(n) time if all elements are the same,
+// since we have searched for an index in a sorted array that is correct
+// the elements beside it should all be the same attributes so loop both sides until we get them all
+function binarySearchFill(found : number, arr : any[], compareFn : any) : List<number>{
+    let startTime = performance.now();
+    let indexes : List<number> = new List<number>();
+    if(typeof compareFn !== 'function'){
+        indexes.push(-1);
+        return indexes;
+    }
     // traverse to the left of the found index and check if element is also the target 
     // if it is add it to foundIndexes, and keep looking left until the next element is not the target
-    let i: number = foundIndex -1;
-    while(i>=0 && compareFn(target,data[i]) ===0){
-        foundIndexes.push(i);
+    let i: number = found -1;
+    while(i>=0 && compareFn(arr[found],arr[i]) ===0){
+        indexes.push(i);
         i--;
     }
 
     // traverse to the right of the found index and check if element is also the target 
     // if it is add it to foundIndexes, and keep looking right until the next element is not the target
-    let j: number = foundIndex +1;
-    while(j<=data.length && compareFn(target,data[j]) === 0){
-        foundIndexes.push(j);
+    let j: number = found +1;
+    while(j<=arr.length && compareFn(arr[found],arr[j]) === 0){
+        indexes.push(j);
         j++;
     }
     let endTime = performance.now();
-    let time : Triplet = new Triplet("Binary Search", endTime-startTime, false)
+    let time : Triplet = new Triplet("Binary Search Fill", endTime-startTime, false)
     performanceTime.enqueue(time);
-    console.log(foundIndexes);
-    return foundIndexes;
-} 
+    console.log(indexes);
+    return indexes;
+}
 
-function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, convert?: any): List<number>{
+function binarySearch(target: number | string, sortedArr : any[], compareFn : any, rightIndex? : number) : List<number>{
+
+    let indexFound : number = binarySearchSingle(target, sortedArr, compareFn, rightIndex);
+    let foundIndexes : List<number> = new List<number>();
+    // check
+    if(indexFound === -1){
+        foundIndexes.push(-1);
+    }
+    else {
+        foundIndexes = binarySearchFill(indexFound, sortedArr, compareFn);
+    }
+    return foundIndexes;
+}
+
+function binarySearchBetween(min: number, max: number, data: any[], compareFn: any, convert?: any) : List<number>{
+    let index : number = binarySearchBetweenSingle(min, max, data, compareFn, convert);
+    return binarySearchFill(index, data, compareFn);
+}
+
+function binarySearchBetweenSingle(min: number, max: number, data: any[], compareFn: any, convert?: any): number{
     const startTime = performance.now();
     // left bound
     let left: number = 0;
     // right bound
     let right: number = data.length-1;
-    // stores indexes of targets found
-    let foundIndexes: List<number> = new List<number>
     // stores current index of target
     let foundIndex: number = -1;
     // check if the compareFn inputted is a function  
     if(typeof compareFn !== 'function'){
-        foundIndexes.push(-1);
-        return foundIndexes;
+        return -1;
     }
     if(typeof convert !== 'function'){
         convert = nothing;
@@ -117,31 +143,10 @@ function binarySearchBetween(min: number, max: number, data: any[], compareFn: a
         }
     }
     if(foundIndex === -1){
-        foundIndexes.push(-1);
-        return foundIndexes;
-    }
-    // add the target's index to the foundIndexes
-    foundIndexes.push(foundIndex);
-
-    // traverse to the left of the found index and check if element is also the target 
-    // if it is add it to foundIndexes, and keep looking left until the next element is not the target
-    let i: number = foundIndex -1;
-    while(i>=0 && compareFn(convert(data[i]), min, max) ===0){
-        foundIndexes.push(i);
-        i--;
+        return -1;
     }
 
-    // traverse to the right of the found index and check if element is also the target 
-    // if it is add it to foundIndexes, and keep looking right until the next element is not the target
-    let j: number = foundIndex +1;
-    while(j<data.length && compareFn(convert(data[j]), min, max) === 0){
-        foundIndexes.push(j);
-        j++;
-    }
-    const endTime = performance.now();
-    let time : Triplet = new Triplet("Binary Search Between", endTime-startTime, false)
-    performanceTime.enqueue(time);
-    return foundIndexes;
+    return foundIndex;
 }
 
 
@@ -368,26 +373,6 @@ function bfs(start : Point, target : number, indexes : number[]) : List<Pair>{
     
 }
 
-function twa(start : Point, target : number, arr : any[]){
-    let q : PriorityQueue<Point> = new PriorityQueue<Point>(hieuristicAscending);
-    q.enqueue(start); // queue the starting node
-    let prev : Array<number | null> = new Array(arr.length).fill(null);
-    let vis : Array<boolean> = new Array(arr.length).fill(false); // visited array
-    let gScore : Array<number> = new Array(arr.length).fill(-1); // cost from start
-    let hScore : Array<number> = new Array(arr.length).fill(0); // cost using hieuristic (cost from target)
-    let fScore : Array<number> = new Array(arr.length).fill(-1); // total estimated cost f() = g() + h()
-
-    // intialize first point
-    gScore[start.index] = 0;
-
-    while(!q.isEmpty()){
-        // grab front of q
-        let current : Point = q.dequeue() as Point;
-        
-    }
-
-}
-
 // returns indexes of data with (lat, lng) between two inputted points
 // O(n), since it loops through all inputted data points once
 // returns indexes of unsorted data
@@ -481,6 +466,59 @@ function filterName(name: string, pokemon: any[]): number[]{
     return binarySearch(name, pokemon, compareAlphaAscendingSearch).getData();
 }
 
-function filterAll(name?: string, ){
+// put -1 into input if nothing
+// put "" into input if nothing
+function filterAll(name : string, type : string, time1 : string, time2 : string, lat1 : number, lon1 : number, lat2 : number, lon2 : number) : List<number>{
+    let startTime = performance.now();
 
+    // create a sub data set to hold the guareented at least one matching attribute
+    let foundIndexes : List<number> | null;
+    let sortedIndexes : Pair | null;
+    
+    let returnIndexes : List<number> = new List<number>();
+
+    // if it exists then make the compare that
+    if(name !== "") {
+        foundIndexes = binarySearch(name, sortedData.names_english.key, compareAlphaAscendingSearch)
+        sortedIndexes = sortedData.names_english;
+    }
+    else if(type !== ""){}
+    else if(time1 !== ""){
+        foundIndexes = binarySearchBetween(toSeconds(time1), toSeconds(time2), sortedData.localTime.key, compareRange, toSeconds)
+        sortedIndexes = sortedData.localTime;
+    }
+    else if(lat1 !== -1){
+         // for lats
+        let minLat: number = Math.min(lat1,lat2);
+        // biggest latitude value of the two points
+        let maxLat: number = Math.max(lat1,lat2);
+        // dont need longitude because we can compare that after
+        // find indexes that latitude is within the max and min lat
+        foundIndexes = binarySearchBetween(minLat, maxLat, sortedData.latitude.key, compareRange)
+        sortedIndexes = sortedData.latitude;
+    }
+    // guarentee assignment
+    else{
+        foundIndexes = null;
+        sortedIndexes = null;
+    }
+
+    if(foundIndexes! !== null && sortedIndexes! !== null){
+    // traverse found indexes to match them
+    // O(n) worst case but smaller since the found indexes will guarentee one match 
+        for(let i=0; i<foundIndexes!.size(); i++){
+            let target : number = foundIndexes!.get(i) as number;
+            if(compareAll(target, name, type, time1, time2, lat1, lon1, lat2 , lon2, sortedIndexes!.val) === 1){
+                returnIndexes.push(target); // indexes the sorted indexes
+            }
+        }
+    }
+
+    returnIndexes = indexConverterList(returnIndexes, sortedIndexes!.val)
+
+    let endTime = performance.now();
+    let time : Triplet = new Triplet("Filter All", endTime-startTime, true)
+    performanceTime.enqueue(time);
+    console.log(returnIndexes);
+    return returnIndexes;
 }
