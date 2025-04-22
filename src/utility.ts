@@ -11,7 +11,7 @@ function indexToData(indexes : number[], arr : any[]) : Array<any> {
         result[i] = arr[indexes[i]];
     }
     let endTime = performance.now();
-    let time : Triplet = new Triplet("Index to Data", endTime-startTime, true)
+    let time : Triplet = new Triplet("Index to Data", endTime-startTime, false)
     performanceTime.enqueue(time);
     return result;
 }
@@ -45,7 +45,7 @@ function findPokedex(arr : any[]): string[]{
         newArr[i] = arr[data.pokemonId[i]-1];
     }
     let endTime = performance.now();
-    let time : Triplet = new Triplet("Find Pokedex Array", endTime-startTime, true)
+    let time : Triplet = new Triplet("Find Pokedex Array", endTime-startTime, false)
     performanceTime.enqueue(time);
     return newArr;
 }   
@@ -78,7 +78,7 @@ function search<T>(arr : T[], val : string | number) : number[]{
     let descension = (typeof val === 'string') ? compareAlphaDescending : descending;
     let indexes : number[] = binarySearch(val, arr, descension).getData();
     let endTime = performance.now();
-    let time : Triplet = new Triplet("Searching", endTime-startTime, true)
+    let time : Triplet = new Triplet("Searching", endTime-startTime, false)
     performanceTime.enqueue(time);
     return indexes; // indexes of sorted data
 }  
@@ -103,7 +103,7 @@ function sortDistance(arr : number[], lat : number, lon : number) : Pair{
     distanceIndexes = indexConverter(distanceIndexes, arr);    
 
     let endTime = performance.now();
-    let time : Triplet = new Triplet("Sorting Distance From Point", endTime-startTime, true)
+    let time : Triplet = new Triplet("Sorting Distance From Point", endTime-startTime, false)
     performanceTime.enqueue(time);
     return new Pair(distance, distanceIndexes);
 }
@@ -154,7 +154,7 @@ function sortDescending<T>(arr : T[]) : number[]{
     let sortedIndexes : number[] = sort(arr, decension);
 
     let endTime = performance.now();
-    let time : Triplet = new Triplet("Sort Descending", endTime-startTime, true)
+    let time : Triplet = new Triplet("Sort Descending", endTime-startTime, false)
     performanceTime.enqueue(time);
 
     return sortedIndexes

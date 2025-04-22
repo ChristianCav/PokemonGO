@@ -89,6 +89,8 @@ function binarySearchFill(found : number, arr : any[], compareFn : any) : List<n
 
 function binarySearch(target: number | string, sortedArr : any[], compareFn : any, rightIndex? : number) : List<number>{
 
+    let startTime = performance.now();
+
     let indexFound : number = binarySearchSingle(target, sortedArr, compareFn, rightIndex);
     let foundIndexes : List<number> = new List<number>();
     // check
@@ -98,6 +100,11 @@ function binarySearch(target: number | string, sortedArr : any[], compareFn : an
     else {
         foundIndexes = binarySearchFill(indexFound, sortedArr, compareFn);
     }
+
+    let endTime = performance.now();
+    let time : Triplet = new Triplet("Binary Search", endTime-startTime, false)
+    performanceTime.enqueue(time);
+
     return foundIndexes;
 }
 
@@ -174,6 +181,10 @@ function binarySearchBetweenSingle(min: number, max: number, data: any[], compar
     if(foundIndex === -1){
         return -1;
     }
+
+    let endTime = performance.now();
+    let time : Triplet = new Triplet("Binary Search Between Single", endTime-startTime, false)
+    performanceTime.enqueue(time);
 
     return foundIndex;
 }
@@ -521,8 +532,7 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
     }
 
     let endTime = performance.now();
-    let time : Triplet = new Triplet("Filter All", endTime-startTime, true)
+    let time : Triplet = new Triplet("Filter All", endTime-startTime, false)
     performanceTime.enqueue(time);
-    console.log(returnIndexes);
     return returnIndexes;
 }

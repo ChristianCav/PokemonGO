@@ -17,6 +17,7 @@ let data2: Pokedex = new Pokedex();
 // KEY is ACTUAL VALUE
 // VAL is the INDEXES
 function presort() {
+  let startTime = performance.now();
   sortedData.localTime = new Pair(
     indexToData(sort(data.localTime.map(toSeconds), ascending), data.localTime),
     sort(data.localTime.map(toSeconds), ascending)
@@ -61,17 +62,24 @@ function presort() {
     ),
     sort(findPokedex(pokedex.weights), ascending)
   );
+  let endTime = performance.now();
+  let time : Triplet = new Triplet("Presort Data", endTime-startTime, true)
+  performanceTime.enqueue(time);
 }
 
 // precompile the data to make it easier to access
 // only take name and types as thats all we need for the table
 function precompile(): void {
+  let startTime = performance.now();
   data2.names_english = findPokedex(pokedex.names_english);
   data2.types = new Array<string[]>(data2.names_english.length);
   for(let i=0; i<data.localTime.length; i++){
     let index : number = data.pokemonId[i];
     data2.types[i] = pokedex.types[index];
   }
+  let endTime = performance.now();
+  let time : Triplet = new Triplet("Precompile Data", endTime-startTime, true)
+  performanceTime.enqueue(time);
 }
 
 // function to take the data and create new elements for each pokemon
@@ -211,6 +219,8 @@ function populateTableWithResults(): void {
 
   // run filter functions to get the indexes of the pokemon that match all filter queries
 
+  let startTime = performance.now();
+
   // start with all indexes as searchResults
   let searchResultsList: List<number> = filterAll(searchQuery, typeQuery, time1Query, time2Query, Number(lat1Query), Number(lng1Query), Number(lat2Query), Number(lng2Query));
 
@@ -222,6 +232,10 @@ function populateTableWithResults(): void {
       "<tr><td colspan='5'>No Pokémon found matching your search.</td></tr>";
     return;
   }
+
+  let endTime = performance.now();
+  let time : Triplet = new Triplet("Populate All", endTime-startTime, true)
+  performanceTime.enqueue(time);
 
   tableBody.innerHTML = "";
 
@@ -391,6 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function showPerformanceTime(): void {
   console.log(performanceTime);
   const container = document.querySelector(".runtimeDisplay") as HTMLElement;
+  const headingTitle = document.getElementById("runTimeHeading") as HTMLElement;
 
   // if queue is empty, show message
   if (performanceTime.isEmpty()) {
@@ -398,17 +413,13 @@ function showPerformanceTime(): void {
     return;
   }
 
-  let output = "";
-  let firstIteration = true;
+  let mainFunction : string = "";
+  let output : string = "";
+  let firstIteration : boolean = true;
 
   // proceed until we find a main function (after the first one)
   while (!performanceTime.isEmpty()) {
     const current = performanceTime.peek() as Triplet;
-
-    // if we hit another main function after the first one, stop
-    if (!firstIteration && current.main) {
-      break;
-    }
 
     // remove and output the result
     const item = performanceTime.dequeue() as Triplet;
@@ -416,10 +427,16 @@ function showPerformanceTime(): void {
 
     // mark that we've passed the first iteration
     if (item.main) {
+      mainFunction = item.key;
       firstIteration = false;
     }
-  }
 
+    // if we hit another main function after the first one, stop
+    if (!firstIteration && current.main) {
+      break;
+    }
+  }
+  headingTitle.innerHTML = `Runtime For Each Algorithm: ${mainFunction}`;
   container.innerHTML = output;
 }
 
