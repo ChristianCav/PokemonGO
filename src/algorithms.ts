@@ -87,6 +87,8 @@ function binarySearchFill(target: number | string, found : number, arr : any[], 
     return indexes;
 }
 
+// O(logn) + O(k)
+// O(k) because the elements looped must not be all the same therefore smaller than O(n)
 function binarySearch(target: number | string, sortedArr : any[], compareFn : any, rightIndex? : number) : List<number>{
 
     let startTime = performance.now();
@@ -108,12 +110,14 @@ function binarySearch(target: number | string, sortedArr : any[], compareFn : an
     return foundIndexes;
 }
 
+// O(logn) + O(k)
+// full binary search between
 function binarySearchBetween(min: number, max: number, sorted: any[], compareFn: any) : List<number>{
     let index : number = binarySearchBetweenSingle(min, max, sorted, compareFn);
     return binarySearchFillBetween(index, sorted, min, max, compareFn);
 }
 
-// O(n) time if all elements are the same,
+// O(k) time if all elements are the same,
 // since we have searched for an index in a sorted array that is correct
 // the elements beside it should all be the same attributes so loop both sides until we get them all
 function binarySearchFillBetween(found : number, arr : any[], min : number, max : number, compareFn : any) : List<number>{
@@ -145,6 +149,9 @@ function binarySearchFillBetween(found : number, arr : any[], min : number, max 
     return indexes;
 }
 
+// binary search between some numbers to find the index that satisfies
+// returns the index
+// O(logn) time
 function binarySearchBetweenSingle(min: number, max: number, data: any[], compareFn: any): number{
     const startTime = performance.now();
     // left bound
@@ -189,7 +196,6 @@ function binarySearchBetweenSingle(min: number, max: number, data: any[], compar
     return foundIndex;
 }
 
-
 // returns indexes of sorted array
 // O(nlogn) time 
 // mergesort function --> O(logn) because it divides the array by 2 each time
@@ -221,7 +227,6 @@ function sort<T>(arr : T[], compare : any) : number[]{
     performanceTime.enqueue(time);
     return indexes;
 }
-
 
 function mergeSort<T>(arr : PairNode<T>[], leftStart : number, rightEnd : number, sortSpace : PairNode<T>[], compareFn : any) : PairNode<T>[]{
 
@@ -299,6 +304,7 @@ function merge<T>(arr: PairNode<T>[], leftStart : number, rightEnd : number, sor
 
     return arr;
 }
+
 // returns the closest same pokemon as the pokemon given
 // uses haversine formula with the given pokemon as the comparision
 // and sorts it by it
@@ -479,8 +485,10 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
     performanceTime.enqueue(time);
     return validIndexes;
 }
-// put -1 into input if nothing
+// put -1000 into input if nothing
 // put "" into input if nothing
+// first O(logn) or O(n) to first filter the indexes
+// then use 1 loop to filter the rest O(k) because it is already filtered guarenteing it to be less
 function filterAll(name : string, type : string, time1 : string, time2 : string, lat1 : number, lon1 : number, lat2 : number, lon2 : number) : List<number>{
     let startTime = performance.now();
 

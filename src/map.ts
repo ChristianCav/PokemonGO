@@ -295,7 +295,7 @@ function applyFilters(): void {
  * function runs in O(n) time, as it loops through all the layers on the map
  * for our purposes, this is O(1) as we only have 1 marker at a time
  */
-function clearMarkers() {
+function clearMarkers() : void {
   map.eachLayer((layer) => {
     if (layer instanceof L.Marker) {
       map.removeLayer(layer);

@@ -13,6 +13,9 @@ let performanceTime: Queue<Triplet> = new Queue();
 let sortedData: AllSorted = new AllSorted();
 let data2: Pokedex = new Pokedex();
 
+// global variable for searched results because we never change pages after searching once
+let searchedResults : number[];
+
 // presort all sorted data
 // KEY is ACTUAL VALUE
 // VAL is the INDEXES
@@ -129,11 +132,15 @@ function displayPokedex(pokedex: Pokedex): void {
   }
 }
 
-function toggleTableSort(): void {
+// handles the table headers being clicked on 
+// sorts by the heading ascending or descending
+function toggleTableSort(): number[] {
+  let newData : number[];
   // Determine which header button was clicked and its current sort direction
   const clickedHeader = document.activeElement; // Get the currently focused element (the clicked button)
   if (clickedHeader && clickedHeader.classList.contains('sortable-header')) {
-   const sortType = clickedHeader.textContent?.toLowerCase(); // Get the text content (e.g., "Pokémon") and lowercase it
+   const type : string = clickedHeader.textContent as string; // Get the text content (e.g., "Pokémon") and lowercase it
+   if(type === "type") return [-1];
    let isAscending = true; // Default to ascending
 
    // Check if the button currently has an 'ascending' or 'descending' class
@@ -150,16 +157,22 @@ function toggleTableSort(): void {
     clickedHeader.classList.add('ascending');
    }
 
-   // Assuming you have your Pokémon data stored in a variable called 'pokemonData'
-   // and a function 'sortData' defined elsewhere to handle the actual sorting
+  // Assuming you have your Pokémon data stored in a variable called 'pokemonData'
+  // and a function 'sortData' defined elsewhere to handle the actual sorting
   //  if (sortType && pokemonData) {
   //   const sortedData = sortData(sortType, isAscending, pokemonData);
   //   // Update the table with the 'sortedData'
   //   populateTable(sortedData); // You'll need a function to update the HTML table
   //  }
+
+    newData = sortType(type.toLowerCase(), isAscending, searchedResults);
+   
   }
+  else {
+    newData = [-1];
+  }
+  return newData;
 }
- 
 
 // function to handle the search button click
 function handleSearchClick(): void {
@@ -263,6 +276,9 @@ function populateTableWithResults(): void {
     let sortedResults = sort(indexToData(searchResults, data2.names_english), compareAlphaAscending);
     searchResults = indexConverter(sortedResults, searchResults);
   }
+
+  // set global
+  searchedResults = searchResults;
 
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
@@ -369,13 +385,6 @@ function formatTimeForFilter(timeString: string): string {
 // @param totalResults holds the total num of results
 // @param resultsPerPage holds the num of results per page
 // @param searchQuery holds the search query
-// @param typeQuery holds the type query
-// @param time1Query holds the time1 query
-// @param time2Query holds the time2 query
-// @param lat1Query holds the lat1 query
-// @param lat2hQuery holds the lat2 query
-// @param lng1Query holds the lng1 query
-// @param lng2Query holds the lng2 query
 // @param typeQuery holds the type query
 // @param time1Query holds the time1 query
 // @param time2Query holds the time2 query
@@ -524,125 +533,26 @@ function toggleAdvancedSearch(): void {
 function sortType(type : string, direction : boolean, givenData : any[]) : number[] {
   // sorted indexes based on the given data
   let sortedIndexes : number[];
+  let translatedData : any[];
   let comparetor : any;
-  if(type === "name"){
+  if(type === "pokemon"){
     comparetor = (direction) ? compareAlphaAscending : compareAlphaDescending;
+    translatedData = indexToData(givenData, data2.names_english);
   }
-  else if(type === "latitude" || type === "longitude"){
+  else if(type === "latitude"){
     comparetor = (direction) ? ascending : descending;
+    translatedData = indexToData(givenData, data.latitude);
+  }
+  else if(type === "longitude"){
+    comparetor = (direction) ? ascending : descending;
+    translatedData = indexToData(givenData, data.longitude);
   }
   else if(type === "time"){
     comparetor = (direction) ? ascendingTime : descendingTime;
+    translatedData = indexToData(givenData, data.localTime);
   }
-  sortedIndexes = sort(givenData, comparetor);
+  sortedIndexes = sort(translatedData!, comparetor);
+  console.log(indexToData(sortedIndexes, translatedData!));
   // return as original
   return indexConverter(sortedIndexes!, givenData);
 }
-// DOENST WORK BECUASE PRESORT IS CALLED AFTER
-
-// grindingCandies("Eevee", data.latitude[0], data.longitude[0]);
-// test stuff
-
-// console.log(filterTimes(sortedData.localTime.key, "12:00:10 AM", "2:46:40 AM"));
-// console.log(filterCoords(sortedData.latitude.key, data.longitude, 0, 0, 40, 60, sortedData.latitude.val)); // 4261
-// console.log(filterType(sortedData.ids.key, "Dragon"));
-// console.log(filterName("Pidgey", sortedData.names_english.key));
-/*
-console.log(pokedex.names_english[data.pokemonId[0]-1])
-let t = (grindingCandies(pokedex.names_english[data.pokemonId[0]-1], data.latitude[0], data.longitude[0]))
-console.log(t);
-
-/*
-// array of indexes 
-let g = sort(findPokedex(pokedex.names_english), compareAlphaAscending);
-console.log(g)
-let h = indexToData(g, findPokedex(pokedex.names_english));
-console.log(h)
-let k = binarySearch("P",h, compareAlphaDescending)
-console.log(k);
-console.log(indexToData(k,h));
-
-const mainNames = pokedex.names_english.slice(0,149)
-// array of indexes 
-let m = sort(mainNames,compareAlphaAscending);
-console.log(m)
-let n = indexToData(m, mainNames);
-console.log(n)
-let o = binarySearch("P", n, compareAlphaDescending)
-console.log(o);
-console.log(indexToData(o,n));
-
-console.log(filterCoords(data.latitude, data.longitude,-40, -40, 0, 0));
-console.log(filterTimes(data.localTime, "1:40:20 AM", "5:21:40 AM"));
-console.log(filterType(pokedex.types.slice(0,149), "Normal"));
-
-// returns the closest same pokemon as the pokemon given
-// uses haversine formula with the given pokemon as the comparision
-// and sorts it by it
-// therefore the closest pokemon is the second one in the return
-
-function grindingCandies(mon : string, lat : number, lon : number){
-
-  // search for all the indexes of the mon
-  let indexArray : number[] = search<string>(findPokedex(pokedex.names_english), mon);
-  // create new array to sort after
-  let distanceArray : number[] = new Array(indexArray.length);
-
-  // create an array of haversine lengths compared to the starting node
-  // O(n)
-  for(let i=0; i<indexArray.length; i++){
-    let index : number = indexArray[i];
-
-    // put the distance into array
-    distanceArray[i] = haversine(lat, lon, data.latitude[index], data.longitude[index]);
-  }
-
-  // if the length is less 2 there is only 1 of that pokemon
-  return (distanceArray.length <= 1) ? -1 : distanceArray[0]; // index 1 because 0 must be itself
-
-}
-
-// test stuff
-/*
-console.log(pokedex.names_english[data.pokemonId[21]-1])
-let t = (grindingCandies(pokedex.names_english[data.pokemonId[21]-1], data.latitude[21], data.longitude[21]))
-console.log(t);
-
-/*
-let f: mergeSort<string> = new mergeSort(compareAlphaAscending)
-// array of indexes 
-let g = f.sort(findPokedex(pokedex.names_english));
-console.log(g)
-let h = indexToData(g, findPokedex(pokedex.names_english));
-console.log(h)
-let k = binarySearch("P",h, compareAlphaDescending)
-console.log(k);
-console.log(indexToData(k,h));
-
-const mainNames = pokedex.names_english.slice(0,149)
-let l: MergeSortLL<string> = new MergeSortLL(mainNames);
-// array of indexes 
-let m = l.sort(compareAlphaAscending);
-console.log(m)
-let n = indexToData(m, mainNames);
-console.log(n)
-let o = binarySearch("P", n, compareAlphaDescending)
-console.log(o);
-console.log(indexToData(o,n));
-
-console.log(filterCoords(data.latitude, data.longitude,-40, -40, 0, 0));
-console.log(filterTimes(data.localTime, "1:40:20 AM", "5:21:40 AM"));
-console.log(filterType(pokedex.types.slice(0,149), "Normal"));
-
-/* HOW TO USE BINARY SEARCH AND MERGE SORT
-// they have to be opposite
-let t : mergeSort<number> = new mergeSort(ascending);
-console.log(data.pokemonId);
-let m = (t.sort(data.pokemonId));
-console.log(m);
-let v = (indexToData(m, data.pokemonId));
-console.log(v);
-let d = binarySearch(1, v, desending);
-console.log(d);
-console.log(indexToData(d, v));
-*/

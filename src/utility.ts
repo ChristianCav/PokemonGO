@@ -135,6 +135,7 @@ function indexConverter(indexes : number[], sortedIndex : number[]) : number[]{
     return newArray;
 }
 
+// converts indexes in a list
 function indexConverterList(indexes : List<number>, sortedIndex : number[]) : List<number>{
     let newArray : List<number> = new List<number>();
     for(let i=0; i<indexes.size(); i++){
