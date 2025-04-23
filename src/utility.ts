@@ -141,11 +141,7 @@ function indexConverterList(indexes : List<number>, sortedIndex : number[]) : Li
         newArray.push(sortedIndex[indexes.get(i) as number]);
     }
     return newArray;
-<<<<<<< Updated upstream
 } 
-=======
-}
-
 // returns the given array in ascending form
 // returns in indexed form
 // O(nlogn)
@@ -161,7 +157,6 @@ function sortDescending<T>(arr : T[]) : number[]{
 
     return sortedIndexes
 }   
->>>>>>> Stashed changes
 
 // given two points longitude and latitude
 // since the earth is a sphere we find the shortest length between the two points
