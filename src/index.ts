@@ -225,7 +225,7 @@ function populateTableWithResults(): void {
   let searchResults: number[] = searchResultsList.getData();
 
   // if no inputs make it default all with sorted names
-  if(searchQuery === "" && (time1Query === "" || time2Query === "") && (Number(lng1Query) === -1000 || Number(lng2Query) === -1000 || Number(lat1Query) === -1000 || Number(lat2Query) === -1000)){
+  if(searchQuery === "" && typeQuery === "" && (time1Query === "" || time2Query === "") && (Number(lng1Query) === -1000 || Number(lng2Query) === -1000 || Number(lat1Query) === -1000 || Number(lat2Query) === -1000)){
     searchResults = sortedData.names_english.val;
   }
   // else there are search results and presort them by alphabet
