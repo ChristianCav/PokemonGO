@@ -91,7 +91,7 @@
 
 .advSearchBar .timePicker {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
   width: 100%;
@@ -119,6 +119,16 @@
   font-size: 14px;
   font-weight: 600;
   color: #2b2b2b;
+}
+
+select {
+  padding: 10px;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex: 1;
+  min-width: 450px;
+  color: #666;
 }
 
 .typeInputBox select {
