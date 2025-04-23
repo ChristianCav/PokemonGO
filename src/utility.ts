@@ -12,6 +12,7 @@ function indexToData(indexes : number[], arr : any[]) : Array<any> {
     }
     let endTime = performance.now();
     let time : Triplet = new Triplet("Index to Data", endTime-startTime, false)
+    let time : Triplet = new Triplet("Index to Data", endTime-startTime, false)
     performanceTime.enqueue(time);
     return result;
 }
@@ -46,6 +47,7 @@ function findPokedex(arr : any[]): string[]{
     }
     let endTime = performance.now();
     let time : Triplet = new Triplet("Find Pokedex Array", endTime-startTime, false)
+    let time : Triplet = new Triplet("Find Pokedex Array", endTime-startTime, false)
     performanceTime.enqueue(time);
     return newArr;
 }   
@@ -58,6 +60,7 @@ function toSeconds(time: string): number{
     // Split "11:23:40 AM" to ["11:23:40", "AM"]
     let [timePart, modifierPart] = time.split(' ');
     // Split "11:23:40" to [11, 23, 40]
+    let [hours, minutes, seconds] = timePart.split(':').map(Number);
     let [hours, minutes, seconds] = timePart.split(':').map(Number);
     // Add 12 hours if the time is PM
     if(modifierPart === "PM" && hours !== 12){
@@ -78,6 +81,7 @@ function search<T>(arr : T[], val : string | number) : number[]{
     let descension = (typeof val === 'string') ? compareAlphaDescending : descending;
     let indexes : number[] = binarySearch(val, arr, descension).getData();
     let endTime = performance.now();
+    let time : Triplet = new Triplet("Searching", endTime-startTime, false)
     let time : Triplet = new Triplet("Searching", endTime-startTime, false)
     performanceTime.enqueue(time);
     return indexes; // indexes of sorted data
@@ -103,6 +107,7 @@ function sortDistance(arr : number[], lat : number, lon : number) : Pair{
     distanceIndexes = indexConverter(distanceIndexes, arr);    
 
     let endTime = performance.now();
+    let time : Triplet = new Triplet("Sorting Distance From Point", endTime-startTime, false)
     let time : Triplet = new Triplet("Sorting Distance From Point", endTime-startTime, false)
     performanceTime.enqueue(time);
     return new Pair(distance, distanceIndexes);
@@ -141,7 +146,31 @@ function indexConverterList(indexes : List<number>, sortedIndex : number[]) : Li
         newArray.push(sortedIndex[indexes.get(i) as number]);
     }
     return newArray;
+}
+
+
+function indexConverterList(indexes : List<number>, sortedIndex : number[]) : List<number>{
+    let newArray : List<number> = new List<number>();
+    for(let i=0; i<indexes.size(); i++){
+        newArray.push(sortedIndex[indexes.get(i) as number]);
+    }
+    return newArray;
 } 
+// returns the given array in ascending form
+// returns in indexed form
+// O(nlogn)
+function sortDescending<T>(arr : T[]) : number[]{
+    let startTime = performance.now();
+
+    let decension = (typeof arr[0] === 'string') ? compareAlphaDescending : descending;
+    let sortedIndexes : number[] = sort(arr, decension);
+
+    let endTime = performance.now();
+    let time : Triplet = new Triplet("Sort Descending", endTime-startTime, false)
+    performanceTime.enqueue(time);
+
+    return sortedIndexes
+}   
 
 // given two points longitude and latitude
 // since the earth is a sphere we find the shortest length between the two points

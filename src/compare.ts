@@ -161,82 +161,14 @@ function compareAlphaAscendingSearch(target: string, mid:string): number{
     }
     return 0;
 }
-
-function compareLetter(target: string, val:string): number{
-    const len = Math.min(target.length,val.length);
-    let a = target.toLowerCase()
-    let b = val.toLowerCase();
-    a = a.substring(0, len);
-    b = b.substring(0, len);    
-    return (a === b) ? 1 : -1;
-}
-
-// for the final find the rest of indexes
-function compareAll(index : number, name : string, type : string, time1 : string, time2 : string, lat1 : number, lon1 : number, lat2 : number, lon2 : number): number{
-
-    let check : number = 0;
-    // check everytype
-    // if it staifies give a increment
-    // if its not a requirement give it for free
-    //console.log(name)
-    //console.log(data2.names_english[index])
-    if(name === "" || compareLetter(name, data2.names_english[index]) === 1) {
-        check++;
+function compareTimes(time: number, min: number, max: number){
+    if(time>= min && time<= max){
+        return 0;
     }
-    if(type === "" || checkType(data2.types[index], type) === 1){
-        check++;
-    }
-    if(time1 === "" || compareTimes((data.localTime[index]), toSeconds(time1), toSeconds(time2)) === 0){
-        check++;
-    }
-    if(lat1 === -1000 || compareBetweenArea(lat1, lat2, lon1, lon2, data.latitude[index], data.longitude[index]) === 0){
-        check++;
-    }
-    if(check === 4){
+    else if(time<min){
         return 1;
     } 
     else {
-        return -1;
-    }
-}
-
-// checks for the type in an array
-// O(n) time but max types is 2 os bascially constant.
-function checkType(typeArray : string[], target : string) : number{
-    target = target.toLowerCase();
-    for(let i=0; i<typeArray.length; i++){
-        let compare : string = typeArray[i].toLowerCase();
-        if(compareLetter(compare, target) === 1){
-            return 1;
-        }
-    }
-    return -1;
-}
-
-function ascendingTime(target: string, mid: string): number{
-    let a : number = toSeconds(target);
-    let b : number = toSeconds(mid);
-    if(a===b){
-        return 0;
-    }
-    else if(a>b){
-        return 1;
-    }
-    else{
-        return -1;
-    }
-}
-
-function descendingTime(target: string, mid: string): number{
-    let a : number = toSeconds(target);
-    let b : number = toSeconds(mid);
-    if(a===b){
-        return 0;
-    }
-    else if(a>b){
-        return 1;
-    }
-    else{
         return -1;
     }
 }

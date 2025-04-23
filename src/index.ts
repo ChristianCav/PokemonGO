@@ -65,11 +65,15 @@ function presort() {
   let endTime = performance.now();
   let time : Triplet = new Triplet("Presort Data", endTime-startTime, true)
   performanceTime.enqueue(time);
+  let endTime = performance.now();
+  let time : Triplet = new Triplet("Presort Data", endTime-startTime, true)
+  performanceTime.enqueue(time);
 }
 
 // precompile the data to make it easier to access
 // only take name and types as thats all we need for the table
 function precompile(): void {
+  let startTime = performance.now();
   let startTime = performance.now();
   data2.names_english = findPokedex(pokedex.names_english);
   data2.types = new Array<string[]>(data2.names_english.length);
@@ -102,6 +106,7 @@ function displayPokedex(pokedex: Pokedex): void {
   for (let i = 0; i < 149; i++) {
     // creates a string of the types of the pokemon
     let types: string = "";
+    const typeList: string[] = pokedex.types[i];
     const typeList: string[] = pokedex.types[i];
 
     // splits the types by the comma and adds them to the string
@@ -179,6 +184,57 @@ function handleSearchClick(): void {
   const encodedType = encodeURIComponent(type);
   window.location.href = `../html/table.html?search=${encodedQuery}&type=${encodedType}&time1=${encodedTime1}&time2=${encodedTime2}&lng1=${encodedlng1}&lng2=${encodedlng2}&lat1=${encodedlat1}&lat2=${encodedlat2}&page=1`;
 
+
+  const nameInput = document.getElementById("searchBar") as HTMLInputElement | null;
+  const timeStartInput = document.getElementById("timePickerStart") as HTMLInputElement | null;
+  const timeEndInput = document.getElementById("timePickerEnd") as HTMLInputElement | null;
+  const minLngInput = document.getElementById("minLongitude") as HTMLInputElement | null;
+  const maxLngInput = document.getElementById("maxLongitude") as HTMLInputElement | null;
+  const minLatInput = document.getElementById("minLatitude") as HTMLInputElement | null;
+  const maxLatInput = document.getElementById("maxLatitude") as HTMLInputElement | null;
+  const typeInput = document.getElementById("typeInput") as HTMLInputElement | null;
+
+  // check if they all exist
+  if(!nameInput || !timeStartInput || !timeEndInput || !minLngInput || !maxLngInput || !minLatInput || !maxLatInput || !typeInput) return;
+
+  // does not require all but one
+  let name : string = nameInput.value.trim().length === 0 ? "" : nameInput.value.trim();
+  let timeStart : string = (timeStartInput.value !== "") ? timeStartInput.value : "";
+  let timeEnd : string = (timeEndInput.value !== "") ? timeEndInput.value : "";
+  // allow decimals
+  let minLng : number | null = isValidLongitude(parseFloat(minLngInput.value)) ? parseFloat(minLngInput.value) : -1000;
+  let maxLng : number | null = isValidLongitude(parseFloat(maxLngInput.value)) ? parseFloat(maxLngInput.value) : -1000;
+  let minLat : number | null = isValidLatitude(parseFloat(minLatInput.value)) ? parseFloat(minLatInput.value) : -1000;
+  let maxLat : number | null = isValidLatitude(parseFloat(maxLatInput.value)) ? parseFloat(maxLatInput.value) : -1000;
+
+  let type : string = (typeInput.value) !== "" ? typeInput.value.trim() : ""; 
+
+  // need at least 1 value
+  if(name === "" && (timeStart === "" || timeEnd === "") && (minLng === -1000 || maxLng === -1000 || minLat === -1000 || maxLat === -1000)) return;
+
+  // if any of the pairs are null make them all null
+  if(timeStart === "" || timeEnd === ""){
+    timeStart = "";
+    timeEnd = "";
+  }
+
+  if(minLng === -1000 || maxLng === -1000 || minLat === -1000 || maxLat === -1000){
+    minLng = -1000
+    maxLng = -1000
+    minLat = -1000
+    maxLat = -1000
+  }
+
+  const encodedQuery = encodeURIComponent(name);
+  const encodedTime1 = encodeURIComponent(timeStart)
+  const encodedTime2 = encodeURIComponent(timeEnd)
+  const encodedlng1 = encodeURIComponent(minLng)
+  const encodedlng2 = encodeURIComponent(maxLng)
+  const encodedlat1 = encodeURIComponent(minLat)
+  const encodedlat2 = encodeURIComponent(maxLat)
+  const encodedType = encodeURIComponent(type);
+  window.location.href = `../html/table.html?search=${encodedQuery}&type=${encodedType}&time1=${encodedTime1}&time2=${encodedTime2}&lng1=${encodedlng1}&lng2=${encodedlng2}&lat1=${encodedlat1}&lat2=${encodedlat2}&page=1`;
+
 }
 
 // populates the table with the search results
@@ -195,9 +251,26 @@ function populateTableWithResults(): void {
   if (!tableBody) return;
 
   // get all queries from the URL
+  // get all queries from the URL
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery: string | null = urlParams.get("search") as string;
   console.log(searchQuery);
+  const typeQuery: string | null = urlParams.get("type") as string;
+  console.log(typeQuery);
+  const time1Query: string | null = urlParams.get("time1") as string;
+  console.log(time1Query);
+  const time2Query: string | null = urlParams.get("time2") as string;
+  console.log(time2Query);
+  const lng1Query: string | null = urlParams.get("lng1") as string;
+  console.log(lng1Query);
+  const lng2Query: string | null = urlParams.get("lng2") as string;
+  console.log(lng2Query);
+  const lat1Query: string | null = urlParams.get("lat1") as string;
+  console.log(lat1Query);
+  const lat2Query: string | null = urlParams.get("lat2") as string;
+  console.log(lat2Query);
+
+  const searchQuery: string | null = urlParams.get("search") as string;
   const typeQuery: string | null = urlParams.get("type") as string;
   console.log(typeQuery);
   const time1Query: string | null = urlParams.get("time1") as string;
@@ -234,12 +307,26 @@ function populateTableWithResults(): void {
     searchResults = indexConverter(sortedResults, searchResults);
   }
 
+  // run filter functions to get the indexes of the pokemon that match all filter queries
+
+  let startTime = performance.now();
+
+  // start with all indexes as searchResults
+  let searchResultsList: List<number> = filterAll(searchQuery, typeQuery, time1Query, time2Query, Number(lat1Query), Number(lng1Query), Number(lat2Query), Number(lng2Query));
+
+  let searchResults: number[] = searchResultsList.getData();
+
+  
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
     tableBody.innerHTML =
       "<tr><td colspan='5'>No Pokémon found matching your search.</td></tr>";
     return;
   }
+
+  let endTime = performance.now();
+  let time : Triplet = new Triplet("Populate All", endTime-startTime, true)
+  performanceTime.enqueue(time);
 
   let endTime = performance.now();
   let time : Triplet = new Triplet("Populate All", endTime-startTime, true)
@@ -282,6 +369,14 @@ function populateTableWithResults(): void {
     lat2Query as string,
     lng1Query as string,
     lng2Query as string
+    searchQuery as string,
+    typeQuery as string,
+    time1Query as string, 
+    time2Query as string,
+    lat1Query as string,
+    lat2Query as string,
+    lng1Query as string,
+    lng2Query as string
   );
 
   // Populate the table with the current page results
@@ -311,12 +406,42 @@ function populateTableWithResults(): void {
     tableBody.innerHTML += rowHTML;
   }
 }
+// Helper function to convert HTML time input format (HH:MM) to the format needed by filterTimes (HH:MM:00 AM/PM)
+function formatTimeForFilter(timeString: string): string {
+  // Handle input with or without seconds (e.g., "14:23" or "14:23:45")
+  const [hoursStr, minutesStr] = timeString.split(':');
+  const hours = Number(hoursStr);
+  const minutes = Number(minutesStr);
+
+  // Convert to 12-hour format with AM/PM
+  let period = "AM";
+  let hours12 = hours;
+
+  if (hours >= 12) {
+    period = "PM";
+    hours12 = hours === 12 ? 12 : hours - 12;
+  }
+
+  if (hours12 === 0) {
+    hours12 = 12;
+  }
+
+  // Always set seconds to 00
+  return `${hours12}:${minutes.toString().padStart(2, '0')}:00 ${period}`;
+}
 
 // update the pagination buttons
 // @param currentPage holds the current page
 // @param totalResults holds the total num of results
 // @param resultsPerPage holds the num of results per page
 // @param searchQuery holds the search query
+// @param typeQuery holds the type query
+// @param time1Query holds the time1 query
+// @param time2Query holds the time2 query
+// @param lat1Query holds the lat1 query
+// @param lat2hQuery holds the lat2 query
+// @param lng1Query holds the lng1 query
+// @param lng2Query holds the lng2 query
 // @param typeQuery holds the type query
 // @param time1Query holds the time1 query
 // @param time2Query holds the time2 query
