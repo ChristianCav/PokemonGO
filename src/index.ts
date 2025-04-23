@@ -65,6 +65,10 @@ function presort() {
   let endTime = performance.now();
   let time : Triplet = new Triplet("Presort Data", endTime-startTime, true)
   performanceTime.enqueue(time);
+<<<<<<< Updated upstream
+=======
+  performanceTime.enqueue(time);
+>>>>>>> Stashed changes
 }
 
 // precompile the data to make it easier to access
@@ -212,7 +216,10 @@ function populateTableWithResults(): void {
   console.log(lat1Query);
   const lat2Query: string | null = urlParams.get("lat2") as string;
   console.log(lat2Query);
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
   const currentPage: number = parseInt(urlParams.get("page") || "1", 10);
 
   // run filter functions to get the indexes of the pokemon that match all filter queries
@@ -233,7 +240,11 @@ function populateTableWithResults(): void {
     let sortedResults = sort(indexToData(searchResults, data2.names_english), compareAlphaAscending);
     searchResults = indexConverter(sortedResults, searchResults);
   }
+<<<<<<< Updated upstream
 
+=======
+  
+>>>>>>> Stashed changes
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
     tableBody.innerHTML =
