@@ -65,10 +65,6 @@ function presort() {
   let endTime = performance.now();
   let time : Triplet = new Triplet("Presort Data", endTime-startTime, true)
   performanceTime.enqueue(time);
-<<<<<<< Updated upstream
-=======
-  performanceTime.enqueue(time);
->>>>>>> Stashed changes
 }
 
 // precompile the data to make it easier to access
@@ -132,6 +128,38 @@ function displayPokedex(pokedex: Pokedex): void {
     gridContainer.innerHTML += cardHTML;
   }
 }
+
+function toggleTableSort(): void {
+  // Determine which header button was clicked and its current sort direction
+  const clickedHeader = document.activeElement; // Get the currently focused element (the clicked button)
+  if (clickedHeader && clickedHeader.classList.contains('sortable-header')) {
+   const sortType = clickedHeader.textContent?.toLowerCase(); // Get the text content (e.g., "Pokémon") and lowercase it
+   let isAscending = true; // Default to ascending
+
+   // Check if the button currently has an 'ascending' or 'descending' class
+   if (clickedHeader.classList.contains('ascending')) {
+    isAscending = false; // Toggle to descending
+    clickedHeader.classList.remove('ascending');
+    clickedHeader.classList.add('descending');
+   } else if (clickedHeader.classList.contains('descending')) {
+    isAscending = true; // Toggle back to ascending
+    clickedHeader.classList.remove('descending');
+    clickedHeader.classList.add('ascending');
+   } else {
+    // If no class, default to ascending and add the class
+    clickedHeader.classList.add('ascending');
+   }
+
+   // Assuming you have your Pokémon data stored in a variable called 'pokemonData'
+   // and a function 'sortData' defined elsewhere to handle the actual sorting
+  //  if (sortType && pokemonData) {
+  //   const sortedData = sortData(sortType, isAscending, pokemonData);
+  //   // Update the table with the 'sortedData'
+  //   populateTable(sortedData); // You'll need a function to update the HTML table
+  //  }
+  }
+}
+ 
 
 // function to handle the search button click
 function handleSearchClick(): void {
@@ -216,10 +244,7 @@ function populateTableWithResults(): void {
   console.log(lat1Query);
   const lat2Query: string | null = urlParams.get("lat2") as string;
   console.log(lat2Query);
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
   const currentPage: number = parseInt(urlParams.get("page") || "1", 10);
 
   // run filter functions to get the indexes of the pokemon that match all filter queries
@@ -240,11 +265,6 @@ function populateTableWithResults(): void {
     let sortedResults = sort(indexToData(searchResults, data2.names_english), compareAlphaAscending);
     searchResults = indexConverter(sortedResults, searchResults);
   }
-<<<<<<< Updated upstream
-
-=======
-  
->>>>>>> Stashed changes
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
     tableBody.innerHTML =
@@ -490,7 +510,6 @@ function sortType(type : string, direction : boolean, givenData : any[]) : numbe
   // return as original
   return indexConverter(sortedIndexes!, givenData);
 }
-
 // DOENST WORK BECUASE PRESORT IS CALLED AFTER
 
 // grindingCandies("Eevee", data.latitude[0], data.longitude[0]);
