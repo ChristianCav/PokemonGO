@@ -171,7 +171,7 @@ function handleSearchClick(): void {
   const maxLngInput = document.getElementById("maxLongitude") as HTMLInputElement | null;
   const minLatInput = document.getElementById("minLatitude") as HTMLInputElement | null;
   const maxLatInput = document.getElementById("maxLatitude") as HTMLInputElement | null;
-  const typeInput = document.getElementById("typeInput") as HTMLInputElement | null;
+  const typeInput = document.getElementById("typeInput") as HTMLSelectElement | null;
 
   // check if they all exist
   if(!nameInput || !timeStartInput || !timeEndInput || !minLngInput || !maxLngInput || !minLatInput || !maxLatInput || !typeInput) return;
