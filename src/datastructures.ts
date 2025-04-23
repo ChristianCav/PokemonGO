@@ -39,14 +39,10 @@ class Queue<T> {
   private queueArray: List<T> = new List<T>();
   private numberOfElements: number = 0;
 
-  // special thing for the performance time
-  constructor(public specialFn?: any) {}
-
   //Add one element to the rear of the queue
   public enqueue(arg: T): void {
     this.queueArray.push(arg);
     this.numberOfElements++;
-    if (typeof this.specialFn === "function") this.specialFn();
   }
   //Removes and returns the element at the front
   public dequeue(): T | null {
