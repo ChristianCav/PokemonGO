@@ -5,12 +5,12 @@
 // it will return the data value of [data[1], data[3], data[2], data[4]]
 // O(n), as it loops through all inputted indexes once
 function indexToData(indexes : number[], arr : any[]) : Array<any> {
-    let startTime = performance.now();
+    let startTime: number = performance.now();
     let result : Array<any> = new Array(indexes.length);
     for(let i=0; i<indexes.length; i++){
         result[i] = arr[indexes[i]];
     }
-    let endTime = performance.now();
+    let endTime: number = performance.now();
     let time : Triplet = new Triplet("Index to Data", endTime-startTime, false)
     performanceTime.enqueue(time);
     return result;
@@ -38,13 +38,13 @@ function roundToDecimal(input: number, numDecimals: number): number{
 // if inputted pokedex.names_english --> will return array of names_englsh
 // O(n) time
 function findPokedex(arr : any[]): string[]{
-    let startTime = performance.now();
+    let startTime: number = performance.now();
     let newArr : string[] = new Array(data.pokemonId.length)
     for(let i=0;i<data.pokemonId.length;i++){
         // id is 1 above 0
         newArr[i] = arr[data.pokemonId[i]-1];
     }
-    let endTime = performance.now();
+    let endTime: number = performance.now();
     let time : Triplet = new Triplet("Find Pokedex Array", endTime-startTime, false)
     performanceTime.enqueue(time);
     return newArr;
@@ -73,11 +73,11 @@ function toSeconds(time: string): number{
 // returns indexes of searched value
 // needs changing because ascedning and descending doesnt work for string
 function search<T>(arr : T[], val : string | number) : number[]{
-    let startTime = performance.now();
+    let startTime: number = performance.now();
     // check whether string or num and change function based off it
     let descension = (typeof val === 'string') ? compareAlphaDescending : descending;
     let indexes : number[] = binarySearch(val, arr, descension).getData();
-    let endTime = performance.now();
+    let endTime: number = performance.now();
     let time : Triplet = new Triplet("Searching", endTime-startTime, false)
     performanceTime.enqueue(time);
     return indexes; // indexes of sorted data
@@ -88,7 +88,7 @@ function search<T>(arr : T[], val : string | number) : number[]{
 // starting lat & lon
 // O(n) to compute distance + Sorting O(nlogn)
 function sortDistance(arr : number[], lat : number, lon : number) : Pair{
-    let startTime = performance.now();
+    let startTime: number = performance.now();
     let distance : number[] = new Array(arr.length);
     for(let i=0; i<distance.length; i++){
         let index : number = arr[i];
@@ -102,7 +102,7 @@ function sortDistance(arr : number[], lat : number, lon : number) : Pair{
     // convert back to original indexes
     distanceIndexes = indexConverter(distanceIndexes, arr);    
 
-    let endTime = performance.now();
+    let endTime: number = performance.now();
     let time : Triplet = new Triplet("Sorting Distance From Point", endTime-startTime, false)
     performanceTime.enqueue(time);
     return new Pair(distance, distanceIndexes);
