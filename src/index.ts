@@ -210,7 +210,6 @@ function handleSearchClick(): void {
   const encodedlat2 = encodeURIComponent(maxLat)
   const encodedType = encodeURIComponent(type);
   window.location.href = `../html/table.html?search=${encodedQuery}&type=${encodedType}&time1=${encodedTime1}&time2=${encodedTime2}&lng1=${encodedlng1}&lng2=${encodedlng2}&lat1=${encodedlat1}&lat2=${encodedlat2}&page=1`;
-
 }
 
 // populates the table with the search results
@@ -228,8 +227,8 @@ function populateTableWithResults(): void {
 
   // get all queries from the URL
   const urlParams = new URLSearchParams(window.location.search);
+
   const searchQuery: string | null = urlParams.get("search") as string;
-  console.log(searchQuery);
   const typeQuery: string | null = urlParams.get("type") as string;
   console.log(typeQuery);
   const time1Query: string | null = urlParams.get("time1") as string;
@@ -271,6 +270,7 @@ function populateTableWithResults(): void {
       "<tr><td colspan='5'>No Pokémon found matching your search.</td></tr>";
     return;
   }
+
 
   let endTime = performance.now();
   let time : Triplet = new Triplet("Populate All", endTime-startTime, true)
@@ -342,12 +342,42 @@ function populateTableWithResults(): void {
     tableBody.innerHTML += rowHTML;
   }
 }
+// Helper function to convert HTML time input format (HH:MM) to the format needed by filterTimes (HH:MM:00 AM/PM)
+function formatTimeForFilter(timeString: string): string {
+  // Handle input with or without seconds (e.g., "14:23" or "14:23:45")
+  const [hoursStr, minutesStr] = timeString.split(':');
+  const hours = Number(hoursStr);
+  const minutes = Number(minutesStr);
+
+  // Convert to 12-hour format with AM/PM
+  let period = "AM";
+  let hours12 = hours;
+
+  if (hours >= 12) {
+    period = "PM";
+    hours12 = hours === 12 ? 12 : hours - 12;
+  }
+
+  if (hours12 === 0) {
+    hours12 = 12;
+  }
+
+  // Always set seconds to 00
+  return `${hours12}:${minutes.toString().padStart(2, '0')}:00 ${period}`;
+}
 
 // update the pagination buttons
 // @param currentPage holds the current page
 // @param totalResults holds the total num of results
 // @param resultsPerPage holds the num of results per page
 // @param searchQuery holds the search query
+// @param typeQuery holds the type query
+// @param time1Query holds the time1 query
+// @param time2Query holds the time2 query
+// @param lat1Query holds the lat1 query
+// @param lat2hQuery holds the lat2 query
+// @param lng1Query holds the lng1 query
+// @param lng2Query holds the lng2 query
 // @param typeQuery holds the type query
 // @param time1Query holds the time1 query
 // @param time2Query holds the time2 query

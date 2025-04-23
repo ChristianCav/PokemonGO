@@ -365,8 +365,7 @@ function shortestCandyDist(): void {
     (document.getElementById("candiesLatitudeFilter") as HTMLInputElement).value
   );
   const lngInput: number = parseFloat(
-    (document.getElementById("candiesLongitudeFilter") as HTMLInputElement)
-      .value
+    (document.getElementById("candiesLongitudeFilter") as HTMLInputElement).value
   );
   const candiesPokemon: string = (
     (document.getElementById("candiesPokemon") as HTMLInputElement).value || ""
@@ -420,8 +419,9 @@ function shortestCandyDist(): void {
       let totalDistance: number = 0;
       let foundCount: number = 0;
       // stores the indices of caught pokemon
-      // this is used to ensure the same pokemon is not caught multiple times
       const caughtIndices: CaughtIndices = new CaughtIndices(numOfPokemons);
+      // stores the target pokemon ID once found
+      let targetPokemonId: number | null = null;
 
       // loop while the number of found pokemon is less than the number of pokemon to find
       while (foundCount < numOfPokemons) {
@@ -431,8 +431,8 @@ function shortestCandyDist(): void {
 
         // find nearest matching pokemon that hasn't been caught yet
         for (let i = 0; i < pokemonLocationData.pokemonId.length; i++) {
-          // skip already caught pokemon
-          if (caughtIndices.contains(i)) continue;
+          // skip already caught spawn points
+          if (caughtIndices.containsSpawn(i)) continue;
 
           const pokemonId: number = pokemonLocationData.pokemonId[i];
           const index: number = pokedexData.ids.indexOf(pokemonId);
@@ -440,17 +440,23 @@ function shortestCandyDist(): void {
           // if the index exists, get the species of the pokemon
           if (index !== -1) {
             const species: string = pokedexData.names_english[index];
-            if (species.toLowerCase().includes(candiesPokemon)) {
+            
+            // find pokemon id if not already found
+            if (targetPokemonId === null && species.toLowerCase().includes(candiesPokemon)) {
+              targetPokemonId = pokemonId;
+            }
+            
+            // only consider exact matches to the target pokemon ID
+            if (pokemonId === targetPokemonId) {
               const pokemonLat: number = pokemonLocationData.latitude[i];
               const pokemonLng: number = pokemonLocationData.longitude[i];
               // calculate distance from current location to pokemon
-              // using the map's distance method
               const distance = map.distance(
                 [currentLat, currentLng],
                 [pokemonLat, pokemonLng]
               );
 
-              // if the distance is less than the current minimum distance, set the closest pokemon to the current pokemon
+              // if the distance is less than the current minimum distance, set the closest pokemon
               if (distance < minDistance) {
                 minDistance = distance;
                 closestIndex = i;
@@ -475,7 +481,7 @@ function shortestCandyDist(): void {
         currentLat = closestPokemon.lat;
         currentLng = closestPokemon.lng;
         pathCoordinates.add(currentLat, currentLng);
-        caughtIndices.add(closestIndex);
+        caughtIndices.add(closestIndex, pokemonLocationData.pokemonId[closestIndex]);
 
         // get pokemon image
         const pokemonIndex: number = pokedexData.ids.indexOf(
@@ -483,7 +489,9 @@ function shortestCandyDist(): void {
         );
         const image: string = pokedexData.images[pokemonIndex];
 
-        // add marker to the map
+        // add marker to the map with debug info
+        console.log(`Caught #${foundCount}: ${closestPokemon.species} (ID: ${pokemonLocationData.pokemonId[closestIndex]}) at index ${closestIndex}`);
+        
         L.marker([currentLat, currentLng]).addTo(map).bindPopup(`
           <div style="text-align:center;">
             <img src="${image}" width="96" height="96">
@@ -597,10 +605,11 @@ function shortestDist(): void {
       let currentLat: number = startLat;
       let currentLng: number = startLng;
       let totalDistance: number = 0;
+      // stores the indices of caught pokemons
       const caughtIndices: CaughtIndices = new CaughtIndices(149);
 
       // while we haven't caught all pokemon
-      while (caughtIndices.size() < pokemonToCatch.size()) {
+      while (caughtIndices.size() < 149) {
         let closestPokemon: PokemonCoordWithDistance | null = null;
         let closestPokemonIndex: number = -1;
         let closestPokemonDataIndex: number = -1;
@@ -608,15 +617,14 @@ function shortestDist(): void {
 
         // find the closest remaining pokemon
         for (let i = 0; i < pokemonLocationData.pokemonId.length; i++) {
-          // checks if we caught the pokemon already
-          // if we have, skip it
-          if (caughtIndices.contains(i)) continue;
+          // skip already caught spawn points
+          if (caughtIndices.containsSpawn(i)) continue;
 
           const pokemonId: number = pokemonLocationData.pokemonId[i];
           const pokedexIndex: number = pokedexData.ids.indexOf(pokemonId);
 
-          // only consider the first 149 pokemons
-          if (pokedexIndex !== -1 && pokemonId <= 149) {
+          // only consider the first 149 pokemons and ones we haven't caught yet
+          if (pokedexIndex !== -1 && pokemonId <= 149 && !caughtIndices.containsPokemon(pokemonId)) {
             const pokemonLat: number = pokemonLocationData.latitude[i];
             const pokemonLng: number = pokemonLocationData.longitude[i];
             const distance: number = map.distance(
@@ -624,7 +632,7 @@ function shortestDist(): void {
               [pokemonLat, pokemonLng]
             );
 
-            // if the distance is less than the current minimum distance, set the closest pokemon to the current pokemon
+            // if the distance is less than the current minimum distance, set the closest pokemon
             if (distance < minDistance) {
               minDistance = distance;
               closestPokemon = new PokemonCoordWithDistance(
@@ -643,13 +651,16 @@ function shortestDist(): void {
         if (!closestPokemon) break;
 
         // update path and markers
-        caughtIndices.add(closestPokemonIndex);
+        caughtIndices.add(closestPokemonIndex, pokemonLocationData.pokemonId[closestPokemonIndex]);
         totalDistance += closestPokemon.distance;
         currentLat = closestPokemon.lat;
         currentLng = closestPokemon.lng;
         pathCoordinates.add(currentLat, currentLng);
 
-        // add marker
+        // log the caught pokemon
+        console.log(`Caught #${caughtIndices.size()}: ${closestPokemon.species} (ID: ${pokemonLocationData.pokemonId[closestPokemonIndex]}) at index ${closestPokemonIndex}`);
+
+        // add marker to map
         L.marker([currentLat, currentLng]).addTo(map).bindPopup(`
           <div style="text-align:center;">
             <img src="${
@@ -671,7 +682,7 @@ function shortestDist(): void {
       }
 
       alert(
-        `Caught ${caughtIndices.size()} pokemon\nTotal distance: ${(
+        `Caught ${caughtIndices.size()} unique pokemon\nTotal distance: ${(
           totalDistance / 1000
         ).toFixed(2)}km\nCost: $${(totalDistance / 1000).toFixed(2)}`
       );
@@ -683,7 +694,6 @@ function shortestDist(): void {
     let time : Triplet = new Triplet("Shortest Distance to Catch All Pokemons", endTime-startTime, true)
     performanceTime.enqueue(time);
 }
-
 /**
  * function to find the nearest pokemon to the given coordinates, helper function for shortestDIst and shortestCandyDist
  * functions runs in O(n) time, as it loops through all the pokemon location data once
