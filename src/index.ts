@@ -16,7 +16,7 @@ let data2: Pokedex = new Pokedex();
 // presort all sorted data
 // KEY is ACTUAL VALUE
 // VAL is the INDEXES
-function presort() {
+function presort() : void {
   let startTime = performance.now();
   sortedData.localTime = new Pair(
     indexToData(sort(data.localTime.map(toSeconds), ascending), data.localTime),
