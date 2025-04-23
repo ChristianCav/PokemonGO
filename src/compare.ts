@@ -212,3 +212,31 @@ function checkType(typeArray : string[], target : string) : number{
     }
     return -1;
 }
+
+function ascendingTime(target: string, mid: string): number{
+    let a : number = toSeconds(target);
+    let b : number = toSeconds(mid);
+    if(a===b){
+        return 0;
+    }
+    else if(a>b){
+        return 1;
+    }
+    else{
+        return -1;
+    }
+}
+
+function descendingTime(target: string, mid: string): number{
+    let a : number = toSeconds(target);
+    let b : number = toSeconds(mid);
+    if(a===b){
+        return 0;
+    }
+    else if(a>b){
+        return 1;
+    }
+    else{
+        return -1;
+    }
+}

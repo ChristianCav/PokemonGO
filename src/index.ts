@@ -156,9 +156,6 @@ function handleSearchClick(): void {
 
   let type : string = (typeInput.value) !== "" ? typeInput.value.trim() : ""; 
 
-  // need at least 1 value
-  if(name === "" && (timeStart === "" || timeEnd === "") && (minLng === -1000 || maxLng === -1000 || minLat === -1000 || maxLat === -1000)) return;
-
   // if any of the pairs are null make them all null
   if(timeStart === "" || timeEnd === ""){
     timeStart = "";
@@ -226,6 +223,16 @@ function populateTableWithResults(): void {
   let searchResultsList: List<number> = filterAll(searchQuery, typeQuery, time1Query, time2Query, Number(lat1Query), Number(lng1Query), Number(lat2Query), Number(lng2Query));
 
   let searchResults: number[] = searchResultsList.getData();
+
+  // if no inputs make it default all with sorted names
+  if(searchQuery === "" && (time1Query === "" || time2Query === "") && (Number(lng1Query) === -1000 || Number(lng2Query) === -1000 || Number(lat1Query) === -1000 || Number(lat2Query) === -1000)){
+    searchResults = sortedData.names_english.val;
+  }
+  // else there are search results and presort them by alphabet
+  else {
+    let sortedResults = sort(indexToData(searchResults, data2.names_english), compareAlphaAscending);
+    searchResults = indexConverter(sortedResults, searchResults);
+  }
 
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
@@ -455,21 +462,22 @@ function toggleAdvancedSearch(): void {
 // type is the value type ex name, latitude
 // direction --> true is ascending --> false descending
 // givenData --> the inputted data
-function sortType(type : string, direction : boolean, givenData : any[]) : void {
+function sortType(type : string, direction : boolean, givenData : any[]) : number[] {
   // sorted indexes based on the given data
   let sortedIndexes : number[];
   let comparetor : any;
   if(type === "name"){
     comparetor = (direction) ? compareAlphaAscending : compareAlphaDescending;
-    sortedIndexes = sort(givenData, comparetor);
   }
   else if(type === "latitude" || type === "longitude"){
     comparetor = (direction) ? ascending : descending;
-    sortedIndexes = sort(givenData, comparetor);
   }
   else if(type === "time"){
-
+    comparetor = (direction) ? ascendingTime : descendingTime;
   }
+  sortedIndexes = sort(givenData, comparetor);
+  // return as original
+  return indexConverter(sortedIndexes!, givenData);
 }
 
 // DOENST WORK BECUASE PRESORT IS CALLED AFTER
