@@ -200,6 +200,7 @@ function populateTableWithResults(): void {
   // get all queries from the URL
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery: string | null = urlParams.get("search") as string;
+  console.log(searchQuery);
   const typeQuery: string | null = urlParams.get("type") as string;
   console.log(typeQuery);
   const time1Query: string | null = urlParams.get("time1") as string;
@@ -447,6 +448,27 @@ function toggleAdvancedSearch(): void {
   // if advSearchBar is found then toggle the hidden class
   if (advSearchBar) {
     advSearchBar.classList.toggle("hidden");
+  }
+}
+
+// sorts in a way for the table depending on what is inputted
+// type is the value type ex name, latitude
+// direction --> true is ascending --> false descending
+// givenData --> the inputted data
+function sortType(type : string, direction : boolean, givenData : any[]) : void {
+  // sorted indexes based on the given data
+  let sortedIndexes : number[];
+  let comparetor : any;
+  if(type === "name"){
+    comparetor = (direction) ? compareAlphaAscending : compareAlphaDescending;
+    sortedIndexes = sort(givenData, comparetor);
+  }
+  else if(type === "latitude" || type === "longitude"){
+    comparetor = (direction) ? ascending : descending;
+    sortedIndexes = sort(givenData, comparetor);
+  }
+  else if(type === "time"){
+
   }
 }
 

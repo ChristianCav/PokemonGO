@@ -58,7 +58,7 @@ function binarySearchSingle(target: number | string, data: any[], compareFn: any
 // O(n) time if all elements are the same,
 // since we have searched for an index in a sorted array that is correct
 // the elements beside it should all be the same attributes so loop both sides until we get them all
-function binarySearchFill(found : number, arr : any[], compareFn : any) : List<number>{
+function binarySearchFill(target: number | string, found : number, arr : any[], compareFn : any) : List<number>{
     let startTime = performance.now();
     let indexes : List<number> = new List<number>();
     if(typeof compareFn !== 'function'){
@@ -68,7 +68,7 @@ function binarySearchFill(found : number, arr : any[], compareFn : any) : List<n
     // traverse to the left of the found index and check if element is also the target 
     // if it is add it to foundIndexes, and keep looking left until the next element is not the target
     let i: number = found -1;
-    while(i>=0 && compareFn(arr[found],arr[i]) ===0){
+    while(i>=0 && compareFn(target,arr[i]) ===0){
         indexes.push(i);
         i--;
     }
@@ -76,7 +76,7 @@ function binarySearchFill(found : number, arr : any[], compareFn : any) : List<n
     // traverse to the right of the found index and check if element is also the target 
     // if it is add it to foundIndexes, and keep looking right until the next element is not the target
     let j: number = found +1;
-    while(j<=arr.length && compareFn(arr[found],arr[j]) === 0){
+    while(j<=arr.length && compareFn(target,arr[j]) === 0){
         indexes.push(j);
         j++;
     }
@@ -98,7 +98,7 @@ function binarySearch(target: number | string, sortedArr : any[], compareFn : an
         foundIndexes.push(-1);
     }
     else {
-        foundIndexes = binarySearchFill(indexFound, sortedArr, compareFn);
+        foundIndexes = binarySearchFill(target, indexFound, sortedArr, compareFn);
     }
 
     let endTime = performance.now();
@@ -195,7 +195,7 @@ function binarySearchBetweenSingle(min: number, max: number, data: any[], compar
 // mergesort function --> O(logn) because it divides the array by 2 each time
 // merge function --> O(n) because it at most compares n times, 1 for each value
 // since each mergesort function calls merge it is mutipled giving O(nlogn)
-    // returns indexes of sorted array
+// returns indexes of sorted array
 function sort<T>(arr : T[], compare : any) : number[]{
     let startTime = performance.now();
     let sortSpace : PairNode<T>[] = new Array(arr.length);
@@ -459,8 +459,8 @@ function filterType(types: string[][], type: string): List<number>{
 // works with full name, or just starting letters
 // returns indexes in unsorted names_english array
 // O(log n + k), where k is the number of occurences, since it uses binarySearch
-function filterName(name: string, pokemon: any[]): number[]{
-    return binarySearch(name, pokemon, compareAlphaAscendingSearch).getData();
+function filterName(name: string, pokemon: any[]): List<number>{
+    return binarySearch(name, pokemon, compareAlphaAscendingSearch);
 }
 
 // returns indexes of data with (lat, lng) between two inputted points
@@ -494,7 +494,7 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
     // all ones that give sorted indexes as null are O(n) time to sort
     // others are O(logn)
     if(name !== "") {
-        foundIndexes = binarySearch(name, sortedData.names_english.key, compareAlphaAscendingSearch)
+        foundIndexes = filterName(name, sortedData.names_english.key)
         sortedIndexes = sortedData.names_english.val;
     }
     else if(type !== ""){
@@ -517,6 +517,7 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
     }
 
     console.log(foundIndexes)
+    console.log(indexToData(foundIndexes?.getData() as number[], sortedData.names_english.key));
 
     if(foundIndexes !== null){
     // traverse found indexes to match them
@@ -524,7 +525,7 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
     // O(k) k being a constant that is based on the size of the filtered down array
         for(let i=0; i<foundIndexes!.size(); i++){
             let target : number = foundIndexes.get(i) as number;
-            if(sortedIndexes !== null) target = sortedIndexes[target];
+            if(sortedIndexes !== null) target = sortedIndexes[target]; // unsort the index
             if(compareAll(target, name, type, time1, time2, lat1, lon1, lat2 , lon2) === 1){
                 returnIndexes.push(target); // indexes the sorted indexes
             }
