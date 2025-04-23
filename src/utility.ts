@@ -135,7 +135,6 @@ function indexConverter(indexes : number[], sortedIndex : number[]) : number[]{
     return newArray;
 }
 
-
 function indexConverterList(indexes : List<number>, sortedIndex : number[]) : List<number>{
     let newArray : List<number> = new List<number>();
     for(let i=0; i<indexes.size(); i++){
@@ -143,21 +142,6 @@ function indexConverterList(indexes : List<number>, sortedIndex : number[]) : Li
     }
     return newArray;
 } 
-// returns the given array in ascending form
-// returns in indexed form
-// O(nlogn)
-function sortDescending<T>(arr : T[]) : number[]{
-    let startTime = performance.now();
-
-    let decension = (typeof arr[0] === 'string') ? compareAlphaDescending : descending;
-    let sortedIndexes : number[] = sort(arr, decension);
-
-    let endTime = performance.now();
-    let time : Triplet = new Triplet("Sort Descending", endTime-startTime, false)
-    performanceTime.enqueue(time);
-
-    return sortedIndexes
-}   
 
 // given two points longitude and latitude
 // since the earth is a sphere we find the shortest length between the two points

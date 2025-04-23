@@ -227,8 +227,8 @@ function populateTableWithResults(): void {
 
   // get all queries from the URL
   const urlParams = new URLSearchParams(window.location.search);
-
   const searchQuery: string | null = urlParams.get("search") as string;
+  console.log(searchQuery);
   const typeQuery: string | null = urlParams.get("type") as string;
   console.log(typeQuery);
   const time1Query: string | null = urlParams.get("time1") as string;
@@ -243,7 +243,6 @@ function populateTableWithResults(): void {
   console.log(lat1Query);
   const lat2Query: string | null = urlParams.get("lat2") as string;
   console.log(lat2Query);
-
   const currentPage: number = parseInt(urlParams.get("page") || "1", 10);
 
   // run filter functions to get the indexes of the pokemon that match all filter queries
@@ -264,6 +263,7 @@ function populateTableWithResults(): void {
     let sortedResults = sort(indexToData(searchResults, data2.names_english), compareAlphaAscending);
     searchResults = indexConverter(sortedResults, searchResults);
   }
+
   // if no results, display error on table container
   if (searchResults.length === 0 || searchResults[0] === -1) {
     tableBody.innerHTML =
@@ -271,11 +271,9 @@ function populateTableWithResults(): void {
     return;
   }
 
-
   let endTime = performance.now();
   let time : Triplet = new Triplet("Populate All", endTime-startTime, true)
   performanceTime.enqueue(time);
-
   tableBody.innerHTML = "";
 
   // calculate the starting and ending indices for the current page
