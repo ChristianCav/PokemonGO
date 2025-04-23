@@ -100,12 +100,23 @@
 
 .advSearchBar .typePicker {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
   width: 100%;
   margin-bottom: 10px;
 }
+
+select {
+  padding: 10px;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex: 1;
+  min-width: 140px;
+  color: #666;
+}
+
 
 .advSearchBar .timePicker label {
   flex: 1;
