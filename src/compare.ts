@@ -1,5 +1,8 @@
 // contains comparisons
 
+
+// compare function for sorting alphabetically from a-z 
+// returns 1 if target comes before mid, -1 if target comes after mid, 0 if mid and target are the same
 function compareAlphaAscending(target: string, mid:string): number{
     const len = Math.min(target.length,mid.length);
     let a = target.toLowerCase();
@@ -26,6 +29,8 @@ function compareAlphaAscending(target: string, mid:string): number{
     return 0;
 }
   
+// compare function for sorting numbers in descending order
+// returns 0 if target = mid, 1 if target>mid, -1 if target<mid
 function descending(target: number, mid: number): number{
     if(target===mid){
         return 0;
@@ -38,7 +43,8 @@ function descending(target: number, mid: number): number{
     }
 }
 
-function roundedAscending(target: number, mid: number){
+// compare function for rounding and sorting in ascending order
+function roundedAscending(target: number, mid: number): number{
     let decimals = numDecimals(String(mid));
     let roundedMid = roundToDecimal(mid, numDecimals(String(target)));
     if(target===roundedMid){
@@ -52,6 +58,7 @@ function roundedAscending(target: number, mid: number){
     }
 }
 
+// compare function for sorting strings alphabetically from z-a
 function compareAlphaDescending(target: string, mid:string): number{
     const len = Math.min(target.length,mid.length);
     let a = target.toLowerCase()
@@ -73,7 +80,7 @@ function compareAlphaDescending(target: string, mid:string): number{
     return 0;
 }
 
-
+// compare function for sorting numbers in ascending order
 function ascending(target: number, mid: number): number{
     if(target===mid){
         return 0;
@@ -87,7 +94,7 @@ function ascending(target: number, mid: number): number{
 }
 
 // is inputted a point data structure
-function hieuristicAscending(arg1 : Point, arg2 : Point){
+function hieuristicAscending(arg1 : Point, arg2 : Point): number{
     if(arg1.cost === arg2.cost){
         return 0;
     }
@@ -98,7 +105,10 @@ function hieuristicAscending(arg1 : Point, arg2 : Point){
         return -1;
     }
 }
-function compareRange(target: number, min: number, max: number){
+
+// compare function for searching for values within a range
+// returns 0 if target is within min and max, 1 if target is >min, -1 if target<max
+function compareRange(target: number, min: number, max: number): number{
     if(target>= min && target<= max){
         return 0;
     }
@@ -110,7 +120,8 @@ function compareRange(target: number, min: number, max: number){
     }
 }
 
-function compareBetweenArea(lat1 : number, lat2 : number, lng1 : number, lng2 : number, latTarget : number, lngTarget : number){
+// compare function for search for (lat,lng) within an area
+function compareBetweenArea(lat1 : number, lat2 : number, lng1 : number, lng2 : number, latTarget : number, lngTarget : number): number{
     // store indexes of data that are within the two inputted points
     // smallest latitude value of the two points
     let minLat: number = Math.min(lat1,lat2);
@@ -128,7 +139,8 @@ function compareBetweenArea(lat1 : number, lat2 : number, lng1 : number, lng2 : 
     }
 }
 
-function compareTimes(time: string, min: number, max: number){
+// compare function for searching for times
+function compareTimes(time: string, min: number, max: number): number{
     let tar : number = toSeconds(time);
 
     if(tar>= min && tar<= max){
@@ -142,6 +154,7 @@ function compareTimes(time: string, min: number, max: number){
     }
 }
 
+// compare function for binarySearch, when data is sorted ascendingly alphabetically
 function compareAlphaAscendingSearch(target: string, mid:string): number{
     const len = Math.min(target.length,mid.length);
     let a = target.toLowerCase()
@@ -162,6 +175,7 @@ function compareAlphaAscendingSearch(target: string, mid:string): number{
     return 0;
 }
 
+// compare 2 letters, see which comes first
 function compareLetter(target: string, val:string): number{
     const len = Math.min(target.length,val.length);
     let a = target.toLowerCase()
@@ -171,6 +185,7 @@ function compareLetter(target: string, val:string): number{
     return (a === b) ? 1 : -1;
 }
 
+// used for advanced filter
 // for the final find the rest of indexes
 function compareAll(index : number, name : string, type : string, time1 : string, time2 : string, lat1 : number, lon1 : number, lat2 : number, lon2 : number): number{
 
@@ -213,6 +228,7 @@ function checkType(typeArray : string[], target : string) : number{
     return -1;
 }
 
+// compare for sorting times ascendingly
 function ascendingTime(target: string, mid: string): number{
     let a : number = toSeconds(target);
     let b : number = toSeconds(mid);
@@ -227,6 +243,7 @@ function ascendingTime(target: string, mid: string): number{
     }
 }
 
+// compare function for sorting times descendingly
 function descendingTime(target: string, mid: string): number{
     let a : number = toSeconds(target);
     let b : number = toSeconds(mid);
