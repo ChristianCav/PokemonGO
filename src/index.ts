@@ -20,7 +20,7 @@ let searchedResults : number[];
 // KEY is ACTUAL VALUE
 // VAL is the INDEXES
 function presort() : void {
-  let startTime = performance.now();
+  let startTime : number = performance.now();
   sortedData.localTime = new Pair(
     indexToData(sort(data.localTime.map(toSeconds), ascending), data.localTime),
     sort(data.localTime.map(toSeconds), ascending)
@@ -65,7 +65,7 @@ function presort() : void {
     ),
     sort(findPokedex(pokedex.weights), ascending)
   );
-  let endTime = performance.now();
+  let endTime : number = performance.now();
   let time : Triplet = new Triplet("Presort Data", endTime-startTime, true)
   performanceTime.enqueue(time);
 }
@@ -73,14 +73,14 @@ function presort() : void {
 // precompile the data to make it easier to access
 // only take name and types as thats all we need for the table
 function precompile(): void {
-  let startTime = performance.now();
+  let startTime : number = performance.now();
   data2.names_english = findPokedex(pokedex.names_english);
   data2.types = new Array<string[]>(data2.names_english.length);
   for(let i=0; i<data.localTime.length; i++){
     let index : number = data.pokemonId[i]-1;
     data2.types[i] = pokedex.types[index];
   }
-  let endTime = performance.now();
+  let endTime : number = performance.now();
   let time : Triplet = new Triplet("Precompile Data", endTime-startTime, true)
   performanceTime.enqueue(time);
 }
@@ -260,7 +260,7 @@ function populateTableWithResults(): void {
 
   // run filter functions to get the indexes of the pokemon that match all filter queries
 
-  let startTime = performance.now();
+  let startTime : number = performance.now();
 
   // start with all indexes as searchResults
   let searchResultsList: List<number> = filterAll(searchQuery, typeQuery, time1Query, time2Query, Number(lat1Query), Number(lng1Query), Number(lat2Query), Number(lng2Query));
@@ -287,7 +287,7 @@ function populateTableWithResults(): void {
     return;
   }
 
-  let endTime = performance.now();
+  let endTime : number = performance.now();
   let time : Triplet = new Triplet("Populate All", endTime-startTime, true)
   performanceTime.enqueue(time);
   tableBody.innerHTML = "";

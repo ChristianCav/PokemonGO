@@ -7,7 +7,7 @@
 // and then + O(k), since it loops k more times, to find all k other occurences of the target
 // Takes 2-6 ms to run on 99000 data, using performance.now()
 function binarySearchSingle(target: number | string, data: any[], compareFn: any, rightIndex?: number) : number{
-    let startTime = performance.now();
+    let startTime : number = performance.now();
     // left bound
     let left: number = 0;
     // right bound
@@ -49,7 +49,7 @@ function binarySearchSingle(target: number | string, data: any[], compareFn: any
     if(foundIndex === -1){
         return -1;
     }
-    let endTime = performance.now();
+    let endTime : number = performance.now();
     let time : Triplet = new Triplet("Binary Search Single", endTime-startTime, false)
     performanceTime.enqueue(time);
     return foundIndex
@@ -59,7 +59,7 @@ function binarySearchSingle(target: number | string, data: any[], compareFn: any
 // since we have searched for an index in a sorted array that is correct
 // the elements beside it should all be the same attributes so loop both sides until we get them all
 function binarySearchFill(target: number | string, found : number, arr : any[], compareFn : any) : List<number>{
-    let startTime = performance.now();
+    let startTime : number = performance.now();
     let indexes : List<number> = new List<number>();
     if(typeof compareFn !== 'function'){
         indexes.push(-1);
@@ -80,7 +80,7 @@ function binarySearchFill(target: number | string, found : number, arr : any[], 
         indexes.push(j);
         j++;
     }
-    let endTime = performance.now();
+    let endTime : number = performance.now();
     let time : Triplet = new Triplet("Binary Search Fill", endTime-startTime, false)
     performanceTime.enqueue(time);
     console.log(indexes);
@@ -91,7 +91,7 @@ function binarySearchFill(target: number | string, found : number, arr : any[], 
 // O(k) because the elements looped must not be all the same therefore smaller than O(n)
 function binarySearch(target: number | string, sortedArr : any[], compareFn : any, rightIndex? : number) : List<number>{
 
-    let startTime = performance.now();
+    let startTime : number = performance.now();
 
     let indexFound : number = binarySearchSingle(target, sortedArr, compareFn, rightIndex);
     let foundIndexes : List<number> = new List<number>();
@@ -103,7 +103,7 @@ function binarySearch(target: number | string, sortedArr : any[], compareFn : an
         foundIndexes = binarySearchFill(target, indexFound, sortedArr, compareFn);
     }
 
-    let endTime = performance.now();
+    let endTime : number = performance.now();
     let time : Triplet = new Triplet("Binary Search", endTime-startTime, false)
     performanceTime.enqueue(time);
 
@@ -121,7 +121,7 @@ function binarySearchBetween(min: number, max: number, sorted: any[], compareFn:
 // since we have searched for an index in a sorted array that is correct
 // the elements beside it should all be the same attributes so loop both sides until we get them all
 function binarySearchFillBetween(found : number, arr : any[], min : number, max : number, compareFn : any) : List<number>{
-    let startTime = performance.now();
+    let startTime :number = performance.now();
     let indexes : List<number> = new List<number>();
     if(typeof compareFn !== 'function'){
         indexes.push(-1);
@@ -142,7 +142,7 @@ function binarySearchFillBetween(found : number, arr : any[], min : number, max 
         indexes.push(j);
         j++;
     }
-    let endTime = performance.now();
+    let endTime : number = performance.now();
     let time : Triplet = new Triplet("Binary Search Fill Between", endTime-startTime, false)
     performanceTime.enqueue(time);
     console.log(indexes);
@@ -153,7 +153,7 @@ function binarySearchFillBetween(found : number, arr : any[], min : number, max 
 // returns the index
 // O(logn) time
 function binarySearchBetweenSingle(min: number, max: number, data: any[], compareFn: any): number{
-    const startTime = performance.now();
+    const startTime : number = performance.now();
     // left bound
     let left: number = 0;
     // right bound
@@ -189,7 +189,7 @@ function binarySearchBetweenSingle(min: number, max: number, data: any[], compar
         return -1;
     }
 
-    let endTime = performance.now();
+    let endTime : number = performance.now();
     let time : Triplet = new Triplet("Binary Search Between Single", endTime-startTime, false)
     performanceTime.enqueue(time);
 
@@ -203,7 +203,7 @@ function binarySearchBetweenSingle(min: number, max: number, data: any[], compar
 // since each mergesort function calls merge it is mutipled giving O(nlogn)
 // returns indexes of sorted array
 function sort<T>(arr : T[], compare : any) : number[]{
-    let startTime = performance.now();
+    let startTime : number = performance.now();
     let sortSpace : PairNode<T>[] = new Array(arr.length);
 
     // make deep copy, we dont want to edit the original
@@ -222,7 +222,7 @@ function sort<T>(arr : T[], compare : any) : number[]{
         indexes[i] = deepcopy[i].index
     ]
 
-    let endTime = performance.now();
+    let endTime : number = performance.now();
     let time : Triplet = new Triplet("Merge Sort", endTime-startTime, false)
     performanceTime.enqueue(time);
     return indexes;
@@ -422,7 +422,7 @@ function bfs(start : Point, target : number, indexes : number[]) : List<Pair>{
 // Returns indexes of pokemon that were caught within 2 inputted times
 // O(log n), as it calls the binarySearchBetween function which is log n, and doesn't do any seperate loops itself
 function filterTimes(times: string[], timeA: string, timeB: string): List<number>{
-    const startTime = performance.now();
+    const startTime : number = performance.now();
     // store indexes of data within the 2 times
     let validIndexes: List<number> = new List<number>;
     // convert string time Ex: "1:40:10" to seconds
@@ -437,7 +437,7 @@ function filterTimes(times: string[], timeA: string, timeB: string): List<number
     let maxTime: number = Math.max(aVal, bVal);
     // O(log n)
     validIndexes = binarySearchBetween(minTime, maxTime, times, compareTimes);
-    const endTime = performance.now();
+    const endTime : number = performance.now();
     let time : Triplet = new Triplet("Filter Time", endTime-startTime, false)
     performanceTime.enqueue(time);
     return validIndexes
@@ -446,7 +446,7 @@ function filterTimes(times: string[], timeA: string, timeB: string): List<number
 // Returns indexes of pokemon that are an inputted type
 // O(n), since it looops through all given times once
 function filterType(types: string[][], type: string): List<number>{
-    const startTime = performance.now();
+    const startTime : number = performance.now();
     // store indexes
     let validIndexes: List<number> = new List<number>;
     // loop through the inputted pokemon
@@ -455,7 +455,7 @@ function filterType(types: string[][], type: string): List<number>{
             validIndexes.push(i);
         }
     }
-    const endTime = performance.now();
+    const endTime : number = performance.now();
     let time : Triplet = new Triplet("Filter Type", endTime-startTime, false)
     performanceTime.enqueue(time);
     return validIndexes;
@@ -472,7 +472,7 @@ function filterName(name: string, pokemon: any[]): List<number>{
 // returns indexes of data with (lat, lng) between two inputted points
 // O(n), since it loops through all inputted data points once
 function filterCoords(latitudes: number[], longitudes: number[], lat1: number, lng1: number, lat2: number, lng2: number): List<number>{
-    let startTime = performance.now();
+    let startTime : number = performance.now();
     let validIndexes: List<number> = new List<number>;
     // if lat is between max and min lat, and if lng is between max and min lng, add the index
     for(let i=0;i<latitudes.length;i++){
@@ -480,7 +480,7 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
             validIndexes.push(i);
         }
     }
-    let endTime = performance.now();
+    let endTime : number = performance.now();
     let time : Triplet = new Triplet("Filter Coords", endTime-startTime, false)
     performanceTime.enqueue(time);
     return validIndexes;
@@ -490,7 +490,7 @@ function filterCoords(latitudes: number[], longitudes: number[], lat1: number, l
 // first O(logn) or O(n) to first filter the indexes
 // then use 1 loop to filter the rest O(k) because it is already filtered guarenteing it to be less
 function filterAll(name : string, type : string, time1 : string, time2 : string, lat1 : number, lon1 : number, lat2 : number, lon2 : number) : List<number>{
-    let startTime = performance.now();
+    let startTime : number = performance.now();
 
     // create a sub data set to hold the guareented at least one matching attribute
     let foundIndexes : List<number> | null = null;
@@ -536,7 +536,7 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
         }
     }
 
-    let endTime = performance.now();
+    let endTime : number = performance.now();
     let time : Triplet = new Triplet("Filter All", endTime-startTime, false)
     performanceTime.enqueue(time);
     console.log(returnIndexes);
