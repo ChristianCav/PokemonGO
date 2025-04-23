@@ -74,7 +74,7 @@ function precompile(): void {
   data2.names_english = findPokedex(pokedex.names_english);
   data2.types = new Array<string[]>(data2.names_english.length);
   for(let i=0; i<data.localTime.length; i++){
-    let index : number = data.pokemonId[i];
+    let index : number = data.pokemonId[i]-1;
     data2.types[i] = pokedex.types[index];
   }
   let endTime = performance.now();

@@ -515,10 +515,6 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
         foundIndexes = null;
         sortedIndexes = null;
     }
-
-    console.log(foundIndexes)
-    console.log(indexToData(foundIndexes?.getData() as number[], sortedData.names_english.key));
-
     if(foundIndexes !== null){
     // traverse found indexes to match them
     // O(n) worst case but smaller since the found indexes will guarentee one match 
@@ -535,5 +531,6 @@ function filterAll(name : string, type : string, time1 : string, time2 : string,
     let endTime = performance.now();
     let time : Triplet = new Triplet("Filter All", endTime-startTime, false)
     performanceTime.enqueue(time);
+    console.log(returnIndexes);
     return returnIndexes;
 }
